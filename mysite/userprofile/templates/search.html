@@ -1,0 +1,24 @@
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+<body style="background-color:#;">
+	<div style="margin-left:25%">
+		<h2>Search results for "{{ query }}":</h2>
+	</div>
+
+	<div class="col-lg-9 col-md-9" style="float:left; padding:10px; width:50%; margin-left:25%; border:#0b8c56 solid 4px; background-color:#">
+		{% for person in results %}
+			{% if not person == user %}
+			<div style="border:#0b8c56 solid 1px;margin-bottom:5%">
+			<div style="border:#0b8c56 solid 1px; margin-bottom:5% ">
+				<div style="margin-left:5%; padding:2px"><h3>{{ person.username }}</h3></div>
+				<hr>
+				<div style="float:right; margin-right:5%; line-height:2.6511;">
+					<a href="{% url 'userprofile:follow' user_id=person.id %}">Follow</a>
+				</div>
+			</div>
+			</div>
+			{% endif %}
+		{% endfor %}
+	</div>
+</body>

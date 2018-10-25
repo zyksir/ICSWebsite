@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form class="form-group" style="margin-left:10%; padding:2%;"method="post" action="">
+	{% csrf_token %}
+	<label >Edit Post:</label><br>
+	<textarea rows="4" cols="50" id="posttext" name="posttext">{{ post }}</textarea><br><br>
+	<button class="" type="submit"> Apply </button>
+</form>
+{% endblock %}

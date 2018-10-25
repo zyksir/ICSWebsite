@@ -1,0 +1,267 @@
+{% load staticfiles %}
+<head>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	
+
+</head>
+<body style="background-color:#;">
+	<div style="height:10%">
+		<div style="margin-left:10%; width:40%; float:left;" ><h2>Home</h2></div>
+		<div style="margin-right:10%; float:right; width:30%; margin-top:25px">
+			<form method="GET" action="{% url 'userprofile:find_person' %}">
+				<input  id="search_box" type="text" name="search_box"  placeholder="Search People..." >
+				<button id="search_submit" type="submit" >Search</button>
+			</form>
+		</div>
+	</div>
+	<hr>
+	<div class="col-lg-3 col-md-3" style="float:left; margin-left:2%; width:25%; border:#0b8c56 solid 5px; height:100%; background-color:#;">
+		<div style="margin:10%"><a href="{% url 'userprofile:feed' %}"><h3>Home</h3></a></div>
+		<div style="margin:10%"><a href="{% url 'userprofile:profile' %}"><h3>Profile</h3></a></div>
+	</div>
+	<div id="recent-posts" class="col-lg-9 col-md-9" style="background-color:#; float:left; padding:10px; width:65%; margin-left:5%; ">
+		<div>
+			<h3>Recent posts from people you know</h3>
+
+			{% for post in posts %}
+			<div id="div_post" postid="{{ post.id }}" class="col-lg-9 col-md-9" style="background-color:#; float:left; padding:10px; margin-left:5%; border:#0b8c56 solid 5px;margin-bottom:5%;">
+
+				<div style="border:#0b8c56 solid 2px; padding:5px; margin-bottom:1%">
+					<div style="float:right">{{ post.published_on }}</div>
+					{% if post.user == request.user %}
+						<div style="margin-left:2%;"><strong style="font-size: initial;">You</strong></div>
+					{% else %}
+						<div style="margin-left:2%;"><strong style="font-size: initial;">{{ post.user }}</strong></div>
+					{% endif %}
+					<hr>
+					<div style="padding:5px">
+						<h4>{{ post.text }}</h4>
+
+					</div>
+					
+				</div>
+				
+
+				<!-- likes and unlikes using AJAX -->
+				<div id="post-likes{{ post.id }}">
+					
+					{% if not post.like_flag %}
+
+							<a class="like" onclick="like({{post.id}})" style="color:#0645ad; cursor:pointer;">Like</a>
+
+					{% else %}
+
+						<a class="unlike" onclick="unlike({{post.id}})" style="color:#0645ad; cursor:pointer;" >Unlike</a>
+
+					{% endif %}
+					<hr style="margin-top:0px; margin-bottom:0px;">
+					<h5>{{ post.likes }} Person{{ post.likes|pluralize }} like this.</h5>
+				
+				</div>
+
+				<div style="margin-left:2%">
+					<h5><i>Add a comment:</i></h5>
+					<form id="comment-form" onsubmit="return false">
+						{% csrf_token %}
+						<textarea id="comment-text{{post.id}}" name="comment" placeholder="Say somethin, I'm givin up on you..."rows="3" style="width:80%" required="true"></textarea>
+						<br>
+						<button onclick="add_comment({{ post.id }})">Comment</button>
+					</form>
+				</div>
+				<div id="comment-list{{post.id}}" style="padding:5px; margin-bottom:1%; margin-left:2%;">
+
+					{% for c in post.comment_set.all %}
+		
+						<div id="comments{{c.id}}" style="width:85%; padding:2px; border:#0b8c56 solid 1px; margin-bottom:4%;">
+							<div style="padding:2px; margin-left:2%; margin-top:px">
+								<strong><i>{{ c.user }}</i></strong>
+								<span style="float:right; margin-right:2%;">{{ c.published_on|date:"F d, o h:i A" }}</span>
+							</div>
+							<hr style="margin-top:0px; margin-bottom:5px">
+							<div style="margin:5px;">
+								<h4>{{ c.comment }}</h4>
+							</div>
+							
+							{% if c.user == user %}
+								<a style="cursor:pointer; color:#0645ad; float:right; margin-right:1%; margin-top:3px;" onclick="edit_comment_box({{c.id}})" >Edit</a>
+								<a style="cursor:pointer; color:#0645ad; float:right; margin-right:1%; margin-top:3px;" onclick="delete_comment({{c.id}})" >Delete</a>
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+
+		<div class="pagination" style="margin:2%; margin-left:7%; width:95%">
+    		<span class="step-links" style="float:left; width:33%">
+        		{% if posts.has_previous %}
+            		<STRONG><a href="?page={{ posts.previous_page_number }} ">Previous</a></STRONG>
+        		{% endif %}
+        	</span>
+
+        	<span class="current" style="width:33%;">
+            	<STRONG>Page {{ posts.number }} of {{ posts.paginator.num_pages }}</STRONG>
+        	</span>
+
+        	<span style="float:right; width:33%;">
+        	{% if posts.has_next %}
+            	<STRONG><a href="?page={{ posts.next_page_number }}">Next</a></STRONG>
+        	{% endif %}
+    		</span>
+		</div>
+
+	</div>
+	
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
+	<script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+
+	<script>
+
+	function add_comment(post_id) {
+
+	    console.log("add comment is working!"); // sanity check
+	    var commentBoxId = '#comment-text'+ post_id;
+	    var listId = '#comment-list'+ post_id;
+	    
+	    $.ajax({
+	        url:"../../profile/comment/"+ post_id +"/",
+	        type:"POST",
+	        /*assync: true,*/
+	        data: { comment : $(commentBoxId).val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+
+	        success : function(json) {
+	            $(commentBoxId).val(''); // remove the value from the input
+	            /*$(listId).html('').load('http://127.0.0.1:8000/profile/list_comments/'+post_id+'/');*/
+	            $(listId).prepend(`<div id="comments`+json.c_id+`"style="width:85%; padding:2px; border:#0b8c56 solid 1px; margin-bottom:4%;">
+				<div style="padding:2px; margin-left:2%; margin-top:px">
+					<strong><i>`+json.user+`</i></strong>
+					<span style="float:right; margin-right:2%;">`+json.published_on+`</span>
+				</div>
+				<hr style="margin-top:0px; margin-bottom:5px">
+				<div style="margin:5px;">
+					<h4>`+json.comment+`</h4>
+				</div>
+					<a style="cursor:pointer; float:right; margin-right:1%; margin-top:3px;" onclick="edit_comment_box(`+json.c_id+`)" >Edit</a>
+					<a style="cursor:pointer; float:right; margin-right:1%; margin-top:3px;" onclick="delete_comment(`+json.c_id+`)" >Delete</a>
+				
+			</div>`)
+	        },
+	        
+	        error : function(jqXHR, textStatus, errorThrown) {
+	        console.log('error');
+	        console.log(jqXHR, textStatus, errorThrown);
+	        },
+
+	    })
+
+	}
+
+	function delete_comment(comment_id) {
+		console.log('comment delete working!!');
+		var divId = '#comments'+comment_id;
+
+		$.ajax({
+			url:'http://127.0.0.1:8000/profile/delete/comment/'+comment_id+'/',
+			type:'POST',
+			success: function(json) {
+				$(divId).remove();
+				console.log('comment must be removed!!');
+			}
+		})
+	}
+
+	function edit_comment_box(comment_id) {
+		console.log('edit comment working!!');
+		var divId = '#comments'+comment_id;
+		var old_comment = $(divId).find('h4').html();
+		console.log(old_comment);
+		$(divId).replaceWith(`
+				<div id="comments`+comment_id+`" style="width:85%; padding:2px; margin-bottom:4%;">
+					<form style="margin-left:; margin-top:5%"class="form-group" onsubmit="return false">
+					{% csrf_token %}
+					<label >Edit Comment:</label><br>
+					<textarea rows="3" style="width:90%;" id="edit_comment_box" name="comment_edit_box">`+old_comment+`</textarea><br><br>
+					<button class="" onclick="edit_comment(`+comment_id+`)" >Edit Comment</button>
+					</form>
+				</div>
+					`);
+	}
+
+	function edit_comment(comment_id) {
+
+		var divId = '#comments'+comment_id;
+		$.ajax({
+			url:'http://127.0.0.1:8000/profile/edit/comment/'+comment_id+'/',
+			type:'POST',
+			data: { comment : $('#edit_comment_box').val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+			success: function(json) {
+				$(divId).replaceWith(`
+
+					<div id="comments`+comment_id+`" style="width:85%; padding:2px; border:#0b8c56 solid 1px; margin-bottom:4%;">
+							<div style="padding:2px; margin-left:2%; margin-top:px">
+								<strong><i>`+json.user+`</i></strong>
+								<span style="float:right; margin-right:2%;">`+json.published_on+`</span>
+							</div>
+							<hr style="margin-top:0px; margin-bottom:5px">
+							<div style="margin:5px;">
+								<h4>`+json.comment+`</h4>
+							</div>
+							
+								<a style="cursor:pointer; color:#0645ad; float:right; margin-right:1%; margin-top:3px;" onclick="edit_comment_box(`+comment_id+`)" >Edit</a>
+								<a style="cursor:pointer; color:#0645ad; float:right; margin-right:1%; margin-top:3px;" onclick="delete_comment(`+comment_id+`)" >Delete</a>
+						</div>
+
+					`)
+				console.log('comment updatede successfully!!');
+			}
+		})
+
+	}
+
+	function like(post_id) {
+		console.log('add like working!!'); //sanity check
+		var divId = '#post-likes'+ post_id;
+
+		$.ajax({
+			url:'http://127.0.0.1:8000/profile/like/'+post_id+'/',
+			type:'POST',
+			success : function(json) {
+				$(divId).replaceWith(
+					`<div id="post-likes`+post_id+`">
+					<a class="like" onclick="unlike(`+post_id+`)" style="color:#0645ad; cursor:pointer;">Unlike</a>
+					<hr style="margin-top:0px; margin-bottom:0px;">
+					<h5>`+json.likes+` Person`+((json.likes>1)?'s':'')+` like this.</h5>
+				
+				</div>
+`),
+				console.log("success");
+			},
+		})
+	}
+
+	function unlike(post_id) {
+		console.log('add unlike working!!'); //sanity check
+		var divId = '#post-likes'+ post_id;
+
+		$.ajax({
+			url:'http://127.0.0.1:8000/profile/unlike/'+post_id+'/',
+			type:'POST',
+			success : function(json) {
+				$(divId).replaceWith(
+					`<div id="post-likes`+post_id+`">
+					<a class="like" onclick="like(`+post_id+`)" style="color:#0645ad; cursor:pointer;">Like</a>
+					<hr style="margin-top:0px; margin-bottom:0px;">
+					<h5>`+json.likes+` Person`+((json.likes>1)?'s':'')+` like this.</h5>
+				
+				</div>
+`),
+				console.log("success");
+			},
+		})
+	}
+
+	</script>
+</body>
+ 

@@ -1,0 +1,11 @@
+{% if not post.like_flag %}
+
+	<a class="like" onclick="like({{post.id}})" href="">Like</a>
+
+{% else %}
+
+	<a class="unlike" onclick="unlike({{post.id}})" href="">Unlike</a>
+
+{% endif %}
+<hr style="margin-top:0px; margin-bottom:0px;">
+<h5>{{ post.likes }} Person{{ post.likes|pluralize }} like this.</h5>

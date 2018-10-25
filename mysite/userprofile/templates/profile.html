@@ -1,0 +1,131 @@
+{% load staticfiles %}
+<html>
+<head>
+	<title>Profile</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+
+<body style="background-color:#;">
+	<nav style="height:5%"><h3>
+		<a href="../home/feed"><span style="margin:2%; margin-left:5%">Home</span></a>
+		<a href="{% url 'login:logout_user'%}"><span style="float:right; margin-right:10%">Logout</span></a>
+	</h3>
+</nav>
+<hr>
+<div style="margin-left:20% "><h2>{{ user.username }}'s Profile</h2></div>
+	
+<div style="margin-left:25%; padding:10px%" >
+	<form method="POST" action="">
+		{% csrf_token %}
+		{% for field in form %}
+		<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+				<span class="text-danger small">{{ field.errors }}</span>
+			</div>
+			<label >What's on your mind:</label>
+			<div >{{ field }}</div>
+		</div>
+		{% endfor %}
+		<button type="submit">Post</button>
+	</form>
+</div>
+<hr><hr>
+<div style="margin-left:5%; padding:10px; width:25%; border:#0b8c56 solid 4px; height:100%; float:left">
+	<div style="margin-left:20%; padding:2px">
+	<a href="{% url 'userprofile:following' %}"><h3>Following</h3></a><br>
+	<a href="{% url 'userprofile:followers' %}"><h3>Followers</h3></a>
+	</div>
+</div>
+{% if posts %}
+<div class="posts" style=" float:left; padding:10px; width:50%; margin-left:5%">
+	<h2>Recent Posts-</h2>
+	{% for post in posts %}
+	<div style="border:#0b8c56 solid 4px; padding:5px; margin:10px;">
+		<div style="border:#0b8c56 solid 3px; padding:5px; margin:5px;">
+			<div style="float:left; margin-left:2%;"><Strong style="font-size: initial;">You</Strong></div>
+			<span style="float:right;">{{ post.published_on }}</span><br>
+		<hr style="margin-bottom:15px color:#0b8c56">
+			<h4>{{ post.text }}</h4>
+		</div>
+		<hr>
+		<div style="margin-left:2%">
+			<h5><i>Add a comment:</i></h5>
+			<form id="comment-form" method="POST" onsubmit="return false">
+				{% csrf_token %}
+				<textarea name="comment" id="comment-text{{post.id}}" placeholder="Say somethin, I'm givin up on you..."rows="3" style="width:80%" required="true" ></textarea>
+				<br>
+				<button onclick="add_comment({{post.id}})">Comment</button>
+			</form>
+		</div>
+		<div id="comment-list{{post.id}}" style="padding:5px; margin-bottom:1%; margin-left:2%;">
+			{% for c in post.comment_set.all %}
+				<div id="comments{{c.id}}" style="width:85%; padding:2px; border:#0b8c56 solid 1px; margin-bottom:4%;">
+							<div style="padding:2px; margin-left:2%; margin-top:px">
+								<strong><i>{{ c.user }}</i></strong>
+								<span style="float:right; margin-right:2%;">{{ c.published_on|date:"F d, o h:i A" }}</span>
+							</div>
+							<hr style="margin-top:0px; margin-bottom:5px">
+							<div style="margin:5px;">
+								<h4>{{ c.comment }}</h4>
+							</div>
+				</div>
+			{% endfor %}
+		</div>
+		<span style="float:right; padding:10px">	
+			<a style="margin-right:4%" href="edit/post/{{post.id}}">Edit</a>
+			<a style="margin-right:0%" href="delete/post/{{post.id}}">Delete</a>
+		</span>
+	</div>
+	<br>
+	{% endfor %}
+</div>
+{% else %}
+No posts Found
+{% endif %}
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+
+	<script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+
+<script>
+function add_comment(post_id) {
+
+	    console.log("add comment is working!"); // sanity check
+	    var commentBoxId = '#comment-text'+ post_id;
+	    var listId = '#comment-list'+ post_id;
+	    
+	    $.ajax({
+	        url:"../../profile/comment/"+ post_id +"/",
+	        type:"POST",
+	        /*assync: true,*/
+	        data: { comment : $(commentBoxId).val(), csrfmiddlewaretoken: '{{ csrf_token }}' },
+
+	        success : function(json) {
+	            $(commentBoxId).val(''); // remove the value from the input
+	            /*$(listId).html('').load('http://127.0.0.1:8000/profile/list_comments/'+post_id+'/');*/
+	            $(listId).prepend(`<div style="width:85%; padding:2px; border:#0b8c56 solid 1px; margin-bottom:4%;">
+				<div style="padding:2px; margin-left:2%; margin-top:px">
+					<strong><i>`+json.user+`</i></strong>
+					<span style="float:right; margin-right:2%;">`+json.published_on+`</span>
+				</div>
+				<hr style="margin-top:0px; margin-bottom:5px">
+				<div style="margin:5px;">
+					<h4>`+json.comment+`</h4>
+				</div>
+				
+			</div>`)
+	        },
+	        
+	        error : function(jqXHR, textStatus, errorThrown) {
+	        console.log('error');
+	        console.log(jqXHR, textStatus, errorThrown);
+	        },
+
+	    })
+
+	}
+
+
+</script>
+</body>
+
+</html>

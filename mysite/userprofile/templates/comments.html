@@ -1,0 +1,20 @@
+
+	{% for c in post.comment_set.all %}
+		
+			<div style="width:85%; padding:2px; border:#0b8c56 solid 1px; margin-bottom:4%;">
+				<div style="padding:2px; margin-left:2%; margin-top:px">
+					<strong><i>{{ c.user }}</i></strong>
+					<span style="float:right; margin-right:2%;">{{ c.published_on }}</span>
+				</div>
+				<hr style="margin-top:0px; margin-bottom:5px">
+				<div style="margin:5px;">
+					<h4>{{ c.comment }}</h4>
+				</div>
+				
+				{% if c.user == user %}
+					<a style="float:right; margin-right:1%; margin-top:3px;" href="{% url 'userprofile:edit_comment' comment_id=c.id %}">Edit</a>
+					<a style="float:right; margin-right:1%; margin-top:3px;" href="{% url 'userprofile:delete_comment' comment_id=c.id%}">Delete</a>
+				{% endif %}
+			</div>
+		
+	{% endfor %}
