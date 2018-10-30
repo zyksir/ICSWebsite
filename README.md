@@ -5,8 +5,4 @@ I just follow the tutorial and add something else
 
 
 
-
-
-flaskr1: 这是一个跑得起来的程序
-
-flaskr2：我们在这上面进行修改
+in flask,暂时还不能跑，所以不要轻易合并到master分支，master分支保留一个可以跑的，
