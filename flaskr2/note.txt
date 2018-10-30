@@ -1,0 +1,5 @@
+venv\Scripts\activate
+set FLASK_ENV=development
+set ELASK_DEBUG=1
+set FLASK_APP=flaskr
+flask run

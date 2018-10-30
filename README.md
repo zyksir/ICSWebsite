@@ -3,3 +3,10 @@
 mysite is a simple website using Django
 I just follow the tutorial and add something else
 
+
+
+
+
+flaskr1: 这是一个跑得起来的程序
+
+flaskr2：我们在这上面进行修改
