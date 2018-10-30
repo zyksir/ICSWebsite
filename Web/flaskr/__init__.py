@@ -5,7 +5,7 @@
 # the flaskr directory should be treated as a package
 
 import os
-from flaskext.mysql import MySQL
+# from flaskext.mysql import MySQL
 from flask import Flask
 
 
@@ -14,11 +14,11 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(    # sets some default configuration that the app will use
         SECRET_KEY='dev',
-        # DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
-    app.config['MYSQL_DATABASE_USER'] = 'root'
-    app.config['MYSQL_DATABASE_PASSWORD'] = 'HWzyk123!@#'
-    mysql = MySQL(app)
+    # app.config['MYSQL_DATABASE_USER'] = 'root'
+    # app.config['MYSQL_DATABASE_PASSWORD'] = 'HWzyk123!@#'
+    # mysql = MySQL(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
