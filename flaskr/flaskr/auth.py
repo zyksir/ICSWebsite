@@ -20,24 +20,28 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
+        conn, db = get_db()
         error = None
 
         if not username:
             error = 'Username is required.'
+        elif len(username) > 40:
+            error = 'The maximum size of username is 40, your username is too long!'
         elif not password:
             error = 'Password is required.'
+        elif len(password) > 40:
+            error = 'The maximum size of password is 40, your password is too long!'
         elif db.execute(
-            'SELECT id FROM user WHERE username = ?', (username,)
-        ).fetchone() is not None:
+            'SELECT id FROM user WHERE username = %s', (username,)
+        ) > 0:
             error = 'User {} is already registered.'.format(username)
 
         if error is None:
             db.execute(
-                'INSERT INTO user (username, password) VALUES (?, ?)',
+                'INSERT INTO user (username, password) VALUES (%s, %s)',
                 (username, generate_password_hash(password))
             )
-            db.commit()
+            conn.commit()
             return redirect(url_for('auth.login'))
 
         flash(error)
@@ -50,13 +54,14 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
+        conn, db = get_db()
         error = None
-        user = db.execute(
-            'SELECT * FROM user WHERE username = ?', (username,)
-        ).fetchone()
+        num = db.execute(
+            'SELECT * FROM user WHERE username = %s', (username,)
+        )
+        user = db.fetchone()
 
-        if user is None:
+        if num == 0:
             error = 'Incorrect username.'
         elif not check_password_hash(user['password'], password):
             error = 'Incorrect password.'
@@ -78,9 +83,11 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id,)
-        ).fetchone()
+        conn, db = get_db()
+        db.execute(
+            'SELECT * FROM user WHERE id = %s', (user_id,)
+        )
+        g.user = db.fetchone()
 
 
 @bp.route('/logout')

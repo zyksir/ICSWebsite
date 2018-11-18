@@ -6,19 +6,24 @@
 
 import os
 from flaskext.mysql import MySQL
+from flask import current_app, g
 from flask import Flask
 
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    # mysql = MySQL()
     app.config.from_mapping(    # sets some default configuration that the app will use
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
+         SECRET_KEY='dev',
+    #     DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
-    # app.config['MYSQL_DATABASE_USER'] = 'root'
-    # app.config['MYSQL_DATABASE_PASSWORD'] = 'HWzyk123!@#'
-    # mysql = MySQL(app)
+    app.config['MYSQL_DATABASE_USER'] = 'root'
+    app.config['MYSQL_DATABASE_PASSWORD'] = 'HWzyk123!@#'
+    app.config['MYSQL_DATABASE_DB'] = 'SAKILA'
+    app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+    app.config['UPLOAD_FOLDER'] = r'E:\system_file'
+    # mysql.init_app(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -39,14 +44,18 @@ def create_app(test_config=None):
         return 'Hello, World!'
 
     from . import db
+    print("__init__.py is going to init_app")
     db.init_app(app)
 
+    # XX/auth
     from . import auth
     app.register_blueprint(auth.bp)
 
+    # XX/home
     from . import home
     app.register_blueprint(home.bp)
 
+    # XX/blog
     from . import blog
     app.register_blueprint(blog.bp)
     app.add_url_rule('/', endpoint='index')

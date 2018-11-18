@@ -11,6 +11,7 @@
       value="{{ request.form['title'] or post['title'] }}" required>
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] or post['body'] }}</textarea>
+    <input id="file-picker" type="file" name="file" multiple>
     <input type="submit" value="Save">
   </form>
   <hr>
