@@ -5,7 +5,7 @@
 # the flaskr directory should be treated as a package
 
 import os
-from flaskext.mysql import MySQL
+# from flaskext.mysql import MySQL
 from flask import current_app, g
 from flask import Flask
 
