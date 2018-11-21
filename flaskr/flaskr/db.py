@@ -3,7 +3,7 @@
 # create a connection to it. Any queries and operations are performed using the connection
 
 import sqlite3
-# from flaskext.mysql import MySQL
+from flaskext.mysql import MySQL
 import pymysql
 import click
 from flask import current_app, g

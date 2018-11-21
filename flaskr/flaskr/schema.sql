@@ -24,3 +24,15 @@ CREATE TABLE post_file (
   filehash TEXT NOT NULL,
   FOREIGN KEY (post_id) REFERENCES post (id)
 );
+
+CREATE TABLE reply (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  author_id INT NOT NULL,
+  post_id INT NOT NULL,
+  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  FOREIGN KEY (author_id) REFERENCES user (id),
+  FOREIGN KEY (post_id) REFERENCES post (id)
+);
+
