@@ -1,5 +1,4 @@
-# Web
-题目：社交网络：设计并实现一个简单的社交网络，实现服务器端、网页端，包括注册用户、发布内容、评论、用户私信私聊等功能；
-mysite is a simple website using Django
-I just follow the tutorial and add something else
+# 更新
+更改了login和register的界面，然后register里有一些东西需要后端重写一下，具体可以看Web-flaskr2/flaskr/flaskr/templates/auth/temp_reg.html里的注释，我大概写了要如何修改auth.py里跟注册有关的内容。
 
+以及这个文件夹为什么会这么多层。。。有一些是不是冗余的啊。。。
