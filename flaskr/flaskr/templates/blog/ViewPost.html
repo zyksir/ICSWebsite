@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}View "{{ post['title'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form>
+    <label for="title">Title</label>
+    <h1>{{ post['title'] }}</h1>
+    <label for="body">Body</label>
+    <p class="body">{{ post['body'] }}</p>
+  </form>
+  <hr>
+  {% for reply in post['reply'] %}
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ reply['title'] }}</h1>
+          <div class="about">by {{ reply['username'] }} on {{ reply['created'].strftime('%Y-%m-%d') }}</div>
+        </div>
+      </header>
+      <p class="body">{{ reply['body'] }}</p>
+    </article>
+    <hr>
+  {% endfor %}
+  <hr>
+  <form method="post">
+    <h1>我要回复</h1>
+    <label for="title">Title</label>
+    <input name="title" id="title" value="" required>
+    <label for="body">Body</label>
+    <textarea name="body" id="body"></textarea>
+    <input type="submit" value="Save" id="upload-button">
+  </form>
+{% endblock %}

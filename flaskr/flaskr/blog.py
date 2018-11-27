@@ -10,6 +10,8 @@ import subprocess
 from flaskr.auth import login_required
 from flaskr.db import get_db
 
+from pprint import pprint
+
 bp = Blueprint('blog', __name__)
 
 
@@ -110,6 +112,41 @@ def get_post(id, check_author=True):
     return post
 
 
+def get_view_post(id, check_author=False):
+    conn, db = get_db()
+    db.execute(
+        'SELECT p.id, title, body, created, author_id, username'
+        ' FROM post p JOIN user u ON p.author_id = u.id'
+        ' WHERE p.id = %s',
+        (id,)
+    )
+    post = db.fetchone()
+    pprint(post)
+
+    if post is None:
+        abort(404, "Post id {0} doesn't exist.".format(id))
+
+    if check_author and post['author_id'] != g.user['id']:
+        abort(403)
+
+
+    db.execute(
+        'SELECT r.id, author_id, title, body, created, username'
+        ' FROM reply r JOIN user u ON r.author_id = u.id'
+        ' WHERE r.post_id=%s'
+        ' ORDER BY created DESC',
+        (post['id'])
+    )
+    posts = db.fetchall()
+    post['reply'] = posts
+    pprint(post)
+
+    #print(type(post))
+    #pprint(post)
+
+    return post
+    
+
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
@@ -136,6 +173,39 @@ def update(id):
             return redirect(url_for('blog.index'))
 
     return render_template('blog/update.html', post=post)
+
+
+@bp.route('/<int:id>/ViewPost', methods=('GET', 'POST'))
+@login_required
+def ViewPost(id):
+    #pprint(post)
+
+    if request.method == 'POST':
+        title = request.form['title']
+        body = request.form['body']
+        error = None
+
+        print(id)
+
+        if not title:
+            error = 'Title is required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            conn, db = get_db()
+            db.execute(
+                'INSERT INTO reply (title, body, author_id, post_id)'
+                ' VALUES (%s, %s, %s, %s)',
+                (title, body, g.user['id'], id)
+            )
+            conn.commit()
+
+            #post = get_view_post(id)
+            #render_template('blog/ViewPost.html', post=post)
+
+    post = get_view_post(id)
+    return render_template('blog/ViewPost.html', post=post)
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))
