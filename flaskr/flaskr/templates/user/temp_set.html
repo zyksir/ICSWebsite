@@ -1,0 +1,121 @@
+
+{% extends 'blog/temp_indextop.html' %}
+
+{% block header %}
+  <h1>{% block title %}个人设置{% endblock %}</h1>
+{% endblock %}
+
+{% block detail %}
+{% if g.user %}
+<div class="layui-container fly-marginTop fly-user-main">
+  <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
+    <li class="layui-nav-item">
+      <a href="{{ url_for('users.home', id=g.user['id']) }}">
+        <i class="layui-icon">&#xe609;</i>
+        我的主页
+      </a>
+    </li>
+    <li class="layui-nav-item layui-this">
+      <a href="{{ url_for('users.set'}}">
+        <i class="layui-icon">&#xe620;</i>
+        基本设置
+      </a>
+    </li>
+  </ul>
+
+  <div class="site-tree-mobile layui-hide">
+    <i class="layui-icon">&#xe602;</i>
+  </div>
+  <div class="site-mobile-shade"></div>
+  
+  <div class="site-tree-mobile layui-hide">
+    <i class="layui-icon">&#xe602;</i>
+  </div>
+  <div class="site-mobile-shade"></div>
+  
+  
+  <div class="fly-panel fly-panel-user" pad20>
+    <div class="layui-tab layui-tab-brief" lay-filter="user">
+      <ul class="layui-tab-title" id="LAY_mine">
+        <li class="layui-this" lay-id="info">我的资料</li>
+        <li lay-id="avatar">头像</li>
+        <li lay-id="pass">密码</li>
+      </ul>
+      <div class="layui-tab-content" style="padding: 20px 0;">
+        <div class="layui-form layui-form-pane layui-tab-item layui-show">
+          <form method="post">
+
+            <div class="layui-form-item">
+              <label for="L_username" class="layui-form-label">昵称</label>
+              <div class="layui-input-inline">
+                <input type="text" id="nickname" name="nickname" required lay-verify="required" autocomplete="off" value="{{ request.form['nickname'] or g.user['nickname'] }}" class="layui-input">
+              </div>
+            </div>
+
+            <div class="layui-form-item">
+              <label for="L_email" class="layui-form-label">邮箱</label>
+              <div class="layui-input-inline">
+                <input type="text" id="email" name="email" required lay-verify="email" autocomplete="off" value="{{ request.form['email'] or g.user['email'] }}" class="layui-input">
+              </div>
+            </div>
+
+            
+            <div class="layui-form-item">
+              <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit>确认修改</button>
+            </div>
+          </div>
+          
+          <div class="layui-form layui-form-pane layui-tab-item">
+            <div class="layui-form-item">
+              <div class="avatar-add">
+                <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过50KB</p>
+                <button type="button" class="layui-btn upload-img">
+                  <i class="layui-icon">&#xe67c;</i>上传头像
+                </button>
+                {% if g.user['avatar'] %}
+                <img src="{{g.user['avatar']}}">
+                {% else %}
+                <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+                {% endif %}
+                <span class="loading"></span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="layui-form layui-form-pane layui-tab-item">
+            <form method="post">
+              </div>
+              <div class="layui-form-item">
+                <label for="L_pass" class="layui-form-label">新密码</label>
+                <div class="layui-input-inline">
+                  <input type="password" id="password" name="password" required lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-form-mid layui-word-aux">6到16个字符</div>
+              </div>
+              <div class="layui-form-item">
+                <label for="L_repass" class="layui-form-label">确认密码</label>
+                <div class="layui-input-inline">
+                  <input type="password" id="repassword" name="repassword" required lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit>确认修改</button>
+              </div>
+            </form>
+          </div>         
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fly-footer">
+  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/" target="_blank">layui.com 出品</a></p>
+  <p>
+    <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
+    <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
+    <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
+  </p>
+</div>
+{% endif %}
+{% endblock %}

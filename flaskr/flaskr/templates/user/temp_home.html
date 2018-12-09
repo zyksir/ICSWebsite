@@ -1,0 +1,75 @@
+
+{% extends 'temp_base.html' %}
+{% block header %}
+  <h1>{% block title %}个人主页{% endblock %}</h1>
+{% endblock %}
+
+{% block detail %}
+<div class="fly-home fly-panel" style="background-image: url();">
+  <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="贤心">
+  <h1>
+    {{ user['nickname'] }}
+    <!-- <i class="iconfont icon-nv"></i>  -->
+    <!--
+    <span style="color:#c00;">（管理员）</span>
+    <span style="color:#5FB878;">（社区之光）</span>
+    <span>（该号已被封）</span>
+    -->
+  </h1>
+
+  <p class="fly-home-info">
+    {% if user['email'] %}
+    <span>{{ user['email'] }}</span>
+    {% endif %}
+  </p>
+  
+  <p class="fly-home-info">
+    <i class="iconfont icon-shijian"></i><span>{{ user['created'].strftime('%Y-%m-%d') }} 加入</span>
+  </p>
+</div>
+
+<div class="layui-container">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md6 fly-home-jie">
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">{{ user['nickname'] }} 最近发布的帖子</h3>
+        <ul class="jie-row">
+          {% for post in user['posts'] %}
+          <li>
+            <a href="{{ url_for('blog.ViewPost', id=post['id']) }}" class="jie-title"> {{post['title']}}</a>
+            <i>{{ post['created'].strftime('%Y-%m-%d') }}</i>
+            <em class="layui-hide-xs">{{ post['marknum'] }}收藏/{{ post['replynum'] }}回复</em>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    
+    <div class="layui-col-md6 fly-home-da">
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">贤心 最近收藏的帖子</h3>
+        <ul class="jie-row">
+          {% for post in user['markposts'] %}
+          <li>
+            <a href="{{ url_for('blog.ViewPost', id=post['id']) }}" class="jie-title"> {{post['title']}}</a>
+            <i>{{ post['created'].strftime('%Y-%m-%d') }}</i>
+            <em class="layui-hide-xs">{{ post['marknum'] }}收藏/{{ post['replynum'] }}回复</em>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="fly-footer">
+  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/" target="_blank">layui.com 出品</a></p>
+  <p>
+    <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
+    <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
+    <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
+  </p>
+</div>
+
+
+{% endblock %}

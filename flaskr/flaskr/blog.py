@@ -34,7 +34,7 @@ def index():
         )
         post['files'] = db.fetchall()
 
-    return render_template('blog/index.html', posts=posts)
+    return render_template('blog/temp_index.html', posts=posts)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -90,7 +90,7 @@ def create():
                 print("Save %s to %s", (filename, file_path))
             return redirect(url_for('blog.index'))
 
-    return render_template('blog/create.html')
+    return render_template('blog/temp_create.html')
 
 
 def get_post(id, check_author=True):
@@ -172,7 +172,7 @@ def update(id):
             conn.commit()
             return redirect(url_for('blog.index'))
 
-    return render_template('blog/update.html', post=post)
+    return render_template('blog/temp_update.html', post=post)
 
 
 @bp.route('/<int:id>/ViewPost', methods=('GET', 'POST'))
@@ -205,7 +205,7 @@ def ViewPost(id):
             #render_template('blog/ViewPost.html', post=post)
 
     post = get_view_post(id)
-    return render_template('blog/ViewPost.html', post=post)
+    return render_template('blog/temp_ViewPost.html', post=post)
 
 
 @bp.route('/<int:id>/delete', methods=('POST',))

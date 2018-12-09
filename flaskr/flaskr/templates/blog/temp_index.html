@@ -1,0 +1,100 @@
+<!--temp_index.html-->
+ 
+ 
+{% extends 'blog/temp_indextop.html' %}
+
+{% block header %}
+  <h1>{% block title %}贴吧首页{% endblock %}</h1>
+{% endblock %}
+
+{% block detail %}
+
+
+<div class="layui-container">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md8">
+      <div class="fly-panel">
+        <div class="fly-panel-title fly-filter">
+          <a>置顶</a><!--置顶由管理员决定？ 然后暂时叫做topposts吧-->
+        </div>
+        <ul class="fly-list">
+          <!--这一段我先注释掉，之后后台加上再注释回来-->
+          <!--
+          {% for post in posts %}
+          {% if post['top'] %}
+          <li>
+            <h2>
+              <a href="jie/temp_detail.html">{{ post['title'] }}</a>
+            </h2>
+            <div class="fly-list-info">
+              <a href="user/temp_home.html" link>
+                <cite>{{ post['username'] }}</cite>
+              </a>
+              <span>{{ post['created'].strftime('%Y-%m-%d') }}</span>
+              
+              <span class="fly-list-kiss layui-hide-xs" title="收藏"><i class="iconfont icon-kiss"></i> {{ post['marknum'] }}</span>
+              <span class="fly-list-nums"> 
+                <i class="iconfont icon-pinglun1" title="评论"></i> {{ post['replynum'] }}
+              </span>
+            </div>
+            <div class="fly-list-badge">
+              <span class="layui-badge layui-bg-black">置顶</span>
+              {%if post['goodpost']%}
+              <span class="layui-badge layui-bg-red">精帖</span>
+              {% endif %}
+            </div>
+          </li>
+          {% endif %}
+        {% endfor %}
+      -->
+        </ul>
+      </div>
+
+
+
+      <div class="fly-panel" style="margin-bottom: 0;">
+        
+        <div class="fly-panel-title fly-filter">
+          <a href="" class="layui-this">按最新</a>
+        </div>
+
+        <ul class="fly-list"> 
+          {% for post in posts %}         
+          <li>
+            <a href="user/home.html" class="fly-avatar">
+              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="{{ post['username'] }}">
+            </a>
+            <h2>
+              <a href="{{ url_for('blog.ViewPost', id=post['id']) }}">{{ post['title'] }}</a>
+            </h2>
+            <div class="fly-list-info">
+              <a href="user/temp_home.html" link>
+                <cite>{{ post['username'] }}</cite><!--这个地方希望改成nickname而不是username-->
+              </a>
+              <span>{{ post['created'].strftime('%Y-%m-%d') }}</span>
+              
+              <span class="fly-list-kiss layui-hide-xs" title="收藏"><i class="iconfont icon-kiss"></i>{{ post['marknum'] }}</span>
+              <span class="fly-list-nums"> 
+                <i class="iconfont icon-pinglun1" title="回复"></i>{{ post['replynum'] }}
+              </span>
+            </div>
+            <div class="fly-list-badge">
+              <!--
+              {%if post['top']%}
+              <span class="layui-badge layui-bg-black">置顶</span>
+              {% endif %}
+              {%if post['goodpost']%}
+              <span class="layui-badge layui-bg-red">精帖</span>
+              {% endif %}
+            -->
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        <!--分页功能有待更新-->
+
+
+      </div>
+    </div>
+    
+{% endblock %}

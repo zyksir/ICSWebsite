@@ -1,0 +1,136 @@
+{% extends 'blog/temp_indextop.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{post['title']}}{% endblock %}</h1>
+{% endblock %}
+
+{% block detail %}
+<div class="layui-container">
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md8 content detail">
+      <div class="fly-panel detail-box">
+        <h1>{{ post['title'] }}</h1>
+        <div class="fly-detail-info">
+          <!--加精和置顶
+          {% if post['top'] %}
+          <span class="layui-badge layui-bg-black">置顶</span>
+          {% endif %}
+          {% if post['goodpost'] %}
+          <span class="layui-badge layui-bg-red">精帖</span>
+          {% endif %}
+          -->
+          <span class="fly-list-nums"> 
+            <!--
+            <a href="#comment"><i class="iconfont" title="回复">&#xe60c;</i> {{post['replynum']}}</a>
+            <i class="iconfont" title="点击">&#xe60b;</i> {{post['clicknum']}}
+          -->
+          </span>
+        </div>
+        <div class="detail-about">
+          <a class="fly-avatar" href="../user/home.html">
+            <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="{{post['username']}}">
+          </a>
+          <div class="fly-detail-user">
+            <a href="../user/home.html" class="fly-link">
+              <cite>{{post['username']}}</cite>
+            </a>
+            <span>{{ post['created'].strftime('%Y-%m-%d') }}</span>
+          </div>
+
+          {% if g.user %}
+          {% if g.user['username']==post['username'] %}
+          <!--删除帖子是楼主权限-->
+          <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+            <div class="detail-hits" id="LAY_jieAdmin" data-id="post['id']">
+            <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="删除此帖" onclick="return confirm('确定删除帖子？');">
+          </div>
+          </form>
+          {% endif %}
+          {% endif %}
+        </div>
+
+        <div class="detail-body photos">
+          <p>
+            {{ post['body'] }}
+          </p>
+        </div>
+      </div>
+
+      <div class="fly-panel detail-box" id="flyReply">
+        <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+          <legend>回帖</legend>
+        </fieldset>
+
+        <ul class="jieda" id="jieda">
+         {% for reply in post['reply'] %}
+          <li data-id="111" class="jieda-daan">
+            <a name="item-1111111111"></a>
+            <div class="detail-about detail-about-reply">
+              <a class="fly-avatar" href="">
+                <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt=" ">
+              </a>
+              <div class="fly-detail-user">
+                <a href="" class="fly-link">
+                  <cite>{{ reply['username'] }}</cite>             
+                </a>
+                {% if reply['username']==post['username'] %}
+                <span>(楼主)</span>
+                {% endif %}
+                <!--
+                <span style="color:#5FB878">(管理员)</span>
+                <span style="color:#FF9E3F">（社区之光）</span>
+                <span style="color:#999">（该号已被封）</span>
+                -->
+              </div>
+
+              <div class="detail-hits">
+                <span>{{ reply['created'].strftime('%Y-%m-%d') }}</span>
+              </div>
+
+            </div>
+            <div class="detail-body jieda-body photos">
+              <p>{{ reply['body'] }}</p>
+            </div>
+            <div class="jieda-reply">
+              <span type="reply">
+                <i class="iconfont icon-svgmoban53"></i>
+                回复
+              </span>
+              <div class="jieda-admin">
+                {% if reply['username']==post['username'] %}
+                <form action="{{ url_for('blog.delete', id=reply['id']) }}" method="reply">
+                <input type="submit" value="删除"></form>
+              </form>
+                {% elif g.user %}
+                {% if g.user['username']==post['username'] %}
+                <form action="{{ url_for('blog.delete', id=reply['id']) }}" method="reply">
+                <input type="submit" value="删除"></form>
+                </form>
+                {% endif %}
+                {% endif %} 
+                <!-- <span class="jieda-accept" type="accept">采纳</span> -->
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+          <!-- 无数据时 -->
+          <!-- <li class="fly-none">消灭零回复</li> -->
+        </ul>
+        
+        <div class="layui-form layui-form-pane">
+          <form method="post">
+            <div class="layui-form-item layui-form-text">
+              <a name="comment"></a>
+              <div class="layui-input-block">
+                <textarea id="body" name="body" required lay-verify="required" placeholder="请输入内容"  class="layui-textarea fly-editor" style="height: 150px;"></textarea>
+              </div>
+            </div>
+            <div class="layui-form-item">
+              <input type="hidden" value="Save">
+              <button class="layui-btn" lay-filter="*" lay-submit>提交回复</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+{% endblock %}
