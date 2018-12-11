@@ -72,4 +72,21 @@
     {% endif %}
   </div>
 </div>
+<!--
+<script>
+layui.use(['layer', 'form', 'layedit'], function () {
+                var layedit = layui.layedit;
+                var index = layedit.build('body',{
+                    height: 260,
+                    tool:['strong','italic','underline','del','|','left','right','center','link','face']
+
+                var form = layui.form();
+                //监听提交
+                form.on('submit(formDemo)', function (data) {
+                    layer.msg(JSON.stringify(data.field));
+                    return false;
+                });
+            });
+</script>
+-->
 {% endblock %}

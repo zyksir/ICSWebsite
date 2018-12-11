@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="{{ url_for('static', filename='res/layui/css/layui.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='res/css/global.css') }}">
+  <script type="text/javascript" src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>
 </head>
 <body>
 
@@ -62,7 +63,8 @@
       <li class="layui-hide-xs layui-this"><a href="{{ url_for('blog.index') }}">首页</a></li> 
       {% if g.user %}
       <!-- 用户登入后显示 -->
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('users.home' , id=g.user['id']) }}">我的主页</a></li> 
+      
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="temp_home.html">我的主页</a></li> 
     </ul> 
     
     <div class="fly-column-right layui-hide-xs"> 

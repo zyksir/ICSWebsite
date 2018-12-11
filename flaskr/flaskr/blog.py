@@ -33,6 +33,7 @@ def index():
             (post['id'],)
         )
         post['files'] = db.fetchall()
+        
 
     return render_template('blog/temp_index.html', posts=posts)
 
