@@ -30,7 +30,7 @@
     <ul class="layui-nav fly-nav-user">
        {% if g.user %}
        <li class="layui-nav-item">
-        <a class="fly-nav-avatar" href="{{ url_for('auth.register') }}"><!--个人主页-->
+        <a class="fly-nav-avatar" href="{{ url_for('user.home', id=g.user['id']) }}"><!--个人主页-->
           <cite class="layui-hide-xs">{{ g.user['nickname'] }}</cite>
           <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
         </a>

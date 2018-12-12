@@ -19,7 +19,7 @@ bp = Blueprint('blog', __name__)
 def index():
     conn, db = get_db()
     db.execute(
-        'SELECT p.id, title, body, created, author_id, username'
+        'SELECT p.id, title, body, u.created, author_id, username'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' ORDER BY created DESC'
     )
@@ -33,7 +33,8 @@ def index():
             (post['id'],)
         )
         post['files'] = db.fetchall()
-        
+
+    pprint(posts)
 
     return render_template('blog/temp_index.html', posts=posts)
 
@@ -122,7 +123,7 @@ def get_view_post(id, check_author=False):
         (id,)
     )
     post = db.fetchone()
-    pprint(post)
+    # pprint(post)
 
     if post is None:
         abort(404, "Post id {0} doesn't exist.".format(id))
@@ -132,7 +133,7 @@ def get_view_post(id, check_author=False):
 
 
     db.execute(
-        'SELECT r.id, author_id, title, body, created, username'
+        'SELECT r.id, author_id, body, created, username'
         ' FROM reply r JOIN user u ON r.author_id = u.id'
         ' WHERE r.post_id=%s'
         ' ORDER BY created DESC',
@@ -140,7 +141,7 @@ def get_view_post(id, check_author=False):
     )
     posts = db.fetchall()
     post['reply'] = posts
-    pprint(post)
+    # pprint(post)
 
     #print(type(post))
     #pprint(post)
@@ -182,23 +183,23 @@ def ViewPost(id):
     #pprint(post)
 
     if request.method == 'POST':
-        title = request.form['title']
+        # title = request.form['title']
         body = request.form['body']
         error = None
 
         print(id)
 
-        if not title:
-            error = 'Title is required.'
+        #if not title:
+        #    error = 'Title is required.'
 
         if error is not None:
             flash(error)
         else:
             conn, db = get_db()
             db.execute(
-                'INSERT INTO reply (title, body, author_id, post_id)'
-                ' VALUES (%s, %s, %s, %s)',
-                (title, body, g.user['id'], id)
+                'INSERT INTO reply (body, author_id, post_id)'
+                ' VALUES (%s, %s, %s)',
+                (body, g.user['id'], id, )
             )
             conn.commit()
 

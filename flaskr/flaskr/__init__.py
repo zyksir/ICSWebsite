@@ -68,6 +68,10 @@ def create_app(test_config=None):
     from . import home
     app.register_blueprint(home.bp)
 
+    # XX/user
+    from . import user
+    app.register_blueprint(user.bp)
+
     # XX/blog
     from . import blog
     app.register_blueprint(blog.bp)

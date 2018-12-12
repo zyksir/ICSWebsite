@@ -1,3 +1,39 @@
+# 更新 18.12.12 by wrh
+
+### schema.sql
+**需要重新运行schema.sql，会把之前的数据全部drop掉**
+
+新增的字段有注释表示
+
+新增：
+
+user is_block
+
+user created
+
+user nickname
+
+user email
+
+post is_top
+
+取消：
+
+reply title
+
+
+### blog.py
+回复取消了title
+
+### user.py
+增加了查看修改个人信息的功能
+
+### auth.py blog.py home.py
+为修改的字段提供支持 为user.py提供支持
+
+easy_set.html是一个简易的设置网页
+
+
 # 更新
 更改了login和register的界面，然后register里有一些东西需要后端重写一下，具体可以看Web-flaskr2/flaskr/flaskr/templates/auth/temp_reg.html里的注释，我大概写了要如何修改auth.py里跟注册有关的内容。
 

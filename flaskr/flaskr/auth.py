@@ -22,6 +22,8 @@ def register():
         password = request.form['password']
         nickname = request.form['nickname']
         repassword = request.form['repassword']
+        email = ""
+        is_block = 0
         conn, db = get_db()
         error = None
 
@@ -29,6 +31,8 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
+        elif not (password ==repassword):
+            error = 'Two passwords are inconsistent.'
         elif len(username) > 40:
             error = 'The maximum size of username is 40, your username is too long!'
         elif len(nickname) > 40:
@@ -42,8 +46,8 @@ def register():
 
         if error is None:
             db.execute(
-                'INSERT INTO user (username, nickname, password) VALUES (%s,%s, %s)',
-                (username, nickname, generate_password_hash(password))
+                'INSERT INTO user (username, nickname, password, email, is_block) VALUES (%s, %s, %s, %s, %s)',
+                (username, nickname, generate_password_hash(password), email, is_block)
             )
             conn.commit()
             return redirect(url_for('auth.login'))

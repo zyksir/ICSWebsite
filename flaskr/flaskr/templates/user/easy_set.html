@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Easy Setting{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    <label for="nickname">nickname</label>
+    <input name="nickname" id="nickname" value="{{ request.form['nickname'] }}" required>
+    <label for="email">email</label>
+    <input name="email" id="email">{{ request.form['email'] }}</input>
+    <input type="submit" value="Save" id="upload-button">
+    </form>
+  </form>
+{% endblock %}

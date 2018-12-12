@@ -47,7 +47,7 @@
     
     <div class="layui-col-md6 fly-home-da">
       <div class="fly-panel">
-        <h3 class="fly-panel-title">贤心 最近收藏的帖子</h3>
+        <h3 class="fly-panel-title">{{ user['nickname'] }} 最近收藏的帖子</h3>
         <ul class="jie-row">
           {% for post in user['markposts'] %}
           <li>

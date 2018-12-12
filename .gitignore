@@ -6,3 +6,6 @@
 .idea/vcs.xml
 .idea/Web.iml
 .idea/workspace.xml
+*.pyc
+flaskr/flaskr/patch_12_12_1.sql
+flaskr/flaskr/patch_12_12_1.sql
