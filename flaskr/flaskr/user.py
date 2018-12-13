@@ -97,12 +97,23 @@ def setpass():
         repassword = request.form['repassword']
         error = None
 
+        conn, db = get_db()
+        db.execute(
+            'SELECT password FROM user WHERE id = %s', (g.user['id'],)
+        )
+        real_password = db.fetchone()['password']
+        #print(real_password)
+        if not (check_password_hash(real_password, nowpass)):
+            error = 'Wrong password!'
+
         if not password:
             error = 'Password is required.'
         elif not (password ==repassword):
             error = 'Two passwords are inconsistent.'
         elif not (password == repassword):
             error = 'you enter different passwords!'
+        elif not ((len(password) < 6) and (len(password) > 16)):
+            error = 'The length of password should be between 6 and 16.'
 
         if error is not None:
             flash(error)
@@ -110,8 +121,8 @@ def setpass():
             conn, db = get_db()
             db.execute(
                 'UPDATE user SET password = %s'
-                ' WHERE id = %s',
-                (password, g.user['id'])
+                'WHERE id = %s',
+                (generate_password_hash(password), g.user['id'])
             )
             conn.commit()
 

@@ -31,8 +31,12 @@ def register():
             error = 'Username is required.'
         elif not password:
             error = 'Password is required.'
-        elif not (password ==repassword):
+        elif not repassword:
+            error = 'Repassword is required'
+        elif not (password == repassword):
             error = 'Two passwords are inconsistent.'
+        elif not ((len(password) < 6) and (len(password) > 16)):
+            error = 'The length of password should be between 6 and 16.'
         elif len(username) > 40:
             error = 'The maximum size of username is 40, your username is too long!'
         elif len(nickname) > 40:
