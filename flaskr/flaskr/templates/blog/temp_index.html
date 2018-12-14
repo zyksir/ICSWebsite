@@ -19,10 +19,13 @@
         </div>
         <ul class="fly-list">
           <!--这一段我先注释掉，之后后台加上再注释回来-->
-          <!--
+          
           {% for post in posts %}
-          {% if post['top'] %}
+          {% if post['is_top']==1 %}
           <li>
+            <a href="user/home.html" class="fly-avatar">
+              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="{{ post['username'] }}">
+            </a>
             <h2>
               <a href="jie/temp_detail.html">{{ post['title'] }}</a>
             </h2>
@@ -46,7 +49,7 @@
           </li>
           {% endif %}
         {% endfor %}
-      -->
+      
         </ul>
       </div>
 
