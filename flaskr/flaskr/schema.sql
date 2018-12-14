@@ -20,6 +20,7 @@ CREATE TABLE post (
   title TEXT NOT NULL,
   body TEXT NOT NULL,
   is_top TINYINT(1) NOT NULL,
+  is_fine TINYINT(1) NOT NULL,
   FOREIGN KEY (author_id) REFERENCES user (id)
 );
 

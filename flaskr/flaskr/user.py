@@ -112,7 +112,7 @@ def setpass():
             error = 'Two passwords are inconsistent.'
         elif not (password == repassword):
             error = 'you enter different passwords!'
-        elif not ((len(password) < 6) and (len(password) > 16)):
+        elif ((len(password) < 6) or (len(password) > 16)):
             error = 'The length of password should be between 6 and 16.'
 
         if error is not None:
