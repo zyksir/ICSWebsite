@@ -79,10 +79,11 @@
               </span>
             </div>
             <div class="fly-list-badge">
-              <!--
-              {%if post['top']%}
+             
+              {%if post['is_top']==1%}
               <span class="layui-badge layui-bg-black">置顶</span>
               {% endif %}
+              <!--
               {%if post['goodpost']%}
               <span class="layui-badge layui-bg-red">精帖</span>
               {% endif %}

@@ -64,7 +64,7 @@
       {% if g.user %}
       <!-- 用户登入后显示 -->
       
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="temp_home.html">我的主页</a></li> 
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('user.home', id=g.user['id']) }}">我的主页</a></li> 
     </ul> 
     
     <div class="fly-column-right layui-hide-xs"> 

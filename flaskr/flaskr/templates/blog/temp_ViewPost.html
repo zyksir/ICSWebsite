@@ -11,10 +11,12 @@
       <div class="fly-panel detail-box">
         <h1>{{ post['title'] }}</h1>
         <div class="fly-detail-info">
-          <!--加精和置顶
-          {% if post['top'] %}
+          <!--加精和置顶-->
+          {% if post['is_top']==1 %}
           <span class="layui-badge layui-bg-black">置顶</span>
           {% endif %}
+
+        <!--
           {% if post['goodpost'] %}
           <span class="layui-badge layui-bg-red">精帖</span>
           {% endif %}
