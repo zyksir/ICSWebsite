@@ -53,12 +53,10 @@
 
         <div class="detail-body photos">
           <p>
-            {{ post['body'] }}
-          </p>
-          <hr>
-          <p>
+            {{ post['body'] | safe }}
             {% for file in post['files'] %}
             {% if file['post_id']==post['id'] %}
+          <hr>
             {{file['filename']}}
             {% endif %}
             {% endfor %}
@@ -99,7 +97,7 @@
 
             </div>
             <div class="detail-body jieda-body photos">
-              <p>{{ reply['body'] }}</p>
+              <p>{{ reply['body'] | safe }}</p>
             </div>
             <div class="jieda-reply">
               <span type="reply">
@@ -132,7 +130,7 @@
             <div class="layui-form-item layui-form-text">
               <a name="comment"></a>
               <div class="layui-input-block">
-                <textarea id="body" name="body" required lay-verify="required" placeholder="请输入内容"  class="layui-textarea fly-editor" style="height: 150px;"></textarea>
+                <textarea id="body" name="body" required lay-verify="article_desc" placeholder="请输入内容"  class="layui-textarea fly-editor" style="height: 150px;"></textarea>
               </div>
             </div>
             <div class="layui-form-item">
@@ -143,4 +141,25 @@
         </div>
       </div>
     </div>
+
+<script src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>
+<script>
+layui.use(['layer', 'form', 'layedit'], function () {
+                var layedit = layui.layedit;
+                var index = layedit.build('body',{
+                    height: 260,
+                    tool:['strong','underline','del','|','link','face']
+          });
+                 var form = layui.form;
+                //监听提交
+                form.verify({
+                    article_desc: function(value){
+                        layedit.sync(index);
+                        if(value.length < 15){
+                        return '不能少于15字哦';
+                        }
+                    }
+                });
+    });
+</script>
 {% endblock %}

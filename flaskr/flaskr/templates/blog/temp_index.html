@@ -27,7 +27,7 @@
               <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="{{ post['username'] }}">
             </a>
             <h2>
-              <a href="jie/temp_detail.html">{{ post['title'] }}</a>
+              <a href="{{ url_for('blog.ViewPost', id=post['id']) }}">{{ post['title'] }}</a>
             </h2>
             <div class="fly-list-info">
               <a href="user/temp_home.html" link>
