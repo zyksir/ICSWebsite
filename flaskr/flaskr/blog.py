@@ -177,7 +177,7 @@ def update(id):
     return render_template('blog/temp_update.html', post=post)
 
 
-@bp.route('/<int:id>/ViewPost', methods=('GET', 'POST'))
+@bp.route('/ViewPost/<int:id>', methods=('GET', 'POST'))
 @login_required
 def ViewPost(id):
     #pprint(post)
@@ -210,15 +210,39 @@ def ViewPost(id):
     return render_template('blog/temp_ViewPost.html', post=post)
 
 
-@bp.route('/<int:id>/delete', methods=('POST',))
+@bp.route('/DeleteReply/<int:id>', methods=('POST',))
 @login_required
-def delete(id):
+def DeleteReply(id):
+    print("delete reply id = ", id)
+
+    conn, db = get_db()
+
+    db.execute('SET FOREIGN_KEY_CHECKS = 0')
+    conn.commit()
+
+    db.execute('SELECT post_id FROM reply r WHERE id=%s', (id, ))
+    post_id = db.fetchone()['post_id']
+    print("post_id = ", post_id)
+
+    db.execute('DELETE FROM reply WHERE id = %s', (id,))
+    conn.commit()
+
+    db.execute('SET FOREIGN_KEY_CHECKS = 1')
+    conn.commit()
+
+    #return redirect(url_for('blog.index'))
+    return redirect(url_for('blog.ViewPost', id=post_id))
+
+
+@bp.route('/DeletePost/<int:id>', methods=('POST',))
+@login_required
+def DeletePost(id):
     savepath = current_app.config['UPLOAD_FOLDER']
-    get_post(id)
+    # get_post(id)
     conn, db = get_db()
     db.execute('SELECT filename, id FROM post_file WHERE post_id=%s', (id, ))
     file_list = db.fetchall()
-    print(file_list)
+    print("filelist = \n",  file_list)
     db.execute('DELETE FROM post_file WHERE post_id=%s', (id,))
     conn.commit()
     print("delete files from MySQL")
@@ -229,6 +253,13 @@ def delete(id):
         process = subprocess.Popen(["del", filename], shell=True)
         print("%s deleted"%(filename))
 
+    db.execute('SET FOREIGN_KEY_CHECKS = 0')
+    conn.commit()
+
     db.execute('DELETE FROM post WHERE id = %s', (id,))
     conn.commit()
+
+    db.execute('SET FOREIGN_KEY_CHECKS = 1')
+    conn.commit()
+
     return redirect(url_for('blog.index'))
