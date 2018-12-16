@@ -53,7 +53,7 @@
               </div>
               <div class="layui-form-item layui-form-text">
                 <div class="layui-input-block">
-                  <textarea id="body" name="body" required lay-verify="required" placeholder="详细描述" class="layui-textarea fly-editor" style="height: 260px;">{{ request.form['body'] }}</textarea>
+                  <textarea id="body" name="body" required lay-verify="article_desc" placeholder="详细描述" class="layui-textarea fly-editor">{{ request.form['body']|safe }}</textarea>
                 </div>
               </div>
 
@@ -72,21 +72,22 @@
     {% endif %}
   </div>
 </div>
-<!--
+
+<script src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>
 <script>
 layui.use(['layer', 'form', 'layedit'], function () {
                 var layedit = layui.layedit;
                 var index = layedit.build('body',{
                     height: 260,
-                    tool:['strong','italic','underline','del','|','left','right','center','link','face']
-
-                var form = layui.form();
+                    tool:['strong','underline','del','|','link','face']
+          });
+                 var form = layui.form;
                 //监听提交
-                form.on('submit(formDemo)', function (data) {
-                    layer.msg(JSON.stringify(data.field));
-                    return false;
+                form.verify({
+                    article_desc: function(value){
+                        layedit.sync(index);
+                    }
                 });
-            });
+    });
 </script>
--->
 {% endblock %}
