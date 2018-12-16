@@ -42,7 +42,7 @@
           {% if g.user %}
           {% if g.user['username']==post['username'] %}
           <!--删除帖子是楼主权限-->
-          <form action="{{ url_for('blog.delete', id=post['id']) }}" method="post">
+          <form action="{{ url_for('blog.DeletePost', id=post['id']) }}" method="post">
             <div class="detail-hits" id="LAY_jieAdmin" data-id="post['id']">
             <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="删除此帖" onclick="return confirm('确定删除帖子？');">
           </div>
@@ -106,12 +106,12 @@
               </span>
               <div class="jieda-admin">
                 {% if reply['username']==post['username'] %}
-                <form action="{{ url_for('blog.delete', id=reply['id']) }}" method="reply">
+                <form action="{{ url_for('blog.DeleteReply', id=reply['id']) }}" method="post">
                 <input type="submit" value="删除"></form>
               </form>
                 {% elif g.user %}
                 {% if g.user['username']==post['username'] %}
-                <form action="{{ url_for('blog.delete', id=reply['id']) }}" method="reply">
+                <form action="{{ url_for('blog.DeleteReply', id=reply['id']) }}" method="post">
                 <input type="submit" value="删除"></form>
                 </form>
                 {% endif %}
