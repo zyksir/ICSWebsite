@@ -6,6 +6,7 @@ from werkzeug import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 import os
 import subprocess
+import datetime
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
@@ -19,12 +20,13 @@ bp = Blueprint('blog', __name__)
 def index():
     conn, db = get_db()
     db.execute(
-        'SELECT p.id, title, body, u.created, author_id, username, p.is_top, p.is_fine'
+        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' ORDER BY created DESC'
     )
     posts = db.fetchall()
     length = len(posts)
+    posts = sorted(posts, key=lambda p: p['created'], reverse=True)
     for i,post in enumerate(posts):
         db.execute(
             'SELECT id, post_id, filename, filehash'
@@ -61,7 +63,7 @@ def create():
             db.execute(
                 'INSERT INTO post (title, body, author_id, is_top, is_fine)'
                 ' VALUES (%s, %s, %s, %s, %s)',
-                (title, body, g.user['id'], 0, 0)
+                (title, body, g.user['id'],  0, 0)
             )
             conn.commit()
 
