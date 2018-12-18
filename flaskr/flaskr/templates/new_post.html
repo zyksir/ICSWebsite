@@ -1,0 +1,46 @@
+{% extends 'new_index.html' %}
+
+{% block header %}
+  <h1>{% block title %}帖子管理{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+  <div class="layui-container">
+    <input type="text" name="title" required  lay-verify="required" placeholder="请输入用户ID" autocomplete="off" class="layui-input">
+    <div class="fly-column-right layui-hide-xs"> 
+      <a href="{{ url_for('admin.SearchPost', id=post['id']) }}" class="layui-btn">搜索帖子</a> 
+    </div>   
+  </div>
+
+<div class="layui-container">
+<table class="layui-table">
+  <thead>
+    <tr>
+      <th width="20" style="text-align:center">用户ID</th>
+      <th width="100" style="text-align:center">用户昵称</th>
+      <th width="100" style="text-align:center">发帖题目</th>
+      <th width="100" style="text-align:center">发帖内容</th>
+      <th width="1" style="text-align:center">删除</th>
+    </tr> 
+  </thead>
+  {% for post in post['posts'] %}
+  <tbody>
+    <tr>
+      <td style="text-align:center">{{ post['id'] }}</td>
+      <td style="text-align:center">{{ post['nickname'] }}</td>   
+      <td style="text-align:center">{{ post['title'].strftime('%Y-%m-%d') }}</td>
+      <td style="text-align:center">time?</td>
+      <td style="text-align:center">
+        <button class="layui-btn layui-btn-sm layui-btn-danger" href="{{ url_for('admin.DeletePost', id=post['id']) }}">
+          <i class="layui-icon">&#xe640;</i>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+</div>
+
+{% endblock %}
+

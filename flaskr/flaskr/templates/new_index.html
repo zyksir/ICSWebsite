@@ -1,0 +1,91 @@
+{% extends 'temp_base.html' %}
+
+{% block header %}
+  <h1>{% block title %}管理员系统{% endblock %}</h1>
+{% endblock %}
+
+{% block detail %}
+	<div class="fly-panel fly-column"> 
+		<div class="layui-container"> 
+			<ul class="layui-clear"> 
+				<li class="layui-hide-xs  layui-this"><a href="/">首页</a></li> 
+				<li> <a href="{{ url_for('auth.member') }}"> 用户管理 </a> </li> 
+				<li> <a href="{{ url_for('auth.post') }}"> 帖子管理  </a> </li> 
+				<li> <a href="{{ url_for('auth.doc') }}"> 文件管理 </a> </li> 
+			</ul> 
+		</div>
+	</div>
+
+
+    		
+{% block content %}
+<div class="layui-container">
+	<div class="fly-home fly-panel""> 
+	<h1> {{ user['nickname'] }}</h1> 
+	<p class="fly-home-info">  
+		<i class="iconfont icon-shijian"></i>
+		<span>6小时前 加入</span> 
+		<i class="iconfont icon-chengshi"></i>
+	</p>
+	 <p class="fly-home-info">
+    {% if user['email'] %}
+    	<span>{{ user['email'] }}</span>
+    {% endif %}
+  	</p>
+  	<p class="fly-home-info">
+    	<i class="iconfont icon-shijian"></i>
+    	<span>{{ user['created'].strftime('%Y-%m-%d') }} 加入</span>
+  	</p>
+	</div>
+
+
+  <div class="layui-row layui-col-space15">
+    <div class="layui-col-md6 fly-home-jie">
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">{{ user['nickname'] }} 最近删除的用户</h3>
+        <ul class="jie-row">
+          {% for post in user['posts'] %}  
+          <li>
+            <a href="{{ url_for('admin.DeleteUser', id=post['id']) }}" class="jie-title"> 
+            	<!--{{post['title']}}</a>-->
+            <i>{{ post['created'].strftime('%Y-%m-%d') }}</i>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    
+    <div class="layui-col-md6 fly-home-da">
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">{{ user['nickname'] }} 最近删除的帖子</h3>
+        <ul class="jie-row">
+          {% for post in user['markposts'] %}
+          <li>
+            <a href="{{ url_for('blog.ViewPost', id=post['id']) }}" class="jie-title"> {{post['title']}}</a>
+            <i>{{ post['created'].strftime('%Y-%m-%d') }}</i>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+
+
+<div class="fly-footer">
+  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/" target="_blank">layui.com 出品</a></p>
+  <p>
+    <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
+    <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
+    <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
+  </p>
+</div>
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_30088308'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/c.php%3Fid%3D30088308' type='text/javascript'%3E%3C/script%3E"));</script>
+
+
+{% endblock %}
+
