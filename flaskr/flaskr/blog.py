@@ -201,7 +201,7 @@ def ViewPost(id):
             conn.commit()
             print("insert done!")
 
-            '''post = get_view_post(id)
+            post = get_view_post(id)
 
             # update the the number of reply
             num_reply = int(post['num_reply']) + 1
@@ -212,7 +212,7 @@ def ViewPost(id):
                 (str(num_reply), id)
             )
             conn.commit()
-            print("num_reply", num_reply)'''
+            print("num_reply", num_reply)
 
             #post = get_view_post(id)
             #render_template('blog/ViewPost.html', post=post)
