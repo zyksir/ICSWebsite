@@ -8,10 +8,10 @@
 	<div class="fly-panel fly-column"> 
 		<div class="layui-container"> 
 			<ul class="layui-clear"> 
-				<li class="layui-hide-xs  layui-this"><a href="/">首页</a></li> 
-				<li> <a href="{{ url_for('auth.member') }}"> 用户管理 </a> </li> 
-				<li> <a href="{{ url_for('auth.post') }}"> 帖子管理  </a> </li> 
-				<li> <a href="{{ url_for('auth.doc') }}"> 文件管理 </a> </li> 
+				<li class="layui-hide-xs  layui-this"><a href="{{ url_for('admin.admin_home') }}">首页</a></li>
+				<li> <a href="{{ url_for('admin.member') }}"> 用户管理 </a> </li>
+				<li> <a href="{{ url_for('admin.post') }}"> 帖子管理  </a> </li>
+				<li> <a href="{{ url_for('admin.doc') }}"> 文件管理 </a> </li>
 			</ul> 
 		</div>
 	</div>
@@ -20,21 +20,21 @@
     		
 {% block content %}
 <div class="layui-container">
-	<div class="fly-home fly-panel""> 
-	<h1> {{ user['nickname'] }}</h1> 
-	<p class="fly-home-info">  
+	<div class="fly-home fly-panel">
+	<h1> {{ post['nickname'] }}</h1>
+	<p class="fly-home-info">
 		<i class="iconfont icon-shijian"></i>
-		<span>6小时前 加入</span> 
+		<span>6小时前 加入</span>
 		<i class="iconfont icon-chengshi"></i>
 	</p>
 	 <p class="fly-home-info">
-    {% if user['email'] %}
-    	<span>{{ user['email'] }}</span>
+    {% if post['email'] %}
+    	<span>{{ post['email'] }}</span>
     {% endif %}
   	</p>
   	<p class="fly-home-info">
     	<i class="iconfont icon-shijian"></i>
-    	<span>{{ user['created'].strftime('%Y-%m-%d') }} 加入</span>
+    	<span>{{ post['created'].strftime('%Y-%m-%d') }} 加入</span>
   	</p>
 	</div>
 
@@ -42,11 +42,11 @@
   <div class="layui-row layui-col-space15">
     <div class="layui-col-md6 fly-home-jie">
       <div class="fly-panel">
-        <h3 class="fly-panel-title">{{ user['nickname'] }} 最近删除的用户</h3>
+        <h3 class="fly-panel-title">{{ post['nickname'] }} 最近删除的用户</h3>
         <ul class="jie-row">
-          {% for post in user['posts'] %}  
+          {% for post in post['posts'] %}
           <li>
-            <a href="{{ url_for('admin.DeleteUser', id=post['id']) }}" class="jie-title"> 
+            <a href="{{ url_for('admin.DeleteUser', id=post['id']) }}" class="jie-title">
             	<!--{{post['title']}}</a>-->
             <i>{{ post['created'].strftime('%Y-%m-%d') }}</i>
           </li>
@@ -54,12 +54,12 @@
         </ul>
       </div>
     </div>
-    
+
     <div class="layui-col-md6 fly-home-da">
       <div class="fly-panel">
-        <h3 class="fly-panel-title">{{ user['nickname'] }} 最近删除的帖子</h3>
+        <h3 class="fly-panel-title">{{ post['nickname'] }} 最近删除的帖子</h3>
         <ul class="jie-row">
-          {% for post in user['markposts'] %}
+          {% for post in post['markposts'] %}
           <li>
             <a href="{{ url_for('blog.ViewPost', id=post['id']) }}" class="jie-title"> {{post['title']}}</a>
             <i>{{ post['created'].strftime('%Y-%m-%d') }}</i>

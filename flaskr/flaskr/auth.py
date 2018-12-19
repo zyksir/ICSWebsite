@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # author: zyk
-# A Blueprint is a way to organize a group of related views and other code. Rather than registering views and other code directly with an application, they are registered with a blueprint.
+# A Blueprint is a way to organize a group of related views and other code.
+# Rather than registering views and other code directly with an application,
+# they are registered with a blueprint.
 
 
 import functools
@@ -82,7 +84,7 @@ def login():
             session.clear()
             session['user_id'] = user['id']
             if user['id'] == 1:
-                return redirect(url_for('admin/'))
+                return redirect(url_for('admin.admin_home'))
             return redirect(url_for('index'))
 
         flash(error)    # stores messages that can be retrieved when rendering the template.

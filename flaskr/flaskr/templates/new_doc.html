@@ -9,7 +9,7 @@
   <div class="layui-container">
     <input type="text" name="title" required  lay-verify="required" placeholder="请输入文件名" autocomplete="off" class="layui-input">
     <div class="fly-column-right layui-hide-xs"> 
-      <a href="{{ url_for('admin.SearchPost', id=post['id']) }}" class="layui-btn">搜索文件</a> 
+      <a href="{{ url_for('admin.SearchPost') }}" class="layui-btn">搜索文件</a>
     </div>   
   </div>
 
@@ -20,21 +20,21 @@
       <th width="20" style="text-align:center">上传用户ID</th>
       <th width="100" style="text-align:center">用户昵称</th>
       <th width="100" style="text-align:center">文件名</th>
-      <th width="100" style="text-align:center">文件描述</th>
       <th width="1" style="text-align:center">删除</th>
     </tr> 
   </thead>
-  {% for post in post['posts'] %}
+  {% for post in posts %}
   <tbody>
     <tr>
-      <td style="text-align:center">{{ post['id'] }}</td>
+      <td style="text-align:center">{{ post['author_id'] }}</td>
       <td style="text-align:center">{{ post['nickname'] }}</td>   
-      <td style="text-align:center">{{ post['title'].strftime('%Y-%m-%d') }}</td>
-      <td style="text-align:center">{{ post['content'].strftime('%Y-%m-%d') }}</td>
+      <td style="text-align:center">{{ post['filename'] }}</td>
       <td style="text-align:center">
-        <button class="layui-btn layui-btn-sm layui-btn-danger" href="{{ url_for('admin.DeleteDoc', id=post['id']) }}">
+          <form action="{{ url_for('admin.DeleteDoc', id=post['id']) }}" method="post">
+              <input type="submit" value="删除"></form>
+        <!--<button class="layui-btn layui-btn-sm layui-btn-danger" href="{{ url_for('admin.DeleteDoc', id=post['id']) }}">
           <i class="layui-icon">&#xe640;</i>
-        </button>
+        </button>-->
       </td>
     </tr>
   </tbody>

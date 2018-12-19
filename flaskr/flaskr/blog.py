@@ -189,7 +189,7 @@ def ViewPost(id):
         body = request.form['body']
         error = None
 
-        print(id)
+        # print(id)
 
         #if not title:
         #    error = 'Title is required.'
@@ -215,6 +215,18 @@ def ViewPost(id):
 @bp.route('/DeleteReply/<int:id>', methods=('POST',))
 @login_required
 def DeleteReply(id):
+    delete_reply(id)
+    #return redirect(url_for('blog.index'))
+    return redirect(url_for('blog.ViewPost', id=post_id))
+
+
+@bp.route('/DeletePost/<int:id>', methods=('POST',))
+@login_required
+def DeletePost(id):
+    delete_post(id)
+    return redirect(url_for('blog.index'))
+
+def delete_reply(id):
     print("delete reply id = ", id)
 
     conn, db = get_db()
@@ -222,7 +234,7 @@ def DeleteReply(id):
     db.execute('SET FOREIGN_KEY_CHECKS = 0')
     conn.commit()
 
-    db.execute('SELECT post_id FROM reply r WHERE id=%s', (id, ))
+    db.execute('SELECT post_id FROM reply r WHERE id=%s', (id,))
     post_id = db.fetchone()['post_id']
     print("post_id = ", post_id)
 
@@ -232,28 +244,22 @@ def DeleteReply(id):
     db.execute('SET FOREIGN_KEY_CHECKS = 1')
     conn.commit()
 
-    #return redirect(url_for('blog.index'))
-    return redirect(url_for('blog.ViewPost', id=post_id))
-
-
-@bp.route('/DeletePost/<int:id>', methods=('POST',))
-@login_required
-def DeletePost(id):
+def delete_post(id):
     savepath = current_app.config['UPLOAD_FOLDER']
     # get_post(id)
     conn, db = get_db()
-    db.execute('SELECT filename, id FROM post_file WHERE post_id=%s', (id, ))
+    db.execute('SELECT filename, id FROM post_file WHERE post_id=%s', (id,))
     file_list = db.fetchall()
-    print("filelist = \n",  file_list)
+    print("filelist = \n", file_list)
     db.execute('DELETE FROM post_file WHERE post_id=%s', (id,))
     conn.commit()
     print("delete files from MySQL")
     for file in file_list:
-        filename = str(file['id'])+"_"+file["filename"]
+        filename = str(file['id']) + "_" + file["filename"]
         filename = os.path.join(savepath, filename)
         print(filename)
         process = subprocess.Popen(["del", filename], shell=True)
-        print("%s deleted"%(filename))
+        print("%s deleted" % (filename))
 
     db.execute('SET FOREIGN_KEY_CHECKS = 0')
     conn.commit()
@@ -263,5 +269,3 @@ def DeletePost(id):
 
     db.execute('SET FOREIGN_KEY_CHECKS = 1')
     conn.commit()
-
-    return redirect(url_for('blog.index'))

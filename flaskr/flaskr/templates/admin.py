@@ -54,9 +54,9 @@ def ViewDeletePost():
 @login_required
 def member():
     return render_template('new_member.html', post=post)
-def DeleteMember():
+def DeleteMember(id):
     return render_template('new_member.html', post=post)
-def SearchMember():
+def SearchMember(id):
     return render_template('new_member.html', post=post)
 
 
