@@ -25,7 +25,7 @@ def index():
         ' ORDER BY created DESC'
     )
     posts = db.fetchall()
-    length = len(posts)
+    # length = len(posts)
     posts = sorted(posts, key=lambda p: p['created'], reverse=True)
     for i,post in enumerate(posts):
         db.execute(
@@ -36,9 +36,17 @@ def index():
         )
         post['files'] = db.fetchall()
 
-    # pprint(posts)
+    db.execute(
+        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.hot'
+        ' FROM post p JOIN user u ON p.author_id = u.id'
+        ' ORDER BY hot DESC'
+    )
+    hots = db.fetchall()
 
-    return render_template('blog/temp_index.html', posts=posts)
+    # pprint(posts)
+    pprint(hots)
+
+    return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
 
 @bp.route('/create', methods=('GET', 'POST'))
@@ -230,7 +238,6 @@ def ViewPost(id):
     )
     conn.commit()
     print("num_view", num_view)
-
 
     return render_template('blog/temp_ViewPost.html', post=post)
 
