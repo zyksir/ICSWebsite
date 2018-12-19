@@ -119,20 +119,18 @@ def get_post(id, check_author=True):
 def get_view_post(id, check_author=False):
     conn, db = get_db()
     db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine'
+        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = %s',
         (id,)
     )
     post = db.fetchone()
-    # pprint(post)
 
     if post is None:
         abort(404, "Post id {0} doesn't exist.".format(id))
 
     if check_author and post['author_id'] != g.user['id']:
         abort(403)
-
 
     db.execute(
         'SELECT r.id, author_id, body, r.created, username'
@@ -143,13 +141,11 @@ def get_view_post(id, check_author=False):
     )
     posts = db.fetchall()
     post['reply'] = posts
-    # pprint(post)
-
-    #print(type(post))
-    #pprint(post)
+    pprint(post)
+    print("len=", len(posts))
 
     return post
-    
+
 
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
@@ -182,14 +178,10 @@ def update(id):
 @bp.route('/ViewPost/<int:id>', methods=('GET', 'POST'))
 @login_required
 def ViewPost(id):
-    #pprint(post)
-
     if request.method == 'POST':
         # title = request.form['title']
         body = request.form['body']
         error = None
-
-        # print(id)
 
         #if not title:
         #    error = 'Title is required.'
@@ -204,11 +196,39 @@ def ViewPost(id):
                 (body, g.user['id'], id, )
             )
             conn.commit()
+            print("insert done!")
+
+            '''post = get_view_post(id)
+
+            # update the the number of reply
+            num_reply = int(post['num_reply']) + 1
+
+            db.execute(
+                'UPDATE post SET num_reply = %s'
+                ' WHERE id = %s',
+                (str(num_reply), id)
+            )
+            conn.commit()
+            print("num_reply", num_reply)'''
 
             #post = get_view_post(id)
             #render_template('blog/ViewPost.html', post=post)
 
     post = get_view_post(id)
+
+    # update the the number of views
+    num_view = int(post['num_view']) + 1
+
+    conn, db = get_db()
+    db.execute(
+        'UPDATE post SET num_view = %s'
+        ' WHERE id = %s',
+        (str(num_view), id)
+    )
+    conn.commit()
+    print("num_view", num_view)
+
+
     return render_template('blog/temp_ViewPost.html', post=post)
 
 
@@ -217,7 +237,7 @@ def ViewPost(id):
 def DeleteReply(id):
     delete_reply(id)
     #return redirect(url_for('blog.index'))
-    return redirect(url_for('blog.ViewPost', id=post_id))
+    return redirect(url_for('blog.ViewPost', id=id))
 
 
 @bp.route('/DeletePost/<int:id>', methods=('POST',))
@@ -225,6 +245,7 @@ def DeleteReply(id):
 def DeletePost(id):
     delete_post(id)
     return redirect(url_for('blog.index'))
+
 
 def delete_reply(id):
     print("delete reply id = ", id)
