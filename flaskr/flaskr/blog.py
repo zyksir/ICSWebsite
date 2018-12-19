@@ -6,7 +6,7 @@ from werkzeug import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 import os
 import subprocess
-import datetime
+import json
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
@@ -300,3 +300,27 @@ def delete_post(id):
 
     db.execute('SET FOREIGN_KEY_CHECKS = 1')
     conn.commit()
+
+
+def title_search(ST):
+    s = "%" + ST + "%"
+    conn, db = get_db()
+    db.execute(
+        'SELECT p.id, p.title'
+        ' FROM post p JOIN user u ON p.author_id = u.id'
+        ' WHERE p.title LIKE %s'
+        ' ORDER BY p.id DESC',
+        (s)
+    )
+    posts = db.fetchall()
+    pprint(posts)
+    return posts
+
+
+@bp.route('/SEARCH/TITLE/<string:ST>')
+@login_required
+def SEARCH_TITLE(ST):
+    posts = title_search(ST)
+    return json.dumps(posts, ensure_ascii=False)
+    #return redirect(url_for('blog.index'))
+
