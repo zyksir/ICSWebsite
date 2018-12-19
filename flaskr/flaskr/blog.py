@@ -36,7 +36,7 @@ def index():
         )
         post['files'] = db.fetchall()
 
-    pprint(posts)
+    # pprint(posts)
 
     return render_template('blog/temp_index.html', posts=posts)
 
@@ -77,9 +77,11 @@ def create():
 
 
             for file in request.files.getlist("file"):
+                print(type(file))
                 print(file.filename)
+                file_content = file.read()
                 filename = secure_filename(file.filename)
-                filehash = generate_password_hash(file.read())
+                filehash = generate_password_hash(file_content)
 
                 db.execute(
                     'INSERT INTO post_file (filename, filehash, post_id)'
@@ -90,8 +92,9 @@ def create():
                 db.execute('SELECT LAST_INSERT_ID()')
                 post_file_id = db.fetchone()['LAST_INSERT_ID()']
                 file_path = os.path.join(savepath, str(post_file_id)+"_"+filename)
-                file.save(file_path)
-                print("Save %s to %s", (filename, file_path))
+                with open(file_path, "wb") as fw:
+                    fw.write(file_content)
+                print("Save %s to %s"%(filename, file_path))
             return redirect(url_for('blog.index'))
 
     return render_template('blog/temp_create.html')
@@ -141,8 +144,8 @@ def get_view_post(id, check_author=False):
     )
     posts = db.fetchall()
     post['reply'] = posts
-    pprint(post)
-    print("len=", len(posts))
+    # pprint(post)
+    # print("len=", len(posts))
 
     return post
 
