@@ -324,3 +324,25 @@ def SEARCH_TITLE(ST):
     return json.dumps(posts, ensure_ascii=False)
     #return redirect(url_for('blog.index'))
 
+
+def user_search(ST):
+    s = "%" + ST + "%"
+    conn, db = get_db()
+    db.execute(
+        'SELECT u.id, u.username'
+        ' FROM user u'
+        ' WHERE u.username LIKE %s'
+        ' ORDER BY u.id DESC',
+        (s)
+    )
+    users = db.fetchall()
+    pprint(users)
+    return users
+
+
+@bp.route('/SEARCH/USER/<string:ST>')
+@login_required
+def SEARCH_USER(ST):
+    users = user_search(ST)
+    return json.dumps(users, ensure_ascii=False)
+    #return redirect(url_for('blog.index'))
