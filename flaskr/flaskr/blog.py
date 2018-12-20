@@ -147,7 +147,7 @@ def get_view_post(id, check_author=False):
         'SELECT r.id, author_id, body, r.created, username'
         ' FROM reply r JOIN user u ON r.author_id = u.id'
         ' WHERE r.post_id=%s'
-        ' ORDER BY created DESC',
+        ' ORDER BY created',
         (post['id'])
     )
     posts = db.fetchall()
