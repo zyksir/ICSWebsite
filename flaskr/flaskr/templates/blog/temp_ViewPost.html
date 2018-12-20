@@ -23,10 +23,10 @@
           -->
 
           <!--收藏和点赞，功能还没完全写完，之后会有一个收藏和取消收藏，反正位置都在这-->
-          <form action="" method="post">
+          <form action="{{ url_for('blog.COLLECT', id=post['id']) }}" method="post">
             <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="收藏">
           </form>
-          <form action="" method="post">
+          <form action="{{ url_for('blog.LIKE', id=post['id']) }}" method="post">
             <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="点赞">
           </form>
 

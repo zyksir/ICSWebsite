@@ -225,6 +225,8 @@ def ViewPost(id):
             #post = get_view_post(id)
             #render_template('blog/ViewPost.html', post=post)
 
+    pprint(g.user)
+
     post = get_view_post(id)
 
     # update the the number of views
@@ -349,3 +351,71 @@ def SEARCH_USER(ST):
     users = user_search(ST)
     return json.dumps(users, ensure_ascii=False)
     #return redirect(url_for('blog.index'))
+
+
+@bp.route('/LIKE/<int:id>', methods=('GET', 'POST'))
+@login_required
+def LIKE(id):
+    user_id = g.user['id']
+    print("user_id = ", user_id)
+
+    conn, db = get_db()
+    db.execute(
+        'SELECT l.author_id, l.post_id'
+        ' FROM likes l'
+        ' WHERE l.author_id = %s ',
+        (user_id)
+    )
+
+    likes = db.fetchall()
+    pprint(likes)
+
+    is_like = False
+    for alike in likes:
+        if alike['post_id'] == id:
+            is_like = True
+            break
+    if (is_like == False):
+        print("add like!")
+        db.execute(
+            'INSERT INTO likes (author_id, post_id)'
+            ' VALUES (%s, %s)',
+            (user_id, id)
+        )
+        conn.commit()
+
+    return redirect(url_for('blog.ViewPost', id=id))
+
+
+@bp.route('/COLLECT/<int:id>', methods=('GET', 'POST'))
+@login_required
+def COLLECT(id):
+    user_id = g.user['id']
+    print("user_id = ", user_id)
+
+    conn, db = get_db()
+    db.execute(
+        'SELECT c.author_id, c.post_id'
+        ' FROM collects c'
+        ' WHERE c.author_id = %s ',
+        (user_id)
+    )
+
+    collects = db.fetchall()
+    pprint(collects)
+
+    is_collect = False
+    for acollect in collects:
+        if acollect['post_id'] == id:
+            is_collect = True
+            break
+    if (is_collect == False):
+        print("add collect!")
+        db.execute(
+            'INSERT INTO collects (author_id, post_id)'
+            ' VALUES (%s, %s)',
+            (user_id, id)
+        )
+        conn.commit()
+
+    return redirect(url_for('blog.ViewPost', id=id))
