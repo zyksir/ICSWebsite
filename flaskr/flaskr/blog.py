@@ -44,7 +44,7 @@ def index():
     hots = db.fetchall()
 
     # pprint(posts)
-    pprint(hots)
+    # pprint(hots)
 
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
@@ -237,7 +237,7 @@ def ViewPost(id):
         (str(num_view), id)
     )
     conn.commit()
-    print("num_view", num_view)
+    # print("num_view", num_view)
 
     return render_template('blog/temp_ViewPost.html', post=post)
 
@@ -245,9 +245,9 @@ def ViewPost(id):
 @bp.route('/DeleteReply/<int:id>', methods=('POST',))
 @login_required
 def DeleteReply(id):
-    delete_reply(id)
+    post_id = delete_reply(id)
     #return redirect(url_for('blog.index'))
-    return redirect(url_for('blog.index'))
+    return redirect(url_for('blog.ViewPost', id=post_id))
 
 
 @bp.route('/DeletePost/<int:id>', methods=('POST',))
@@ -274,6 +274,9 @@ def delete_reply(id):
 
     db.execute('SET FOREIGN_KEY_CHECKS = 1')
     conn.commit()
+
+    return post_id
+
 
 def delete_post(id):
     savepath = current_app.config['UPLOAD_FOLDER']
