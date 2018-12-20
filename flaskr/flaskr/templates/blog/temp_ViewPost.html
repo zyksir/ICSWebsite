@@ -33,7 +33,7 @@
             <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="{{post['username']}}">
           </a>
           <div class="fly-detail-user">
-            <a href="../user/home.html" class="fly-link">
+            <a href="{{ url_for('user.home', id=post['author_id']) }}" class="fly-link">
               <cite>{{post['username']}}</cite>
             </a>
             <span>{{ post['created'].strftime('%Y-%m-%d') }}</span>
@@ -74,11 +74,11 @@
           <li data-id="111" class="jieda-daan">
             <a name="item-1111111111"></a>
             <div class="detail-about detail-about-reply">
-              <a class="fly-avatar" href="">
+              <a class="fly-avatar" href="{{ url_for('user.home', id=post['author_id']) }}">
                 <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt=" ">
               </a>
               <div class="fly-detail-user">
-                <a href="" class="fly-link">
+                <a href="{{ url_for('user.home', id=post['author_id']) }}" class="fly-link">
                   <cite>{{ reply['username'] }}</cite>             
                 </a>
                 {% if reply['username']==post['username'] %}
@@ -100,19 +100,15 @@
               <p>{{ reply['body'] | safe }}</p>
             </div>
             <div class="jieda-reply">
-              <span type="reply">
-                <i class="iconfont icon-svgmoban53"></i>
-                回复
-              </span>
               <div class="jieda-admin">
-                {% if reply['username']==post['username'] %}
+                {% if reply['username']==g.user['username'] %}
                 <form action="{{ url_for('blog.DeleteReply', id=reply['id']) }}" method="post">
-                <input type="submit" value="删除"></form>
+                <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="删除">
               </form>
                 {% elif g.user %}
                 {% if g.user['username']==post['username'] %}
                 <form action="{{ url_for('blog.DeleteReply', id=reply['id']) }}" method="post">
-                <input type="submit" value="删除"></form>
+                 <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="删除">
                 </form>
                 {% endif %}
                 {% endif %} 
@@ -155,6 +151,7 @@ layui.use(['layer', 'form', 'layedit'], function () {
                 form.verify({
                     article_desc: function(value){
                         layedit.sync(index);
+                        sleep(100);
                         if(value.length < 15){
                         return '不能少于15字哦';
                         }

@@ -247,7 +247,7 @@ def ViewPost(id):
 def DeleteReply(id):
     delete_reply(id)
     #return redirect(url_for('blog.index'))
-    return redirect(url_for('blog.ViewPost', id=id))
+    return redirect(url_for('blog.index'))
 
 
 @bp.route('/DeletePost/<int:id>', methods=('POST',))

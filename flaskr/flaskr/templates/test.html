@@ -8,6 +8,20 @@
   <script type="text/javascript" src="../static/res/layui/layui.js"></script>
 </head>
 <body>
-  <textarea id="body" name="body" required lay-verify="required" placeholder="详细描述" class="layui-textarea fly-editor" style="height: 260px;"></textarea>
+  <textarea id="demo" style="display: none;"></textarea>
+<script>
+layui.use('layedit', function(){
+  var layedit = layui.layedit;
+  var index = layedit.build('demo',{
+                             height: 150,
+                             tool:['strong','italic','underline','del','|','left','right','center','link','face']});
+   var form = layui.form();
+                //监听提交
+                form.on('submit(formDemo)', function (data) {
+                    layer.msg(JSON.stringify(data.field));
+                    return false;
+                });
+});
+</script>
 </body>
 </html>
