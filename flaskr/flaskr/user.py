@@ -19,15 +19,47 @@ bp = Blueprint('user', __name__, url_prefix='/user')
 def home(id):
     conn, db = get_db()
     db.execute('SELECT username, nickname, email, created FROM user WHERE id=%s', (id,))
-    tmp_list = db.fetchall()
-    #print(tmp_list)
+    tmp_list = db.fetchone()
+
+    db.execute(
+        'SELECT p.id, p.title, p.created, p.author_id'
+        ' FROM post p'
+        ' WHERE p.author_id = %s'
+        ' ORDER BY created DESC',
+        (id,)
+    )
+    posts = db.fetchall()
+    #pprint(posts)
+
+    db.execute(
+        'SELECT c.author_id, c.post_id'
+        ' FROM collects c'
+        ' WHERE c.author_id = %s ',
+        (id)
+    )
+    collects = db.fetchall()
+    for acollect in collects:
+        pprint(acollect)
+        db.execute(
+            'SELECT p.title, p.created'
+            ' FROM post p'
+            ' WHERE p.id = %s',
+            (acollect['post_id'])
+        )
+        apost = db.fetchone()
+        acollect['title'] = apost['title']
+        acollect['created'] = apost['created']
+        acollect['id'] = acollect['post_id']
+    collects = collects[::-1]
+    pprint(collects)
+
     user = {
-        'username': tmp_list[0]['username'],
-        'nickname': tmp_list[0]['nickname'],
-        'email': tmp_list[0]['email'],
-        'created': tmp_list[0]['created'],
-        'posts': [],
-        'markposts': []
+        'username': tmp_list['username'],
+        'nickname': tmp_list['nickname'],
+        'email': tmp_list['email'],
+        'created': tmp_list['created'],
+        'posts': posts,
+        'markposts': collects
         }
     return render_template('user/temp_home.html', user=user)
 

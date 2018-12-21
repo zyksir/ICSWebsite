@@ -16,6 +16,139 @@ from pprint import pprint
 bp = Blueprint('blog', __name__)
 
 
+# check if the post is collected by user
+def check_is_collect(user_id, post_id):
+    conn, db = get_db()
+    db.execute(
+        'SELECT c.author_id, c.post_id'
+        ' FROM collects c'
+        ' WHERE c.author_id = %s ',
+        (user_id)
+    )
+    collects = db.fetchall()
+    for acollect in collects:
+        if acollect['post_id'] == post_id:
+            return True
+    return False
+
+
+# check if the post is collected by user
+def check_is_like(user_id, post_id):
+    conn, db = get_db()
+    db.execute(
+        'SELECT l.author_id, l.post_id'
+        ' FROM likes l'
+        ' WHERE l.author_id = %s ',
+        (user_id)
+    )
+    likes = db.fetchall()
+    for alike in likes:
+        if alike['post_id'] == post_id:
+            return True
+    return False
+
+
+# get a specific post by id
+def get_post(id, check_author=True):
+    conn, db = get_db()
+    db.execute(
+        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine'
+        ' FROM post p JOIN user u ON p.author_id = u.id'
+        ' WHERE p.id = %s',
+        (id,)
+    )
+    post = db.fetchone()
+
+    if post is None:
+        abort(404, "Post id {0} doesn't exist.".format(id))
+
+    if check_author and post['author_id'] != g.user['id']:
+        abort(403)
+
+    return post
+
+
+# get a post to view by id
+def get_view_post(id, check_author=False):
+    conn, db = get_db()
+    db.execute(
+        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply'
+        ' FROM post p JOIN user u ON p.author_id = u.id'
+        ' WHERE p.id = %s',
+        (id,)
+    )
+    post = db.fetchone()
+
+    if post is None:
+        abort(404, "Post id {0} doesn't exist.".format(id))
+
+    if check_author and post['author_id'] != g.user['id']:
+        abort(403)
+
+    db.execute(
+        'SELECT r.id, author_id, body, r.created, username'
+        ' FROM reply r JOIN user u ON r.author_id = u.id'
+        ' WHERE r.post_id=%s'
+        ' ORDER BY created',
+        (post['id'])
+    )
+    posts = db.fetchall()
+    post['reply'] = posts
+
+    return post
+
+
+# delete the reply return the post id of it
+def delete_reply(id):
+    print("delete reply id = ", id)
+
+    conn, db = get_db()
+
+    db.execute('SET FOREIGN_KEY_CHECKS = 0')
+    conn.commit()
+
+    db.execute('SELECT post_id FROM reply r WHERE id=%s', (id,))
+    post_id = db.fetchone()['post_id']
+    print("post_id = ", post_id)
+
+    db.execute('DELETE FROM reply WHERE id = %s', (id,))
+    conn.commit()
+
+    db.execute('SET FOREIGN_KEY_CHECKS = 1')
+    conn.commit()
+
+    return post_id
+
+
+# delete a post by id
+def delete_post(id):
+    savepath = current_app.config['UPLOAD_FOLDER']
+    # get_post(id)
+    conn, db = get_db()
+    db.execute('SELECT filename, id FROM post_file WHERE post_id=%s', (id,))
+    file_list = db.fetchall()
+    print("filelist = \n", file_list)
+    db.execute('DELETE FROM post_file WHERE post_id=%s', (id,))
+    conn.commit()
+    print("delete files from MySQL")
+    for file in file_list:
+        filename = str(file['id']) + "_" + file["filename"]
+        filename = os.path.join(savepath, filename)
+        print(filename)
+        process = subprocess.Popen(["del", filename], shell=True)
+        print("%s deleted" % (filename))
+
+    db.execute('SET FOREIGN_KEY_CHECKS = 0')
+    conn.commit()
+
+    db.execute('DELETE FROM post WHERE id = %s', (id,))
+    conn.commit()
+
+    db.execute('SET FOREIGN_KEY_CHECKS = 1')
+    conn.commit()
+
+
+# index page
 @bp.route('/')
 def index():
     conn, db = get_db()
@@ -43,12 +176,10 @@ def index():
     )
     hots = db.fetchall()
 
-    # pprint(posts)
-    # pprint(hots)
-
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
 
+# create a new post
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
@@ -108,56 +239,7 @@ def create():
     return render_template('blog/temp_create.html')
 
 
-def get_post(id, check_author=True):
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = %s',
-        (id,)
-    )
-    post = db.fetchone()
-
-    if post is None:
-        abort(404, "Post id {0} doesn't exist.".format(id))
-
-    if check_author and post['author_id'] != g.user['id']:
-        abort(403)
-
-    return post
-
-
-def get_view_post(id, check_author=False):
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = %s',
-        (id,)
-    )
-    post = db.fetchone()
-
-    if post is None:
-        abort(404, "Post id {0} doesn't exist.".format(id))
-
-    if check_author and post['author_id'] != g.user['id']:
-        abort(403)
-
-    db.execute(
-        'SELECT r.id, author_id, body, r.created, username'
-        ' FROM reply r JOIN user u ON r.author_id = u.id'
-        ' WHERE r.post_id=%s'
-        ' ORDER BY created',
-        (post['id'])
-    )
-    posts = db.fetchall()
-    post['reply'] = posts
-    # pprint(post)
-    # print("len=", len(posts))
-
-    return post
-
-
+# update a post
 @bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
@@ -186,6 +268,7 @@ def update(id):
     return render_template('blog/temp_update.html', post=post)
 
 
+# view a post
 @bp.route('/ViewPost/<int:id>', methods=('GET', 'POST'))
 @login_required
 def ViewPost(id):
@@ -222,11 +305,6 @@ def ViewPost(id):
             conn.commit()
             print("num_reply", num_reply)
 
-            #post = get_view_post(id)
-            #render_template('blog/ViewPost.html', post=post)
-
-    pprint(g.user)
-
     post = get_view_post(id)
 
     # update the the number of views
@@ -239,11 +317,17 @@ def ViewPost(id):
         (str(num_view), id)
     )
     conn.commit()
-    # print("num_view", num_view)
 
-    return render_template('blog/temp_ViewPost.html', post=post)
+    is_collect = check_is_collect(g.user['id'], id)
+    is_like = check_is_like(g.user['id'], id)
+
+    print("is_like = ", is_like)
+    print("is_collect = ", is_collect)
+
+    return render_template('blog/temp_ViewPost.html', post=post, is_collect = is_collect, is_like = is_like)
 
 
+# delete a reply by id
 @bp.route('/DeleteReply/<int:id>', methods=('POST',))
 @login_required
 def DeleteReply(id):
@@ -259,54 +343,7 @@ def DeletePost(id):
     return redirect(url_for('blog.index'))
 
 
-def delete_reply(id):
-    print("delete reply id = ", id)
-
-    conn, db = get_db()
-
-    db.execute('SET FOREIGN_KEY_CHECKS = 0')
-    conn.commit()
-
-    db.execute('SELECT post_id FROM reply r WHERE id=%s', (id,))
-    post_id = db.fetchone()['post_id']
-    print("post_id = ", post_id)
-
-    db.execute('DELETE FROM reply WHERE id = %s', (id,))
-    conn.commit()
-
-    db.execute('SET FOREIGN_KEY_CHECKS = 1')
-    conn.commit()
-
-    return post_id
-
-
-def delete_post(id):
-    savepath = current_app.config['UPLOAD_FOLDER']
-    # get_post(id)
-    conn, db = get_db()
-    db.execute('SELECT filename, id FROM post_file WHERE post_id=%s', (id,))
-    file_list = db.fetchall()
-    print("filelist = \n", file_list)
-    db.execute('DELETE FROM post_file WHERE post_id=%s', (id,))
-    conn.commit()
-    print("delete files from MySQL")
-    for file in file_list:
-        filename = str(file['id']) + "_" + file["filename"]
-        filename = os.path.join(savepath, filename)
-        print(filename)
-        process = subprocess.Popen(["del", filename], shell=True)
-        print("%s deleted" % (filename))
-
-    db.execute('SET FOREIGN_KEY_CHECKS = 0')
-    conn.commit()
-
-    db.execute('DELETE FROM post WHERE id = %s', (id,))
-    conn.commit()
-
-    db.execute('SET FOREIGN_KEY_CHECKS = 1')
-    conn.commit()
-
-
+# search a keyword ST in titles
 def title_search(ST):
     s = "%" + ST + "%"
     conn, db = get_db()
@@ -322,6 +359,7 @@ def title_search(ST):
     return posts
 
 
+# search a keyword ST in titles
 @bp.route('/SEARCH/TITLE/<string:ST>')
 @login_required
 def SEARCH_TITLE(ST):
@@ -330,6 +368,7 @@ def SEARCH_TITLE(ST):
     #return redirect(url_for('blog.index'))
 
 
+# search a keyword ST in users
 def user_search(ST):
     s = "%" + ST + "%"
     conn, db = get_db()
@@ -345,6 +384,7 @@ def user_search(ST):
     return users
 
 
+# search a keyword ST in users
 @bp.route('/SEARCH/USER/<string:ST>')
 @login_required
 def SEARCH_USER(ST):
@@ -353,29 +393,16 @@ def SEARCH_USER(ST):
     #return redirect(url_for('blog.index'))
 
 
+# like a post
 @bp.route('/LIKE/<int:id>', methods=('GET', 'POST'))
 @login_required
 def LIKE(id):
     user_id = g.user['id']
     print("user_id = ", user_id)
 
-    conn, db = get_db()
-    db.execute(
-        'SELECT l.author_id, l.post_id'
-        ' FROM likes l'
-        ' WHERE l.author_id = %s ',
-        (user_id)
-    )
-
-    likes = db.fetchall()
-    pprint(likes)
-
-    is_like = False
-    for alike in likes:
-        if alike['post_id'] == id:
-            is_like = True
-            break
+    is_like = check_is_like(user_id, id)
     if (is_like == False):
+        conn, db = get_db()
         print("add like!")
         db.execute(
             'INSERT INTO likes (author_id, post_id)'
@@ -387,30 +414,17 @@ def LIKE(id):
     return redirect(url_for('blog.ViewPost', id=id))
 
 
+# collect a post
 @bp.route('/COLLECT/<int:id>', methods=('GET', 'POST'))
 @login_required
 def COLLECT(id):
     user_id = g.user['id']
-    print("user_id = ", user_id)
+    print("in collect user_id = ", user_id)
 
-    conn, db = get_db()
-    db.execute(
-        'SELECT c.author_id, c.post_id'
-        ' FROM collects c'
-        ' WHERE c.author_id = %s ',
-        (user_id)
-    )
-
-    collects = db.fetchall()
-    pprint(collects)
-
-    is_collect = False
-    for acollect in collects:
-        if acollect['post_id'] == id:
-            is_collect = True
-            break
+    is_collect = check_is_collect(user_id, id)
     if (is_collect == False):
         print("add collect!")
+        conn, db = get_db()
         db.execute(
             'INSERT INTO collects (author_id, post_id)'
             ' VALUES (%s, %s)',
