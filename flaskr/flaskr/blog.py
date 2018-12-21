@@ -158,16 +158,15 @@ def index():
         ' ORDER BY created DESC'
     )
     posts = db.fetchall()
-    # length = len(posts)
     posts = sorted(posts, key=lambda p: p['created'], reverse=True)
-    for i,post in enumerate(posts):
+    for i, post in enumerate(posts):
         db.execute(
             'SELECT id, post_id, filename, filehash'
             ' FROM post_file WHERE post_id=%s'
             ' ORDER BY created DESC',
             (post['id'],)
         )
-        post['files'] = db.fetchall()
+        posts[i]['files'] = db.fetchall()
 
     db.execute(
         'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.hot'

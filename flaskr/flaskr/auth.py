@@ -83,8 +83,8 @@ def login():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            if user['id'] == 1:
-                return redirect(url_for('admin.admin_home'))
+            # if user['id'] == 1:
+            #     return redirect(url_for('admin.admin_home'))
             return redirect(url_for('index'))
 
         flash(error)    # stores messages that can be retrieved when rendering the template.

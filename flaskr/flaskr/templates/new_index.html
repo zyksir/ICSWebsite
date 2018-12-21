@@ -8,8 +8,9 @@
 	<div class="fly-panel fly-column"> 
 		<div class="layui-container"> 
 			<ul class="layui-clear"> 
-				<li class="layui-hide-xs  layui-this"><a href="{{ url_for('admin.admin_home') }}">首页</a></li>
-				<li> <a href="{{ url_for('admin.member') }}"> 用户管理 </a> </li>
+				<li class="layui-hide-xs  layui-this"><a href="{{ url_for('blog.index') }}">首页</a></li>
+				<li> <a href="{{ url_for('admin.admin_home') }}"> 管理员首页 </a> </li>
+                <li> <a href="{{ url_for('admin.member') }}"> 用户管理 </a> </li>
 				<li> <a href="{{ url_for('admin.post') }}"> 帖子管理  </a> </li>
 				<li> <a href="{{ url_for('admin.doc') }}"> 文件管理 </a> </li>
 			</ul> 

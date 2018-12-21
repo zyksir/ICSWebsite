@@ -64,8 +64,11 @@
       {% if g.user %}
       <!-- 用户登入后显示 -->
       
-      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('user.home', id=g.user['id']) }}">我的主页</a></li> 
-    </ul> 
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('user.home', id=g.user['id']) }}">我的主页</a></li>
+          {% if g.user['id'] == 1 %}
+          <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('admin.admin_home') }}">管理界面</a></li>
+          {%  endif %}
+    </ul>
     
     <div class="fly-column-right layui-hide-xs"> 
       <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a> 
