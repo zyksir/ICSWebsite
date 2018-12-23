@@ -103,8 +103,9 @@ def BlockMember(id):
     return redirect(url_for('admin.member'))
 @bp.route('/search_member', methods=('GET', 'POST'))
 @login_required
-def SearchMember(id = None):
-    return render_template('new_member.html', post=post)
+def SearchMember(ST):
+
+    return redirect(url_for('admin.member'))
 
 
 @bp.route('/post', methods=('GET', 'POST'))
@@ -173,7 +174,6 @@ def doc():
         posts[i]['nickname'] = user_info[0]['nickname']
     print(posts)
     return render_template('new_doc.html', posts=posts)
-
 @bp.route('/delete_doc/<int:id>', methods=('GET', 'POST'))
 @login_required
 def DeleteDoc(id):
