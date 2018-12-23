@@ -48,6 +48,32 @@ def check_is_like(user_id, post_id):
     return False
 
 
+# get num_like from a post
+def get_like(post_id):
+    conn, db = get_db()
+    db.execute(
+        'SELECT p.num_like'
+        ' FROM  post p'
+        ' WHERE p.id = %s ',
+        (post_id)
+    )
+    num_like = db.fetchone()['num_like']
+    return num_like
+
+
+# get num_collect from a post
+def get_collect(post_id):
+    conn, db = get_db()
+    db.execute(
+        'SELECT p.num_collect'
+        ' FROM  post p'
+        ' WHERE p.id = %s ',
+        (post_id)
+    )
+    num_collect = db.fetchone()['num_collect']
+    return num_collect
+
+
 # get a specific post by id
 def get_post(id, check_author=True):
     conn, db = get_db()
@@ -72,7 +98,7 @@ def get_post(id, check_author=True):
 def get_view_post(id, check_author=False):
     conn, db = get_db()
     db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply'
+        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply, p.num_like, p.num_collect, p.num_view'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = %s',
         (id,)
@@ -153,12 +179,13 @@ def delete_post(id):
 def index():
     conn, db = get_db()
     db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine'
+        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.num_like, p.num_collect, p.num_view'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' ORDER BY created DESC'
     )
     posts = db.fetchall()
     posts = sorted(posts, key=lambda p: p['created'], reverse=True)
+    # pprint(posts)
     for i, post in enumerate(posts):
         db.execute(
             'SELECT id, post_id, filename, filehash'
@@ -169,7 +196,7 @@ def index():
         posts[i]['files'] = db.fetchall()
 
     db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.hot'
+        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.hot, p.num_like, p.num_collect, p.num_view'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' ORDER BY hot DESC'
     )
@@ -239,7 +266,7 @@ def create():
 
 
 # update a post
-@bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@bp.route('/update/<int:id>', methods=('GET', 'POST'))
 @login_required
 def update(id):
     post = get_post(id)
@@ -272,12 +299,8 @@ def update(id):
 @login_required
 def ViewPost(id):
     if request.method == 'POST':
-        # title = request.form['title']
         body = request.form['body']
         error = None
-
-        #if not title:
-        #    error = 'Title is required.'
 
         if error is not None:
             flash(error)
@@ -299,7 +322,7 @@ def ViewPost(id):
             db.execute(
                 'UPDATE post SET num_reply = %s'
                 ' WHERE id = %s',
-                (str(num_reply), id)
+                (num_reply, id)
             )
             conn.commit()
             print("num_reply", num_reply)
@@ -313,7 +336,7 @@ def ViewPost(id):
     db.execute(
         'UPDATE post SET num_view = %s'
         ' WHERE id = %s',
-        (str(num_view), id)
+        (num_view, id)
     )
     conn.commit()
 
@@ -323,7 +346,7 @@ def ViewPost(id):
     print("is_like = ", is_like)
     print("is_collect = ", is_collect)
 
-    return render_template('blog/temp_ViewPost.html', post=post, is_collect = is_collect, is_like = is_like)
+    return render_template('blog/temp_ViewPost.html', post=post, is_collect=is_collect, is_like=is_like)
 
 
 # delete a reply by id
@@ -331,7 +354,6 @@ def ViewPost(id):
 @login_required
 def DeleteReply(id):
     post_id = delete_reply(id)
-    #return redirect(url_for('blog.index'))
     return redirect(url_for('blog.ViewPost', id=post_id))
 
 
@@ -364,7 +386,6 @@ def title_search(ST):
 def SEARCH_TITLE(ST):
     posts = title_search(ST)
     return json.dumps(posts, ensure_ascii=False)
-    #return redirect(url_for('blog.index'))
 
 
 # search a keyword ST in users
@@ -372,11 +393,11 @@ def user_search(ST):
     s = "%" + ST + "%"
     conn, db = get_db()
     db.execute(
-        'SELECT u.id, u.username'
+        'SELECT u.id, u.username, u.nickname'
         ' FROM user u'
-        ' WHERE u.username LIKE %s'
+        ' WHERE u.username LIKE %s OR u.nickname LIKE %s'
         ' ORDER BY u.id DESC',
-        (s)
+        (s, s)
     )
     users = db.fetchall()
     pprint(users)
@@ -389,7 +410,6 @@ def user_search(ST):
 def SEARCH_USER(ST):
     users = user_search(ST)
     return json.dumps(users, ensure_ascii=False)
-    #return redirect(url_for('blog.index'))
 
 
 # like a post
@@ -409,6 +429,17 @@ def LIKE(id):
             (user_id, id)
         )
         conn.commit()
+
+        num_like = get_like(id) + 1
+
+        db.execute(
+            'UPDATE post SET num_like = %s'
+            ' WHERE id = %s',
+            (str(num_like), id)
+        )
+        conn.commit()
+
+        print("num_like = ", num_like)
 
     return redirect(url_for('blog.ViewPost', id=id))
 
@@ -430,5 +461,78 @@ def COLLECT(id):
             (user_id, id)
         )
         conn.commit()
+
+        num_collect = get_collect(id) + 1
+
+        db.execute(
+            'UPDATE post SET num_collect = %s'
+            ' WHERE id = %s',
+            (str(num_collect), id)
+        )
+        conn.commit()
+
+        print("num_collect = ", num_collect)
+
+    return redirect(url_for('blog.ViewPost', id=id))
+
+
+# collect a post
+@bp.route('/UNCOLLECT/<int:id>', methods=('GET', 'POST'))
+@login_required
+def UNCOLLECT(id):
+    user_id = g.user['id']
+    print("in uncollect user_id = ", user_id)
+
+    is_collect = check_is_collect(user_id, id)
+    if (is_collect == True):
+        print("add uncollect!")
+        conn, db = get_db()
+        db.execute(
+            'DELETE FROM collects WHERE author_id = %s AND post_id = %s',
+            (user_id, id)
+        )
+        conn.commit()
+
+        num_collect = get_collect(id) - 1
+
+        db.execute(
+            'UPDATE post SET num_collect = %s'
+            ' WHERE id = %s',
+            (str(num_collect), id)
+        )
+        conn.commit()
+
+        print("num_collect = ", num_collect)
+
+    return redirect(url_for('blog.ViewPost', id=id))
+
+
+# unlike a post
+@bp.route('/UNLIKE/<int:id>', methods=('GET', 'POST'))
+@login_required
+def UNLIKE(id):
+    user_id = g.user['id']
+    print("user_id = ", user_id)
+
+    is_like = check_is_like(user_id, id)
+    if (is_like == True):
+        conn, db = get_db()
+        print("add unlike!")
+        db.execute(
+            'DELETE FROM likes WHERE author_id = %s AND post_id = %s',
+            (user_id, id)
+        )
+        conn.commit()
+
+        num_like = get_like(id) - 1
+
+        db.execute(
+            'UPDATE post SET num_like = %s'
+            ' WHERE id = %s',
+            (str(num_like), id)
+        )
+        conn.commit()
+
+        print("num_like = ", num_like)
 
     return redirect(url_for('blog.ViewPost', id=id))
