@@ -12,9 +12,6 @@
         <h1>{{ post['title'] }}</h1>
         <div class="fly-detail-info">
           <!--加精和置顶-->
-          {% if post['is_top']==1 %}
-          <span class="layui-badge layui-bg-black">置顶</span>
-          {% endif %}
 
         <!--
           {% if post['goodpost'] %}
@@ -23,9 +20,25 @@
           -->
 
           <!--收藏和点赞，功能还没完全写完，之后会有一个收藏和取消收藏，反正位置都在这-->
+          <div class="layui-btn-container">
+            {% if post['is_top']==1 %}
+              <span class="layui-badge layui-bg-black">置顶</span>
+            {% endif %}
+            {% if is_collect %}
+            <a href="{{ url_for('blog.UNCOLLECT', id=post['id']) }}"  class="layui-btn layui-btn-xs layui-btn-radius layui-btn-danger">取消收藏</a>
+            {% else %}
+            <a href="{{ url_for('blog.COLLECT', id=post['id']) }}" class="layui-btn layui-btn-xs layui-btn-radius">收藏</a>
+            {% endif %}
+            {% if is_like %}
+            <a href="{{ url_for('blog.UNLIKE', id=post['id']) }}" class="layui-btn layui-btn-xs layui-btn-radius layui-btn-danger">取消点赞</a>
+            {% else %}
+            <a href="{{ url_for('blog.LIKE', id=post['id']) }}" class="layui-btn layui-btn-xs layui-btn-radius">点赞</a>
+            {% endif %}
+          </div>
+          <!--
           {% if is_collect %}
           <form action="{{ url_for('blog.UNCOLLECT', id=post['id']) }}" method="post">
-          <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="取消收藏">
+          <input class="layui-btn layui-btn-danger layui-btn-xs jie-admin" type="submit" value="取消收藏">
           </form>
           {% else %}
           <form action="{{ url_for('blog.COLLECT', id=post['id']) }}" method="post">
@@ -35,14 +48,14 @@
 
           {% if is_like %}
           <form action="{{ url_for('blog.UNLIKE', id=post['id']) }}" method="post">
-            <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="取消点赞">
+            <input class="layui-btn layui-btn-danger layui-btn-xs jie-admin" type="submit" value="取消点赞">
           </form>
           {% else %}
           <form action="{{ url_for('blog.LIKE', id=post['id']) }}" method="post">
             <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="点赞">
           </form>
             {% endif %}
-
+          -->
           <span class="fly-list-nums"> 
             <!--
             <a href="#comment"><i class="iconfont" title="回复">&#xe60c;</i> {{post['replynum']}}</a>
