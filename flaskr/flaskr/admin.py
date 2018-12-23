@@ -90,6 +90,7 @@ def SearchDoc(ST):
         tmp_dict = model_to_dict(File)
         tmp_dict['nickname'] = tmp_dict['post']['author']['nickname']
         tmp_dict['username'] = tmp_dict['post']['author']['username']
+        tmp_dict['author_id'] = tmp_dict['post']['author']['id']
         files.append(tmp_dict)
     pprint(files)
     # conn, db = get_db()
@@ -123,10 +124,11 @@ def SearchDoc(ST):
 @bp.route('/admin', methods=('GET', 'POST'))
 @login_required
 def admin_home():
-    conn, db = get_db()
-    db.execute('SELECT id, created, username, nickname FROM user')
-    post = db.fetchall()[0]
-    return render_template('new_index.html', post=post)
+    Post = model_to_dict(user.select().where(user.id == 1).get())
+    # conn, db = get_db()
+    # db.execute('SELECT id, created, username, nickname FROM user')
+    # post = db.fetchall()[0]
+    return render_template('new_index.html', post=Post)
 
 def ViewDeleteMember():
     return render_template('new_index.html')
@@ -143,16 +145,19 @@ def Member():
         posts = SearchMember(ST)
         return render_template('new_member.html', posts=posts)
 
-    conn, db = get_db()
-    db.execute(
-        'SELECT id, created, username, nickname , email, is_block'
-        ' FROM user WHERE id > 1'
-        ' ORDER BY created DESC'
-    )
-    posts = db.fetchall()
+    # conn, db = get_db()
+    # db.execute(
+    #     'SELECT id, created, username, nickname , email, is_block'
+    #     ' FROM user WHERE id > 1'
+    #     ' ORDER BY created DESC'
+    # )
+    # posts = db.fetchall()
     # length = len(posts)
     # pprint(posts)
+    Posts = user.select().where(user.id >1).order_by(user.created)
+    posts = [model_to_dict(Post) for Post in Posts]
     return render_template('new_member.html', posts=posts)
+
 @bp.route('/delete_member/<int:id>', methods=('POST', ))
 @login_required
 def DeleteMember(id):
@@ -192,24 +197,31 @@ def Post():
         ST = request.form['title']
         posts = SearchPost(ST)
         return render_template('new_post.html', posts=posts)
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
-    )
-    posts = db.fetchall()
-    length = len(posts)
-    posts = sorted(posts, key=lambda p: p['created'], reverse=True)
-    for i, post in enumerate(posts):
-        db.execute(
-            'SELECT id, post_id, filename, filehash'
-            ' FROM post_file WHERE post_id=%s'
-            ' ORDER BY created DESC',
-            (post['id'],)
-        )
-        post['files'] = db.fetchall()
+    # conn, db = get_db()
+    # db.execute(
+    #     'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine'
+    #     ' FROM post p JOIN user u ON p.author_id = u.id'
+    #     ' ORDER BY created DESC'
+    # )
+    # posts = db.fetchall()
+    # length = len(posts)
+    # posts = sorted(posts, key=lambda p: p['created'], reverse=True)
+    # for i, post in enumerate(posts):
+    #     db.execute(
+    #         'SELECT id, post_id, filename, filehash'
+    #         ' FROM post_file WHERE post_id=%s'
+    #         ' ORDER BY created DESC',
+    #         (post['id'],)
+    #     )
+    #     post['files'] = db.fetchall()
+    posts = []
+    Posts = post.select().order_by(post.created)
+    for Post in Posts:
+        tmp_dict = model_to_dict(Post)
+        tmp_dict['nickname'] = tmp_dict['author']['nickname']
+        posts.append(tmp_dict)
     return render_template('new_post.html', posts=posts)
+
 @bp.route('/delete_post/<int:id>', methods=('GET', 'POST'))
 @login_required
 def DeletePost(id):
@@ -230,37 +242,46 @@ def Doc():
         ST = request.form['title']
         posts = SearchDoc(ST)
         return render_template('new_doc.html', posts=posts)
-    conn, db = get_db()
-    db.execute(
-        'SELECT id, created, filename, post_id'
-        ' FROM post_file'
-        ' ORDER BY created DESC'
-    )
-    posts = db.fetchall()
-    for i, post in enumerate(posts):
-        db.execute(
-            'SELECT author_id'
-            ' FROM post WHERE id=%s',
-            (post['post_id'],)
-        )
-        post_info = db.fetchall()
-        posts[i]['author_id'] = post_info[0]['author_id']
-        db.execute(
-            'SELECT username, nickname'
-            ' FROM user WHERE id=%s',
-            (posts[i]['author_id'],)
-        )
-        user_info = db.fetchall()
-        posts[i]['username'] = user_info[0]['username']
-        posts[i]['nickname'] = user_info[0]['nickname']
-    print(posts)
-    return render_template('new_doc.html', posts=posts)
+    # conn, db = get_db()
+    # db.execute(
+    #     'SELECT id, created, filename, post_id'
+    #     ' FROM post_file'
+    #     ' ORDER BY created DESC'
+    # )
+    # posts = db.fetchall()
+    # for i, post in enumerate(posts):
+    #     db.execute(
+    #         'SELECT author_id'
+    #         ' FROM post WHERE id=%s',
+    #         (post['post_id'],)
+    #     )
+    #     post_info = db.fetchall()
+    #     posts[i]['author_id'] = post_info[0]['author_id']
+    #     db.execute(
+    #         'SELECT username, nickname'
+    #         ' FROM user WHERE id=%s',
+    #         (posts[i]['author_id'],)
+    #     )
+    #     user_info = db.fetchall()
+    #     posts[i]['username'] = user_info[0]['username']
+    #     posts[i]['nickname'] = user_info[0]['nickname']
+    Files = post_file.select()
+    files = []
+    for File in Files:
+        tmp_dict = model_to_dict(File)
+        tmp_dict['nickname'] = tmp_dict['post']['author']['nickname']
+        tmp_dict['username'] = tmp_dict['post']['author']['username']
+        tmp_dict['author_id'] = tmp_dict['post']['author']['id']
+        files.append(tmp_dict)
+    print(files)
+    return render_template('new_doc.html', posts=files)
 @bp.route('/delete_doc/<int:id>', methods=('GET', 'POST'))
 @login_required
 def DeleteDoc(id):
-    conn, db = get_db()
-    db.execute('DELETE FROM post_file WHERE id = %s', (id,))
-    conn.commit()
+    post_file.delete().where(post_file.id == id).execute()
+    # conn, db = get_db()
+    # db.execute('DELETE FROM post_file WHERE id = %s', (id,))
+    # conn.commit()
     return redirect(url_for('admin.Doc'))
 
 
