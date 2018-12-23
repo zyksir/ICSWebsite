@@ -323,7 +323,7 @@ def ViewPost(id):
     print("is_like = ", is_like)
     print("is_collect = ", is_collect)
 
-    return render_template('blog/temp_ViewPost.html', post=post, is_collect = is_collect, is_like = is_like)
+    return render_template('blog/temp_ViewPost.html', post=post, is_collect=is_collect, is_like=is_like)
 
 
 # delete a reply by id
@@ -427,6 +427,46 @@ def COLLECT(id):
         db.execute(
             'INSERT INTO collects (author_id, post_id)'
             ' VALUES (%s, %s)',
+            (user_id, id)
+        )
+        conn.commit()
+
+    return redirect(url_for('blog.ViewPost', id=id))
+
+
+# collect a post
+@bp.route('/UNCOLLECT/<int:id>', methods=('GET', 'POST'))
+@login_required
+def UNCOLLECT(id):
+    user_id = g.user['id']
+    print("in uncollect user_id = ", user_id)
+
+    is_collect = check_is_collect(user_id, id)
+    if (is_collect == True):
+        print("add uncollect!")
+        conn, db = get_db()
+        db.execute(
+            'DELETE FROM collects WHERE author_id = %s AND post_id = %s',
+            (user_id, id)
+        )
+        conn.commit()
+
+    return redirect(url_for('blog.ViewPost', id=id))
+
+
+# unlike a post
+@bp.route('/UNLIKE/<int:id>', methods=('GET', 'POST'))
+@login_required
+def UNLIKE(id):
+    user_id = g.user['id']
+    print("user_id = ", user_id)
+
+    is_like = check_is_like(user_id, id)
+    if (is_like == True):
+        conn, db = get_db()
+        print("add unlike!")
+        db.execute(
+            'DELETE FROM likes WHERE author_id = %s AND post_id = %s',
             (user_id, id)
         )
         conn.commit()
