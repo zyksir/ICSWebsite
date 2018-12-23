@@ -53,7 +53,7 @@ class user(BaseModel):
 
 class post(BaseModel):
     id = IntegerField(primary_key=True)
-    author_id = ForeignKeyField(user, backref="author_id")
+    author = ForeignKeyField(user, backref="author_id1", column_name="author_id")
     num_view = IntegerField(default=0)
     num_reply = IntegerField(default=0)
     num_like = IntegerField(default=0)
@@ -67,20 +67,28 @@ class post(BaseModel):
 
 class reply(BaseModel):
     id = IntegerField(primary_key=True)
-    author_id = ForeignKeyField(user, backref="author_id")
-    post_id = ForeignKeyField(post, backref="post_id")
+    author = ForeignKeyField(user, backref="author_id1", column_name="author_id")
+    post = ForeignKeyField(post, backref="post_id1", column_name="post_id")
     created = DateTimeField()
     body = TextField()
 
 class collects(BaseModel):
     id = IntegerField(primary_key=True)
-    author_id = ForeignKeyField(user, backref="author_id")
-    post_id = ForeignKeyField(post, backref="post_id")
+    author = ForeignKeyField(user, backref="author_id1", column_name="author_id")
+    post = ForeignKeyField(post, backref="post_id1", column_name="post_id")
 
 class likes(BaseModel):
     id = IntegerField(primary_key=True)
-    author_id = ForeignKeyField(user, backref="author_id")
-    post_id = ForeignKeyField(post, backref="post_id")
+    author = ForeignKeyField(user, backref="author_id1", column_name="author_id")
+    post = ForeignKeyField(post, backref="post_id1", column_name="post_id")
+
+class post_file(BaseModel):
+    id = IntegerField(primary_key=True)
+    created = DateTimeField()
+    post = ForeignKeyField(post, backref="post_id1", column_name="post_id")
+    created = DateTimeField()
+    filename = TextField()
+    filehash = TextField()
 
 # class post(Model):
 #     id = IntegerField()

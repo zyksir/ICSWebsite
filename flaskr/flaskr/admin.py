@@ -11,90 +11,113 @@ import json
 from flaskr.auth import login_required
 from flaskr.db import *
 from flaskr.blog import get_post, delete_post, delete_reply
-
+from playhouse.shortcuts import model_to_dict
 from pprint import pprint
 
 bp = Blueprint('admin', __name__)
 
 def modify_is_top(post_id, is_top):
-    conn, db = get_db()
-    db.execute(
-        'UPDATE post SET is_top = %s'
-        ' WHERE id = %s',
-        (is_top, post_id)
-    )
-    conn.commit()
+    post.update({post.is_top: is_top}).where(post.id == post_id).execute()
+    # conn, db = get_db()
+    # db.execute(
+    #     'UPDATE post SET is_top = %s'
+    #     ' WHERE id = %s',
+    #     (is_top, post_id)
+    # )
+    # conn.commit()
 def modify_is_file(post_id, is_fine):
-    conn, db = get_db()
-    db.execute(
-        'UPDATE post SET is_fine = %s'
-        ' WHERE id = %s',
-        (is_fine, post_id)
-    )
-    conn.commit()
+    post.update({post.is_top: is_fine}).where(post.id == post_id).execute()
+    # conn, db = get_db()
+    # db.execute(
+    #     'UPDATE post SET is_fine = %s'
+    #     ' WHERE id = %s',
+    #     (is_fine, post_id)
+    # )
+    # conn.commit()
 def modify_is_block(user_id, is_block):
-    conn, db = get_db()
-    db.execute(
-        'UPDATE user SET is_block = %s'
-        ' WHERE id = %s',
-        (is_block, user_id)
-    )
-    conn.commit()
+    user.update({user.is_block: is_block}).where(user.id == user_id).execute()
+    # conn, db = get_db()
+    # db.execute(
+    #     'UPDATE user SET is_block = %s'
+    #     ' WHERE id = %s',
+    #     (is_block, user_id)
+    # )
+    # conn.commit()
 
 def SearchPost(ST):
     s = "%" + ST + "%"
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE title LIKE %s'
-        ' ORDER BY created DESC',
-        (s)
-    )
-    users = db.fetchall()
-    pprint(users)
-    return users
+    # conn, db = get_db()
+    # db.execute(
+    #     'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine'
+    #     ' FROM post p JOIN user u ON p.author_id = u.id'
+    #     ' WHERE title LIKE %s'
+    #     ' ORDER BY created DESC',
+    #     (s)
+    # )
+    # users = db.fetchall()
+    Posts = post.select().where((post.title ** s) | (post.body ** s))
+    posts = []
+    for Post in Posts:
+        tmp_dict = model_to_dict(Post)
+        tmp_dict['nickname'] = tmp_dict['author']['nickname']
+        posts.append(tmp_dict)
+    pprint(posts)
+    return posts
+
 def SearchMember(ST):
     s = "%" + ST + "%"
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE title LIKE %s'
-        ' ORDER BY p.id DESC',
-        (s)
-    )
-    users = db.fetchall()
+    # conn, db = get_db()
+    # db.execute(
+    #     'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine'
+    #     ' FROM post p JOIN user u ON p.author_id = u.id'
+    #     ' WHERE title LIKE %s'
+    #     ' ORDER BY p.id DESC',
+    #     (s)
+    # )
+    # users = db.fetchall()
+    Users = user.select().where((user.nickname ** s) | (user.username ** s))
+    users = []
+    for User in Users:
+        users.append(model_to_dict(User))
     pprint(users)
     return users
+
 def SearchDoc(ST):
     s = "%" + ST + "%"
-    conn, db = get_db()
-    db.execute(
-        'SELECT id, created, filename, post_id'
-        ' FROM post_file'
-        'WHERE filename LIKE %s'
-        ' ORDER BY created DESC',
-        (s)
-    )
-    posts = db.fetchall()
-    for i, post in enumerate(posts):
-        db.execute(
-            'SELECT author_id'
-            ' FROM post WHERE id=%s',
-            (post['post_id'],)
-        )
-        post_info = db.fetchall()
-        posts[i]['author_id'] = post_info[0]['author_id']
-        db.execute(
-            'SELECT username, nickname'
-            ' FROM user WHERE id=%s',
-            (posts[i]['author_id'],)
-        )
-        user_info = db.fetchall()
-        posts[i]['username'] = user_info[0]['username']
-        posts[i]['nickname'] = user_info[0]['nickname']
-    return posts
+    Files = post_file.select().where((post_file.filename ** s))
+    files = []
+    for File in Files:
+        tmp_dict = model_to_dict(File)
+        tmp_dict['nickname'] = tmp_dict['post']['author']['nickname']
+        tmp_dict['username'] = tmp_dict['post']['author']['username']
+        files.append(tmp_dict)
+    pprint(files)
+    # conn, db = get_db()
+    # db.execute(
+    #     'SELECT id, created, filename, post_id'
+    #     ' FROM post_file'
+    #     'WHERE filename LIKE %s'
+    #     ' ORDER BY created DESC',
+    #     (s)
+    # )
+    # posts = db.fetchall()
+    # for i, post in enumerate(posts):
+    #     db.execute(
+    #         'SELECT author_id'
+    #         ' FROM post WHERE id=%s',
+    #         (post['post_id'],)
+    #     )
+    #     post_info = db.fetchall()
+    #     posts[i]['author_id'] = post_info[0]['author_id']
+    #     db.execute(
+    #         'SELECT username, nickname'
+    #         ' FROM user WHERE id=%s',
+    #         (posts[i]['author_id'],)
+    #     )
+    #     user_info = db.fetchall()
+    #     posts[i]['username'] = user_info[0]['username']
+    #     posts[i]['nickname'] = user_info[0]['nickname']
+    return files
 
 
 @bp.route('/admin', methods=('GET', 'POST'))
@@ -114,7 +137,7 @@ def ViewDeletePost():
 
 @bp.route('/member', methods=('GET', 'POST'))
 @login_required
-def member():
+def Member():
     if request.method == 'POST':
         ST = request.form['title']
         posts = SearchMember(ST)
@@ -153,18 +176,18 @@ def DeleteMember(id):
     db.execute('DELETE FROM user WHERE id = %s', (id,))
     conn.commit()
 
-    return redirect(url_for('admin.member'))
+    return redirect(url_for('admin.Member'))
 @bp.route('/block_member/<string:id>', methods=('POST', ))
 @login_required
 def BlockMember(id):
     id = eval(id)
     print(id)
     modify_is_block(id[0], id[1])
-    return redirect(url_for('admin.member'))
+    return redirect(url_for('admin.Member'))
 
 @bp.route('/post', methods=('GET', 'POST'))
 @login_required
-def post():
+def Post():
     if request.method == 'POST':
         ST = request.form['title']
         posts = SearchPost(ST)
@@ -191,18 +214,18 @@ def post():
 @login_required
 def DeletePost(id):
     delete_post(id)
-    return redirect(url_for('admin.post'))
+    return redirect(url_for('admin.Post'))
 @bp.route('/top_post/<string:id>', methods=('GET', 'POST'))
 @login_required
 def TopPost(id):
     id = eval(id)
     print(id)
     modify_is_top(id[0], id[1])
-    return redirect(url_for('admin.post'))
+    return redirect(url_for('admin.Post'))
 
 @bp.route('/doc', methods=('GET', 'POST'))
 @login_required
-def doc():
+def Doc():
     if request.method == 'POST':
         ST = request.form['title']
         posts = SearchDoc(ST)
@@ -238,6 +261,6 @@ def DeleteDoc(id):
     conn, db = get_db()
     db.execute('DELETE FROM post_file WHERE id = %s', (id,))
     conn.commit()
-    return redirect(url_for('admin.doc'))
+    return redirect(url_for('admin.Doc'))
 
 

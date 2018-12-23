@@ -11,7 +11,7 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-
+from playhouse.shortcuts import model_to_dict
 from flaskr.db import *
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -76,16 +76,17 @@ def get_login_info(form):
     username = form['username']
     password = form['password']
     error = None
+    post = {}
     User = user.select().where(user.username == username)
     if len(User) == 0:
         error = "用户名不存在"
+        User = None
     else:
         User = User.get()
         if not check_password_hash(User.password, password):
             error = "密码不正确"
 
-    if error == None:
-
+    return User, error
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
@@ -102,12 +103,11 @@ def login():
         #     error = '用户名不存在！'
         # elif not check_password_hash(user['password'], password):
         #     error = '密码不正确！'
+        User, error = get_login_info(request.form)
 
         if error is None:
             session.clear()
-            session['user_id'] = user['id']
-            # if user['id'] == 1:
-            #     return redirect(url_for('admin.admin_home'))
+            session['user_id'] = User.id
             return redirect(url_for('index'))
 
         flash(error)    # stores messages that can be retrieved when rendering the template.
@@ -122,11 +122,12 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        conn, db = get_db()
-        db.execute(
-            'SELECT * FROM user WHERE id = %s', (user_id,)
-        )
-        g.user = db.fetchone()
+        # conn, db = get_db()
+        # db.execute(
+        #     'SELECT * FROM user WHERE id = %s', (user_id,)
+        # )
+        # g.user = db.fetchone()
+        g.user = model_to_dict(user.select().where(user.id == user_id).get())
 
 
 @bp.route('/logout')
