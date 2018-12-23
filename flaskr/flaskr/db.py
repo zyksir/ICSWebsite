@@ -93,6 +93,18 @@ class reply(Model):
         database = mydatabase
 
 
+class post_file(Model):
+    id = IntegerField()
+    created = DateTimeField()
+    post_id = IntegerField()
+    created = DateTimeField()
+    filename = TextField()
+    filehash = TextField()
+
+    class Meta:
+        database = mydatabase
+
+
 def init_db():
     print("db.py is going to init_db")
     conn, db = get_db()
