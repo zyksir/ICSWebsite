@@ -266,7 +266,7 @@ def create():
 
 
 # update a post
-@bp.route('/<int:id>/update', methods=('GET', 'POST'))
+@bp.route('/update/<int:id>', methods=('GET', 'POST'))
 @login_required
 def update(id):
     post = get_post(id)
