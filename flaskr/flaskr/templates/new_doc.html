@@ -5,12 +5,13 @@
 {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="../static/layui/css/layui.css" media="all">
+<!--<link rel="stylesheet" href="../static/res/layui/css/layui.css" media="all">-->
   <div class="layui-container">
-    <input type="text" name="title" required  lay-verify="required" placeholder="请输入文件名" autocomplete="off" class="layui-input">
-    <div class="fly-column-right layui-hide-xs"> 
-      <a href="{{ url_for('admin.SearchPost') }}" class="layui-btn">搜索文件</a>
-    </div>   
+  <form action="" method="post" enctype="multipart/form-data">
+    <input type="text" id="title" name="title" required  lay-verify="required" placeholder="请输入文件ID" autocomplete="off" class="layui-input">
+     <div class="fly-column-right layui-hide-xs">
+      <button class="layui-btn" lay-filter="*" lay-submit>搜索文件</button>
+     </div></form>
   </div>
 
 <div class="layui-container">
@@ -31,7 +32,8 @@
       <td style="text-align:center">{{ post['filename'] }}</td>
       <td style="text-align:center">
           <form action="{{ url_for('admin.DeleteDoc', id=post['id']) }}" method="post">
-              <input type="submit" value="删除"></form>
+              <button type="submit" class="layui-btn layui-btn-danger layui-btn-xs"  lay-filter="*" lay-submit type="submit">删除文件</button>
+              </form>
         <!--<button class="layui-btn layui-btn-sm layui-btn-danger" href="{{ url_for('admin.DeleteDoc', id=post['id']) }}">
           <i class="layui-icon">&#xe640;</i>
         </button>-->

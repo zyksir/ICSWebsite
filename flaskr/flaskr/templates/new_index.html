@@ -8,20 +8,35 @@
 	<div class="fly-panel fly-column"> 
 		<div class="layui-container"> 
 			<ul class="layui-clear"> 
-				<li class="layui-hide-xs  layui-this"><a href="{{ url_for('blog.index') }}">首页</a></li>
-				<li> <a href="{{ url_for('admin.admin_home') }}"> 管理员首页 </a> </li>
-                <li> <a href="{{ url_for('admin.member') }}"> 用户管理 </a> </li>
-				<li> <a href="{{ url_for('admin.post') }}"> 帖子管理  </a> </li>
-				<li> <a href="{{ url_for('admin.doc') }}"> 文件管理 </a> </li>
-			</ul> 
+				<li class="layui-hide-xs  layui-this"><a href="/">首页</a></li>
+                <li> <a href="{{ url_for('admin.admin_home') }}"> 管理员首页 </a> </li>
+				<li> <a href="{{ url_for('admin.Member') }}"> 用户管理 </a> </li>
+				<li> <a href="{{ url_for('admin.Post') }}"> 帖子管理  </a> </li>
+				<li> <a href="{{ url_for('admin.Doc') }}"> 文件管理 </a> </li>
+			</ul>
 		</div>
 	</div>
 
 
-    		
+
 {% block content %}
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
 <div class="layui-container">
-	<div class="fly-home fly-panel">
+<div class="layui-carousel" id="test1" lay-filter="test1">
+  <div carousel-item="">
+    <div><img src="{{ url_for('static', filename='pic/b.jpg') }}"  alt="春天" width = '100%'></div>
+    <div><img src="{{ url_for('static', filename='pic/p1.jpg') }}"  alt="逸夫楼" width = '100%'></div>
+    <div><img src="{{ url_for('static', filename='pic/b.jpg') }}"  alt="机房" width = '100%'></div>
+  </div>
+</div>
+</div>
+
+
+<div class="layui-container">
+	<div class="fly-home fly-panel"">
 	<h1> {{ post['nickname'] }}</h1>
 	<p class="fly-home-info">
 		<i class="iconfont icon-shijian"></i>
@@ -38,54 +53,193 @@
     	<span>{{ post['created'].strftime('%Y-%m-%d') }} 加入</span>
   	</p>
 	</div>
+</div>
 
+<div class="layui-container">
+  <div class="fly-panel">
+    <div class="layui-row ">
 
-  <div class="layui-row layui-col-space15">
-    <div class="layui-col-md6 fly-home-jie">
-      <div class="fly-panel">
-        <h3 class="fly-panel-title">{{ post['nickname'] }} 最近删除的用户</h3>
-        <ul class="jie-row">
-          {% for post in post['posts'] %}
-          <li>
-            <a href="{{ url_for('admin.DeleteUser', id=post['id']) }}" class="jie-title">
-            	<!--{{post['title']}}</a>-->
-            <i>{{ post['created'].strftime('%Y-%m-%d') }}</i>
-          </li>
-          {% endfor %}
-        </ul>
+      <div class="layui-col-md3 layui-bg-green" style="text-align:center">
+        <div class="fly-panel layui-bg-green">
+          <br><br><br><br><br><br><br><br><br>
+          <h1>开发者</h1>
+          <br><br><br><br><br><br><br><br><br>
+        </div>
       </div>
-    </div>
 
-    <div class="layui-col-md6 fly-home-da">
-      <div class="fly-panel">
-        <h3 class="fly-panel-title">{{ post['nickname'] }} 最近删除的帖子</h3>
-        <ul class="jie-row">
-          {% for post in post['markposts'] %}
-          <li>
-            <a href="{{ url_for('blog.ViewPost', id=post['id']) }}" class="jie-title"> {{post['title']}}</a>
-            <i>{{ post['created'].strftime('%Y-%m-%d') }}</i>
-          </li>
-          {% endfor %}
-        </ul>
+      <div class="layui-col-md9" style="text-align:center">
+        <div class="fly-panel">
+          <table class="layui-table" lay-size="lg"  border="1" cellpadding="3" cellspacing="0" style="width: 80%; height:80%;  margin:auto">
+            <br><br>
+            <thead>
+              <tr>
+                <th style="text-align:center">照片</th>
+                <th style="text-align:center">姓名</th>
+                <th style="text-align:center">学号</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:center"><img src="{{ url_for('static', filename='pic/b.jpg') }}"  alt="春天" width = '100%'></td>
+                <td style="text-align:center">朱熠恺</td>
+                <td style="text-align:center">1600012984</td>
+              </tr>
+              <tr>
+                <td style="text-align:center"><img src="{{ url_for('static', filename='pic/b.jpg') }}"  alt="春天" width = '100%'></td>
+                <td style="text-align:center">吴睿海</td>
+                <td style="text-align:center">1600012984</td>
+              </tr>
+              <tr>
+                <td style="text-align:center"><img src="{{ url_for('static', filename='pic/b.jpg') }}"  alt="春天" width = '100%'></td>
+                <td style="text-align:center">徐沁玫</td>
+                <td style="text-align:center">1600012984</td>
+              </tr>
+              <tr>
+                <td style="text-align:center"><img src="{{ url_for('static', filename='pic/b.jpg') }}"  alt="春天" width = '100%'></td>
+                <td style="text-align:center">赵宇瑄</td>
+                <td style="text-align:center">1600012984</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
     </div>
   </div>
 </div>
-</div>
-{% endblock %}
 
+
+<div class="layui-container">
+  <div class="fly-panel">
+    <div class="layui-row ">
+      <div class="layui-col-md3 " style="text-align:center">
+        <div class="fly-panel layui-bg-green">
+          <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+          <h1>开发者的</h1>
+          <h1>更新</h1>
+          <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        </div>
+      </div>
+
+      <div class="layui-col-md1 " style="text-align:center">
+        <div class="fly-panel">
+          <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+          <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        </div>
+      </div>
+
+      <div class="layui-col-md8">
+        <ul class="layui-timeline">
+          <br><br>
+          <h1 style="margin-left: 300px"><font style="color:#009688">时间线</font></h1>
+          <br><br>
+
+          <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+              <h3 class="layui-timeline-title">9-11月</h3>
+                <p>
+                  Branch：flaskr2
+                  <i class="layui-icon"></i>
+                </p>
+            </div>
+          </li>
+          <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+              <h3 class="layui-timeline-title">12.9</h3>
+                <p>
+                  大体布局已经全部写完了，剩下还有一些细节还要慢慢再改。
+                </p>
+            </div>
+          </li>
+
+          <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+              <h3 class="layui-timeline-title">12.12</h3>
+                <p>
+                  <ul>
+                    <li>修改schema.sql</li>
+                    <li>blog.py回复取消了title</li>
+                    <li>user.py增加了查看修改个人信息的功能</li>
+                    <li>auth.py blog.py home.py为修改的字段提供支持 为user.py提供支持</li>
+                  </ul>
+                </p>
+            </div>
+          </li>
+
+          <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+              <h3 class="layui-timeline-title">12.17</h3>
+              <p>
+                <ul>
+                <li>修改auth/temp_index.html 第75行使用了nickname</li>
+                <li>修改了auth.py 中的login函数，默认第一个注册是管理员</li>
+                <li>增加了admin.py文件，在这里定义管理员相关的函数，具体等前端出来改</li>
+              </ul>
+              </p>
+            </div>
+          </li>
+
+          <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+              <h3 class="layui-timeline-title">12.19</h3>
+              <p>完善了管理员相关界面 完善了对所有用户、帖子的管理，包括禁言、是否置顶、删除等操作 需要解决的问题</p>
+            </div>
+          </li>
+
+          <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+              <h3 class="layui-timeline-title">12.23</h3>
+              <p>
+                <ul>
+                <li>后端：禁止禁言用户发言</li>
+                <li>管理员前端：按钮更好看,调节表头的位置,首页制作</li>
+                <li>管理员处搜索功能实现</li>
+              </ul>
+              </p>
+            </div>
+          </li>
+
+        </ul>
+
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script src="../res/static/layui/layui.js"></script>
+<script>
+layui.use('carousel', function(){
+  var carousel = layui.carousel;
+  //建造实例
+  carousel.render({
+    elem: '#test1'
+    ,width: '100%' //设置容器宽度
+    ,arrow: 'always' //始终显示箭头
+    //,anim: 'updown' //切换动画方式
+  });
+});
+</script>
 
 
 <div class="fly-footer">
-  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/" target="_blank">layui.com 出品</a></p>
-  <p>
-    <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
-    <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
-    <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
-  </p>
+  <p><a target="_blank">Admin用户管理系统</a> 2018.12 &copy; <a href="http://www.layui.com/" target="_blank">Web小组出品</a></p>
 </div>
 
-<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_30088308'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/c.php%3Fid%3D30088308' type='text/javascript'%3E%3C/script%3E"));</script>
+
+
+
+
+{% endblock %}
+
 
 
 {% endblock %}

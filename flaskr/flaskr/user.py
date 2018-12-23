@@ -11,17 +11,25 @@ from flaskr.auth import login_required
 from flaskr.db import get_db
 
 from pprint import pprint
+from peewee import *
+
+from playhouse.shortcuts import model_to_dict
 
 bp = Blueprint('user', __name__, url_prefix='/user')
+
+from .db import *
 
 
 @bp.route('/home/<string:id>')
 def home(id):
-    conn, db = get_db()
+    '''conn, db = get_db()
     db.execute('SELECT username, nickname, email, created FROM user WHERE id=%s', (id,))
-    tmp_list = db.fetchone()
+    tmp_list = db.fetchone() '''
 
-    db.execute(
+    from .db import user
+    tmp_list = model_to_dict(user.select(user.username, user.nickname, user.email, user.created).where(user.id == id).get())
+
+    '''db.execute(
         'SELECT p.id, p.title, p.created, p.author_id'
         ' FROM post p'
         ' WHERE p.author_id = %s'
@@ -29,16 +37,33 @@ def home(id):
         (id,)
     )
     posts = db.fetchall()
-    #pprint(posts)
+    #pprint(posts) '''
 
-    db.execute(
+    posts = []
+    allposts = post.select(post.id, post.title, post.created, post.author_id).where(post.author_id == id).order_by(post.created.desc())
+    for apost in allposts:
+        posts.append(model_to_dict(apost))
+
+    '''db.execute(
         'SELECT c.author_id, c.post_id'
         ' FROM collects c'
         ' WHERE c.author_id = %s ',
         (id)
     )
-    collects = db.fetchall()
-    for acollect in collects:
+    collects = db.fetchall() '''
+
+    return_collects = []
+    allcollects = collects.select(collects.author_id, collects.post_id).where(collects.author_id == id)
+    for acollect in allcollects:
+        dctcollect = model_to_dict(acollect)
+        apost = model_to_dict(post.select(post.title, post.created).where(post.id == dctcollect['post_id']).get())
+        dctcollect['title'] = apost['title']
+        dctcollect['created'] = apost['created']
+        dctcollect['id'] = dctcollect['post_id']
+
+        return_collects.append(dctcollect)
+
+    '''for acollect in collects:
         pprint(acollect)
         db.execute(
             'SELECT p.title, p.created'
@@ -49,9 +74,9 @@ def home(id):
         apost = db.fetchone()
         acollect['title'] = apost['title']
         acollect['created'] = apost['created']
-        acollect['id'] = acollect['post_id']
-    collects = collects[::-1]
-    pprint(collects)
+        acollect['id'] = acollect['post_id']'''
+    return_collects = return_collects[::-1]
+    pprint(return_collects)
 
     user = {
         'username': tmp_list['username'],
@@ -59,7 +84,7 @@ def home(id):
         'email': tmp_list['email'],
         'created': tmp_list['created'],
         'posts': posts,
-        'markposts': collects
+        'markposts': return_collects
         }
     return render_template('user/temp_home.html', user=user)
 
@@ -76,13 +101,16 @@ def setname():
         if error is not None:
             flash(error)
         else:
-            conn, db = get_db()
+            '''conn, db = get_db()
             db.execute(
                 'UPDATE user SET nickname = %s'
                 ' WHERE id = %s',
                 (nickname, g.user['id'])
             )
-            conn.commit()
+            conn.commit() '''
+
+            t = user.update(nickname=nickname).where(user.id == g.user['id'])
+            t.execute()
 
             return redirect(url_for('blog.index'))
 
@@ -101,13 +129,16 @@ def setemail():
         if error is not None:
             flash(error)
         else:
-            conn, db = get_db()
+            '''conn, db = get_db()
             db.execute(
                 'UPDATE user SET email = %s'
                 ' WHERE id = %s',
                 (email, g.user['id'])
             )
-            conn.commit()
+            conn.commit() '''
+
+            t = user.update(email=email).where(user.id == g.user['id'])
+            t.execute()
 
             return redirect(url_for('blog.index'))
 
@@ -129,11 +160,14 @@ def setpass():
         repassword = request.form['repassword']
         error = None
 
-        conn, db = get_db()
+        '''conn, db = get_db()
         db.execute(
             'SELECT password FROM user WHERE id = %s', (g.user['id'],)
         )
-        real_password = db.fetchone()['password']
+        real_password = db.fetchone()['password'] '''
+
+        real_password = model_to_dict(user.select(user.password).where(user.id == g.user['id']).get())['password']
+
         #print(real_password)
         if not (check_password_hash(real_password, nowpass)):
             error = 'Wrong password!'
@@ -150,13 +184,16 @@ def setpass():
         if error is not None:
             flash(error)
         else:
-            conn, db = get_db()
+            '''conn, db = get_db()
             db.execute(
                 'UPDATE user SET password = %s'
                 'WHERE id = %s',
                 (generate_password_hash(password), g.user['id'])
             )
-            conn.commit()
+            conn.commit() '''
+
+            t = user.update(password=generate_password_hash(password)).where(user.id == g.user['id'])
+            t.execute()
 
             return redirect(url_for('blog.index'))
 
