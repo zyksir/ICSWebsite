@@ -393,7 +393,7 @@ def user_search(ST):
     s = "%" + ST + "%"
     conn, db = get_db()
     db.execute(
-        'SELECT u.id, u.username'
+        'SELECT u.id, u.username, u.nickname'
         ' FROM user u'
         ' WHERE u.username LIKE %s OR u.nickname LIKE %s'
         ' ORDER BY u.id DESC',
