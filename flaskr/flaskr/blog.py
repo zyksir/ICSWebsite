@@ -98,7 +98,7 @@ def get_post(id, check_author=True):
 def get_view_post(id, check_author=False):
     conn, db = get_db()
     db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply, p.num_like, p.num_collect， p.num_view'
+        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply, p.num_like, p.num_collect, p.num_view'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = %s',
         (id,)
