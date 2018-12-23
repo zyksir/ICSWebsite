@@ -281,19 +281,19 @@ def ViewPost(id):
 
             print("insert done!")
 
-            post = get_view_post(id)
+            apost = get_view_post(id)
 
             # update the the number of reply
-            num_reply = int(post['num_reply']) + 1
+            num_reply = int(apost['num_reply']) + 1
 
             t = post.update(num_reply=num_reply).where(post.id == id)
             t.execute()
             print("num_reply", num_reply)
 
-    post = get_view_post(id)
+    apost = get_view_post(id)
 
     # update the the number of views
-    num_view = int(post['num_view']) + 1
+    num_view = int(apost['num_view']) + 1
 
     t = post.update(num_view=num_view).where(post.id==id)
     t.execute()
@@ -305,7 +305,7 @@ def ViewPost(id):
     print("is_like = ", is_like)
     print("is_collect = ", is_collect)
 
-    return render_template('blog/temp_ViewPost.html', post=post, is_collect=is_collect, is_like=is_like)
+    return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like)
 
 
 # delete a reply by id

@@ -151,6 +151,76 @@ def close_db(e=None):
 #     id = IntegerField(primary_key=True)
 #     author_id = ForeignKeyField(user)
 #     post_id = ForeignKeyField(post)
+class post(Model):
+    id = IntegerField()
+    author_id = IntegerField()
+    num_view = IntegerField()
+    num_like = IntegerField()
+    num_collect = IntegerField()
+    num_reply = IntegerField()
+    hot = DoubleField()
+    created = DateTimeField()
+    title = TextField()
+    body = TextField()
+    is_top = BooleanField()
+    is_fine = BooleanField()
+
+    class Meta:
+        database = mydatabase
+
+
+class user(Model):
+    id = IntegerField()
+    created = DateTimeField()
+    username = CharField()
+    nickname = CharField()
+    password = CharField()
+    email = CharField()
+    is_block = BooleanField()
+
+    class Meta:
+        database = mydatabase
+
+
+class likes(Model):
+    id = IntegerField()
+    author_id = IntegerField()
+    post_id = IntegerField()
+
+    class Meta:
+        database = mydatabase
+
+
+class collects(Model):
+    id = IntegerField()
+    author_id = IntegerField()
+    post_id = IntegerField()
+
+    class Meta:
+        database = mydatabase
+
+
+class reply(Model):
+    id = IntegerField()
+    author_id = IntegerField()
+    post_id = IntegerField()
+    created = DateTimeField()
+    body = TextField()
+
+    class Meta:
+        database = mydatabase
+
+
+class post_file(Model):
+    id = IntegerField()
+    created = DateTimeField()
+    post_id = IntegerField()
+    created = DateTimeField()
+    filename = TextField()
+    filehash = TextField()
+
+    class Meta:
+        database = mydatabase
 
 
 def init_db():
