@@ -8,4 +8,6 @@
 .idea/workspace.xml
 *.pyc
 flaskr/flaskr/patch_12_12_1.sql
-flaskr/flaskr/patch_12_12_1.sql
+flaskr/flaskr/__init__.py
+
+flaskr/flaskr/__init__.py
