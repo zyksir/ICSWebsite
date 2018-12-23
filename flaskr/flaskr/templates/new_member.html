@@ -5,13 +5,15 @@
 {% endblock %}
 
 {% block content %}
-<!--<link rel="stylesheet" href="../static/res/layui/css/layui.css" media="all">-->
+<!--<link rel="stylesheet" href="../static/layui/css/layui.css" media="all">-->
   <div class="layui-container">
-    <input type="text" name="title" required  lay-verify="required" placeholder="请输入用户ID" autocomplete="off" class="layui-input">
-    <div class="fly-column-right layui-hide-xs"> 
-      <a href="{{ url_for('admin.SearchMember') }}" class="layui-btn">搜索用户</a>
-    </div>   
+  <form action="" method="post" enctype="multipart/form-data">
+    <input type="text" id="title" name="title" required  lay-verify="required" placeholder="请输入用户ID" autocomplete="off" class="layui-input" value="{{ request.form['title'] }}" required>
+     <div class="fly-column-right layui-hide-xs">
+      <button class="layui-btn" lay-filter="*" lay-submit>搜索用户</button>
+     </div>
   </div>
+
 <div class="layui-container">
 <table class="layui-table">
   <thead>
@@ -22,13 +24,13 @@
       <th width="100" style="text-align:center">邮箱</th>
         <th width="2" style="text-align:center">禁言状态</th>
       <th width="1" style="text-align:center">删除</th>
-    </tr> 
+    </tr>
   </thead>
   {% for post in posts %}
   <tbody>
     <tr>
       <td style="text-align:center">{{ post['id'] }}</td>
-      <td style="text-align:center">{{ post['nickname'] }}</td>   
+      <td style="text-align:center">{{ post['nickname'] }}</td>
       <td style="text-align:center">{{ post['created'] }}</td>
       <td style="text-align:center">{{ post['email'] }}</td>
         {% if post['is_block'] == 1 %}
