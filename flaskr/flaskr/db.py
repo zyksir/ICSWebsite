@@ -38,49 +38,119 @@ def close_db(e=None):
         conn.close()
 
 
-class BaseModel(Model):
-    class Meta:
-        database = mydatabase
-
-class user(BaseModel):
-    id = IntegerField(primary_key=True)
-    created = DateTimeField()
-    username = CharField(unique=True)
-    nickname = CharField()
-    password = CharField()
-    email = CharField(default="")
-    is_block = SmallIntegerField(default=0)
-
-class post(BaseModel):
-    id = IntegerField(primary_key=True)
-    author_id = ForeignKeyField(user)
-    num_view = IntegerField(default=0)
-    num_reply = IntegerField(default=0)
-    num_like = IntegerField(default=0)
-    num_collect = IntegerField(default=0)
-    hot = DoubleField(default=0.0)
-    created = DateTimeField()
-    title = TextField()
-    body = TextField()
-    is_top = SmallIntegerField()
-    is_fine = SmallIntegerField()
-
-class reply(BaseModel):
-    id = IntegerField(primary_key=True)
-    author_id = ForeignKeyField(user)
-    post_id = ForeignKeyField(post)
-    created = DateTimeField()
-    body = TextField()
-
-class collects(BaseModel):
-    id = IntegerField(primary_key=True)
-    author_id = ForeignKeyField(user)
-    post_id = ForeignKeyField(post)
-
-class likes(BaseModel):
-    id = IntegerField(primary_key=True)
-    author_id = ForeignKeyField(user)
-    post_id = ForeignKeyField(post)
+# <<<<<<< HEAD
+# class BaseModel(Model):
+# =======
+# class post(Model):
+#     id = IntegerField()
+#     author_id = IntegerField()
+#     num_view = IntegerField()
+#     num_like = IntegerField()
+#     num_collect = IntegerField()
+#     hot = DoubleField()
+#     created = DateTimeField()
+#     title = TextField()
+#     body = TextField()
+#     is_top = BooleanField()
+#     is_fine = BooleanField()
+#
+#     class Meta:
+#         database = mydatabase
+#
+#
+# class user(Model):
+#     id = IntegerField()
+#     created = DateTimeField()
+#     username = CharField()
+#     nickname = CharField()
+#     password = CharField()
+#     email = CharField()
+#     is_block = BooleanField()
+#
+#     class Meta:
+#         database = mydatabase
+#
+#
+# class likes(Model):
+#     id = IntegerField()
+#     author_id = IntegerField()
+#     post_id = IntegerField()
+#
+#     class Meta:
+#         database = mydatabase
+#
+#
+# class collects(Model):
+#     id = IntegerField()
+#     author_id = IntegerField()
+#     post_id = IntegerField()
+#
+#     class Meta:
+#         database = mydatabase
+#
+#
+# class reply(Model):
+#     id = IntegerField()
+#     author_id = IntegerField()
+#     post_id = IntegerField()
+#     created = DateTimeField()
+#     body = TextField()
+#
+#     class Meta:
+#         database = mydatabase
+#
+#
+# class post_file(Model):
+#     id = IntegerField()
+#     created = DateTimeField()
+#     post_id = IntegerField()
+#     created = DateTimeField()
+#     filename = TextField()
+#     filehash = TextField()
+#
+# >>>>>>> 0bf890e7a29a1de3e7ca77462b58eacb29f15942
+#     class Meta:
+#         database = mydatabase
+#
+# class user(BaseModel):
+#     id = IntegerField(primary_key=True)
+#     created = DateTimeField()
+#     username = CharField(unique=True)
+#     nickname = CharField()
+#     password = CharField()
+#     email = CharField(default="")
+#     is_block = SmallIntegerField(default=0)
+#
+# class post(BaseModel):
+#     id = IntegerField(primary_key=True)
+#     author_id = ForeignKeyField(user)
+#     num_view = IntegerField(default=0)
+#     num_reply = IntegerField(default=0)
+#     num_like = IntegerField(default=0)
+#     num_collect = IntegerField(default=0)
+#     hot = DoubleField(default=0.0)
+#     created = DateTimeField()
+#     title = TextField()
+#     body = TextField()
+#     is_top = SmallIntegerField()
+#     is_fine = SmallIntegerField()
+#
+# class reply(BaseModel):
+#     id = IntegerField(primary_key=True)
+#     author_id = ForeignKeyField(user)
+#     post_id = ForeignKeyField(post)
+#     created = DateTimeField()
+#     body = TextField()
+#
+# class collects(BaseModel):
+#     id = IntegerField(primary_key=True)
+#     author_id = ForeignKeyField(user)
+#     post_id = ForeignKeyField(post)
+#
+# class likes(BaseModel):
+#     id = IntegerField(primary_key=True)
+#     author_id = ForeignKeyField(user)
+#     post_id = ForeignKeyField(post)
 
 
 def init_db():
