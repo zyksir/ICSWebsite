@@ -6,6 +6,7 @@ from werkzeug import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 import os
 import subprocess
+import json
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
@@ -101,10 +102,25 @@ def BlockMember(id):
     print(id)
     modify_is_block(id[0], id[1])
     return redirect(url_for('admin.member'))
-@bp.route('/search_member', methods=('GET', 'POST'))
+@bp.route('/search_member/<string:ST>', methods=('GET', 'POST'))
 @login_required
-def SearchMember(id = None):
-    return render_template('new_member.html', post=post)
+def SearchMember(ST):
+    s = "%" + ST + "%"
+    conn, db = get_db()
+    db.execute(
+        'SELECT u.id, u.username'
+        ' FROM user u'
+        ' WHERE u.username LIKE %s'
+        ' ORDER BY u.id DESC',
+        (s)
+    )
+    users = db.fetchall()
+    pprint(users)
+    return json.dumps(users, ensure_ascii=False)
+
+
+    #return redirect(url_for('admin.member'))
+    #return render_template('new_member.html', post=post)
 
 
 @bp.route('/post', methods=('GET', 'POST'))
