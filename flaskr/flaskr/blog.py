@@ -16,7 +16,7 @@ from pprint import pprint
 
 from playhouse.shortcuts import model_to_dict
 
-import ipdb
+# import ipdb
 
 bp = Blueprint('blog', __name__)
 
