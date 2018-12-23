@@ -47,7 +47,6 @@ def get_register_info(form):
         error = 'User {} is already registered.'.format(username)
 
     return username, password, nickname, email, error
-
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
@@ -73,23 +72,36 @@ def register():
 
     return render_template('auth/temp_reg.html')
 
+def get_login_info(form):
+    username = form['username']
+    password = form['password']
+    error = None
+    User = user.select().where(user.username == username)
+    if len(User) == 0:
+        error = "用户名不存在"
+    else:
+        User = User.get()
+        if not check_password_hash(User.password, password):
+            error = "密码不正确"
+
+    if error == None:
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn, db = get_db()
-        error = None
-        num = db.execute(
-            'SELECT * FROM user WHERE username = %s', (username,)
-        )
-        user = db.fetchone()
+        # username = request.form['username']
+        # password = request.form['password']
+        # conn, db = get_db()
+        # error = None
+        # num = db.execute(
+        #     'SELECT * FROM user WHERE username = %s', (username,)
+        # )
+        # user = db.fetchone()
 
-        if num == 0:
-            error = '用户名不存在！'
-        elif not check_password_hash(user['password'], password):
-            error = '密码不正确！'
+        # if num == 0:
+        #     error = '用户名不存在！'
+        # elif not check_password_hash(user['password'], password):
+        #     error = '密码不正确！'
 
         if error is None:
             session.clear()
