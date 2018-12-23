@@ -8,7 +8,9 @@ import pymysql
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
+from peewee import *
 
+mydatabase = MySQLDatabase(host="127.0.0.1", user="root", passwd='1998218wrh', database="SAKILA", charset="utf8", port=3306)
 
 def get_db():
     if 'db' not in g:
@@ -30,6 +32,17 @@ def close_db(e=None):
         db.close()
     if conn is not None:
         conn.close()
+
+
+class likes(Model):
+    id = IntegerField()
+    author_id = IntegerField()
+    post_id = IntegerField()
+
+    # DateTimeField
+
+    class Meta:
+        database = mydatabase
 
 
 def init_db():
