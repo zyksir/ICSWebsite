@@ -395,9 +395,9 @@ def user_search(ST):
     db.execute(
         'SELECT u.id, u.username'
         ' FROM user u'
-        ' WHERE u.username LIKE %s'
+        ' WHERE u.username LIKE %s OR u.nickname LIKE %s'
         ' ORDER BY u.id DESC',
-        (s)
+        (s, s)
     )
     users = db.fetchall()
     pprint(users)
