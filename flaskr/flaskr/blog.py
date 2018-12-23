@@ -194,14 +194,6 @@ def create():
             flash(error)
         else:
             conn, db = get_db()
-
-            '''db.execute(
-                'INSERT INTO post (title, body, author_id, is_top, is_fine)'
-                ' VALUES (%s, %s, %s, %s, %s)',
-                (title, body, g.user['id'],  0, 0)
-            )
-            conn.commit()'''
-
             t = post.insert(title=title, body=body, author_id=g.user['id'], is_top=0, is_fine=0)
             t.execute()
 
