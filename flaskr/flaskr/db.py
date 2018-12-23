@@ -10,8 +10,12 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 from peewee import *
 
-mydatabase = MySQLDatabase(host="127.0.0.1", user="root", passwd='1998218wrh', database="SAKILA", charset="utf8", port=3306)
-
+host = "127.0.0.1"
+user = "root"
+passwd = 'HWzyk123!@#' #'1998218wrh'
+database = "sakila"
+mydatabase = MySQLDatabase(host=host, user=user, passwd=passwd, database=database, charset="utf8", port=3306)
+mydatabase.connect()
 def get_db():
     if 'db' not in g:
         user = current_app.config['MYSQL_DATABASE_USER']
@@ -34,15 +38,49 @@ def close_db(e=None):
         conn.close()
 
 
-class likes(Model):
-    id = IntegerField()
-    author_id = IntegerField()
-    post_id = IntegerField()
-
-    # DateTimeField
-
+class BaseModel(Model):
     class Meta:
         database = mydatabase
+
+class user(BaseModel):
+    id = IntegerField(primary_key=True)
+    created = DateTimeField()
+    username = CharField(unique=True)
+    nickname = CharField()
+    password = CharField()
+    email = CharField(default="")
+    is_block = SmallIntegerField(default=0)
+
+class post(BaseModel):
+    id = IntegerField(primary_key=True)
+    author_id = ForeignKeyField(user)
+    num_view = IntegerField(default=0)
+    num_reply = IntegerField(default=0)
+    num_like = IntegerField(default=0)
+    num_collect = IntegerField(default=0)
+    hot = DoubleField(default=0.0)
+    created = DateTimeField()
+    title = TextField()
+    body = TextField()
+    is_top = SmallIntegerField()
+    is_fine = SmallIntegerField()
+
+class reply(BaseModel):
+    id = IntegerField(primary_key=True)
+    author_id = ForeignKeyField(user)
+    post_id = ForeignKeyField(post)
+    created = DateTimeField()
+    body = TextField()
+
+class collects(BaseModel):
+    id = IntegerField(primary_key=True)
+    author_id = ForeignKeyField(user)
+    post_id = ForeignKeyField(post)
+
+class likes(BaseModel):
+    id = IntegerField(primary_key=True)
+    author_id = ForeignKeyField(user)
+    post_id = ForeignKeyField(post)
 
 
 def init_db():

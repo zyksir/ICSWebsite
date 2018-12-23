@@ -9,7 +9,7 @@ import subprocess
 import json
 
 from flaskr.auth import login_required
-from flaskr.db import get_db
+from flaskr.db import *
 from flaskr.blog import get_post, delete_post, delete_reply
 
 from pprint import pprint

@@ -12,50 +12,61 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from flaskr.db import get_db
+from flaskr.db import *
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+def get_register_info(form):
+    username = request.form['username']
+    password = request.form['password']
+    nickname = request.form['nickname']
+    repassword = request.form['repassword']
+    email = request.form['email']
+    error = None
+
+    if not username:
+        error = 'Username is required.'
+    elif not password:
+        error = 'Password is required.'
+    elif not repassword:
+        error = 'Repassword is required'
+    elif not (password == repassword):
+        error = 'Two passwords are inconsistent.'
+    elif ((len(password) < 6) or (len(password) > 16)):
+        error = 'The length of password should be between 6 and 16.'
+    elif len(username) > 40:
+        error = 'The maximum size of username is 40, your username is too long!'
+    elif len(nickname) > 40:
+        error = 'The maximum size of nickname is 40, your username is too long!'
+    elif not (password == repassword):
+        error = 'you enter different passwords!'
+    elif len(user.select(user.id).where(user.username == username))>0 :
+    # elif db.execute(
+    #         'SELECT id FROM user WHERE username = %s', (username,)
+    # ) > 0:
+        error = 'User {} is already registered.'.format(username)
+
+    return username, password, nickname, email, error
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        nickname = request.form['nickname']
-        repassword = request.form['repassword']
-        email = ""
-        is_block = 0
-        conn, db = get_db()
-        error = None
-
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-        elif not repassword:
-            error = 'Repassword is required'
-        elif not (password == repassword):
-            error = 'Two passwords are inconsistent.'
-        elif ((len(password) < 6) or (len(password) > 16)):
-            error = 'The length of password should be between 6 and 16.'
-        elif len(username) > 40:
-            error = 'The maximum size of username is 40, your username is too long!'
-        elif len(nickname) > 40:
-            error = 'The maximum size of nickname is 40, your username is too long!'
-        elif not (password == repassword):
-            error = 'you enter different passwords!'
-        elif db.execute(
-            'SELECT id FROM user WHERE username = %s', (username,)
-        ) > 0:
-            error = 'User {} is already registered.'.format(username)
+        print(request.form)
+        username, password, nickname, email, error = get_register_info(request.form)
+        # conn, db = get_db()
 
         if error is None:
-            db.execute(
-                'INSERT INTO user (username, nickname, password, email, is_block) VALUES (%s, %s, %s, %s, %s)',
-                (username, nickname, generate_password_hash(password), email, is_block)
-            )
-            conn.commit()
+            user.insert({
+                user.username: username,
+                user.password: password,
+                user.nickname: nickname,
+                user.email: email
+            }).execute()
+            # db.execute(
+            #     'INSERT INTO user (username, nickname, password, email, is_block) VALUES (%s, %s, %s, %s, %s)',
+            #     (username, nickname, generate_password_hash(password), email, is_block)
+            # )
+            # conn.commit()
             return redirect(url_for('auth.login'))
 
         flash(error)
