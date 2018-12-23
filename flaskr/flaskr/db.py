@@ -40,6 +40,7 @@ class post(Model):
     num_view = IntegerField()
     num_like = IntegerField()
     num_collect = IntegerField()
+    num_reply = IntegerField()
     hot = DoubleField()
     created = DateTimeField()
     title = TextField()
