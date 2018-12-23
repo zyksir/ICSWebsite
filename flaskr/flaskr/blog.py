@@ -56,7 +56,7 @@ def get_collect(post_id):
  # get a specific post by id
 def get_post(id, check_author=True):
     try:
-        apost = model_to_dict(post.select(post.id, post.title, post.body, post.created, post.author_id, post.is_top, post.is_fine, user.username).join(user).where(post.id == id).get())
+        apost = model_to_dict(post.select(post.id, post.title, post.body, post.created, post.author_id, post.is_top, post.is_fine).where(post.id == id).get())
     except post.DoesNotExist:
         abort(404, "Post id {0} doesn't exist.".format(id))
 
@@ -68,42 +68,35 @@ def get_post(id, check_author=True):
 
 # get a post to view by id
 def get_view_post(id, check_author=False):
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply, p.num_like, p.num_collect, p.num_view'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = %s',
-        (id,)
-    )
-    post = db.fetchone()
-
-    if post is None:
+    try:
+        return_post = model_to_dict(
+            post.select(post.id, post.title, post.body, post.created, post.author_id, post.is_top, post.is_fine,
+                        post.num_view, post.num_reply, post.num_like, post.num_collect).where(post.id == id).get())
+    except post.DoesNotExist:
         abort(404, "Post id {0} doesn't exist.".format(id))
 
-    if check_author and post['author_id'] != g.user['id']:
+    if check_author and return_post['author_id'] != g.user['id']:
         abort(403)
 
-    db.execute(
-        'SELECT r.id, author_id, body, r.created, username'
-        ' FROM reply r JOIN user u ON r.author_id = u.id'
-        ' WHERE r.post_id=%s'
-        ' ORDER BY created',
-        (post['id'])
-    )
-    posts = db.fetchall()
-    post['reply'] = posts
+    return_post['username'] = model_to_dict(user.select(user.username).where(user.id == return_post['author_id']).get())['username']
 
-    return post
+    pprint(return_post)
+
+    replys = reply.select(reply.id, reply.author_id, reply.body, reply.created).where(reply.post_id == return_post['id'])
+    return_replys = []
+    for areply in replys:
+        dct_reply = model_to_dict(areply)
+        dct_reply['username'] = model_to_dict(user.select(user.username).where(user.id == dct_reply['author_id']).get())['username']
+        return_replys.append(dct_reply)
+
+    return_post['reply'] = return_replys
+
+    return return_post
 
 
 # delete the reply return the post id of it
 def delete_reply(id):
     print("delete reply id = ", id)
-
-    conn, db = get_db()
-
-    db.execute('SET FOREIGN_KEY_CHECKS = 0')
-    conn.commit()
 
     post_id = model_to_dict(reply.select(reply.post_id).where(reply.id == id).get())['post_id']
 
@@ -112,22 +105,24 @@ def delete_reply(id):
     t = reply.delete().where(reply.id == id)
     t.execute()
 
-    db.execute('SET FOREIGN_KEY_CHECKS = 1')
-    conn.commit()
-
     return post_id
 
 
 # delete a post by id
 def delete_post(id):
     savepath = current_app.config['UPLOAD_FOLDER']
-    # get_post(id)
-    conn, db = get_db()
-    db.execute('SELECT filename, id FROM post_file WHERE post_id=%s', (id,))
-    file_list = db.fetchall()
+    #conn, db = get_db()
+
+    file_list = []
+    file_lists = post_file.select(post_file.filename, post_file.id).where(post_file.post_id == id)
+    for afile in file_lists:
+        file_list.append(model_to_dict(afile))
+
     print("filelist = \n", file_list)
-    db.execute('DELETE FROM post_file WHERE post_id=%s', (id,))
-    conn.commit()
+
+    t = post_file.delete().where(post_file.post_id == id)
+    t.execute()
+
     print("delete files from MySQL")
     for file in file_list:
         filename = str(file['id']) + "_" + file["filename"]
@@ -136,43 +131,46 @@ def delete_post(id):
         process = subprocess.Popen(["del", filename], shell=True)
         print("%s deleted" % (filename))
 
-    db.execute('SET FOREIGN_KEY_CHECKS = 0')
-    conn.commit()
+    t = reply.delete().where(reply.post_id == id)
+    t.execute()
 
-    db.execute('DELETE FROM post WHERE id = %s', (id,))
-    conn.commit()
-
-    db.execute('SET FOREIGN_KEY_CHECKS = 1')
-    conn.commit()
+    t = post.delete().where(post.id == id)
+    t.execute()
 
 
 # index page
 @bp.route('/')
 def index():
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.num_like, p.num_collect, p.num_view'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY created DESC'
-    )
-    posts = db.fetchall()
-    posts = sorted(posts, key=lambda p: p['created'], reverse=True)
-    # pprint(posts)
-    for i, post in enumerate(posts):
-        db.execute(
-            'SELECT id, post_id, filename, filehash'
-            ' FROM post_file WHERE post_id=%s'
-            ' ORDER BY created DESC',
-            (post['id'],)
-        )
-        posts[i]['files'] = db.fetchall()
+    posts = []
+    allposts = post.select()
+    pprint(allposts)
+    for apost in allposts:
+        dct_apost = model_to_dict(apost)
+        this_user = model_to_dict(user.select(user.nickname, user.username).where(user.id == dct_apost['author_id']).get())
+        dct_apost['username'] = this_user['username']
+        dct_apost['nickname'] = this_user['nickname']
 
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.hot, p.num_like, p.num_collect, p.num_view'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' ORDER BY hot DESC'
-    )
-    hots = db.fetchall()
+        posts.append(dct_apost)
+
+    posts = sorted(posts, key=lambda p: p['created'], reverse=True)
+
+    for i, apost in enumerate(posts):
+        tmp_files = []
+        allfiles = post_file.select().where(post_file.post_id == apost['id'])
+        for afile in allfiles:
+            tmp_files.append(model_to_dict(afile))
+        posts[i]['files'] = tmp_files
+
+    hots = []
+    allhots = post.select().order_by(post.hot.desc())
+    for ahot in allhots:
+        dcthot = model_to_dict(ahot)
+        auser = model_to_dict(user.select(user.username, user.nickname).where(user.id == dcthot['author_id']).get())
+        dcthot['username'] = auser['username']
+        dcthot['nickname'] = auser['nickname']
+        hots.append(dcthot)
+
+    pprint(hots)
 
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
@@ -197,21 +195,18 @@ def create():
         else:
             conn, db = get_db()
 
-            db.execute(
+            '''db.execute(
                 'INSERT INTO post (title, body, author_id, is_top, is_fine)'
                 ' VALUES (%s, %s, %s, %s, %s)',
                 (title, body, g.user['id'],  0, 0)
             )
-            conn.commit()
+            conn.commit()'''
+
+            t = post.insert(title=title, body=body, author_id=g.user['id'], is_top=0, is_fine=0)
+            t.execute()
 
             db.execute('SELECT LAST_INSERT_ID()')
             post_id = db.fetchone()['LAST_INSERT_ID()']
-            # print(post_id)
-
-            db.execute('SELECT author_id, id FROM post WHERE id=%s', (post_id,))
-            tmp_list = db.fetchall()
-            print(tmp_list)
-
 
             for file in request.files.getlist("file"):
                 print(type(file))
@@ -220,12 +215,9 @@ def create():
                 filename = secure_filename(file.filename)
                 filehash = generate_password_hash(file_content)
 
-                db.execute(
-                    'INSERT INTO post_file (filename, filehash, post_id)'
-                    ' VALUES (%s, %s, %s)',
-                    (filename, filehash, post_id)
-                )
-                conn.commit()
+                t = post_file.insert(filename=filename, filehash=filehash, post_id=post_id)
+                t.execute()
+
                 db.execute('SELECT LAST_INSERT_ID()')
                 post_file_id = db.fetchone()['LAST_INSERT_ID()']
                 file_path = os.path.join(savepath, str(post_file_id)+"_"+filename)
@@ -235,35 +227,6 @@ def create():
             return redirect(url_for('blog.index'))
 
     return render_template('blog/temp_create.html')
-
-
-''' # update a post
-@bp.route('/update/<int:id>', methods=('GET', 'POST'))
-@login_required
-def update(id):
-    post = get_post(id)
-
-    if request.method == 'POST':
-        title = request.form['title']
-        body = request.form['body']
-        error = None
-
-        if not title:
-            error = 'Title is required.'
-
-        if error is not None:
-            flash(error)
-        else:
-            conn, db = get_db()
-            db.execute(
-                'UPDATE post SET title = %s, body = %s'
-                ' WHERE id = %s',
-                (title, body, id)
-            )
-            conn.commit()
-            return redirect(url_for('blog.index'))
-
-    return render_template('blog/temp_update.html', post=post) '''
 
 
 # view a post
@@ -277,7 +240,8 @@ def ViewPost(id):
         if error is not None:
             flash(error)
         else:
-            reply.insert(body=body, author_id=g.user['id'], post_id=id)
+            t = reply.insert(body=body, author_id=g.user['id'], post_id=id)
+            t.execute()
 
             print("insert done!")
 
@@ -290,6 +254,8 @@ def ViewPost(id):
             t.execute()
             print("num_reply", num_reply)
 
+    print("before get post")
+
     apost = get_view_post(id)
 
     # update the the number of views
@@ -298,7 +264,6 @@ def ViewPost(id):
     t = post.update(num_view=num_view).where(post.id==id)
     t.execute()
 
-    #print(g.user)
     is_like = check_is_like(g.user['id'], id)
     is_collect = check_is_collect(g.user['id'], id)
 
@@ -327,11 +292,16 @@ def DeletePost(id):
 def title_search(ST):
     s = "%" + ST + "%"
 
-    t_posts = post.select(post.id, post.title).where(post.title ** s).order_by(post.id.desc())
+    t_posts = post.select(post.id, post.title, post.author_id).where(post.title ** s).order_by(post.id.desc())
 
     posts = []
     for apost in t_posts:
-        posts.append(model_to_dict(apost))
+        ta = model_to_dict(apost)
+        ta['author_id'] = ta['author']['id']
+        ta.pop('author')
+        posts.append(ta)
+
+    # pprint(posts)
 
     return posts
 
@@ -459,3 +429,32 @@ def UNLIKE(id):
         print("num_like = ", num_like)
 
     return redirect(url_for('blog.ViewPost', id=id))
+
+
+''' # update a post
+@bp.route('/update/<int:id>', methods=('GET', 'POST'))
+@login_required
+def update(id):
+    post = get_post(id)
+
+    if request.method == 'POST':
+        title = request.form['title']
+        body = request.form['body']
+        error = None
+
+        if not title:
+            error = 'Title is required.'
+
+        if error is not None:
+            flash(error)
+        else:
+            conn, db = get_db()
+            db.execute(
+                'UPDATE post SET title = %s, body = %s'
+                ' WHERE id = %s',
+                (title, body, id)
+            )
+            conn.commit()
+            return redirect(url_for('blog.index'))
+
+    return render_template('blog/temp_update.html', post=post) '''
