@@ -98,14 +98,12 @@ def get_post(id, check_author=True):
 def get_view_post(id, check_author=False):
     conn, db = get_db()
     db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply, p.num_like, p.num_collect'
+        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine, p.num_view, p.num_reply, p.num_like, p.num_collect， p.num_view'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' WHERE p.id = %s',
         (id,)
     )
     post = db.fetchone()
-
-    #pprint(post)
 
     if post is None:
         abort(404, "Post id {0} doesn't exist.".format(id))
@@ -181,7 +179,7 @@ def delete_post(id):
 def index():
     conn, db = get_db()
     db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.num_like, p.num_collect'
+        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.num_like, p.num_collect, p.num_view'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' ORDER BY created DESC'
     )
@@ -198,7 +196,7 @@ def index():
         posts[i]['files'] = db.fetchall()
 
     db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.hot, p.num_like, p.num_collect'
+        'SELECT p.id, title, body, p.created, author_id, username, nickname , p.is_top, p.is_fine, p.hot, p.num_like, p.num_collect, p.num_view'
         ' FROM post p JOIN user u ON p.author_id = u.id'
         ' ORDER BY hot DESC'
     )
@@ -338,7 +336,7 @@ def ViewPost(id):
     db.execute(
         'UPDATE post SET num_view = %s'
         ' WHERE id = %s',
-        (str(num_view), id)
+        (num_view, id)
     )
     conn.commit()
 
@@ -356,7 +354,6 @@ def ViewPost(id):
 @login_required
 def DeleteReply(id):
     post_id = delete_reply(id)
-    #return redirect(url_for('blog.index'))
     return redirect(url_for('blog.ViewPost', id=post_id))
 
 
@@ -537,6 +534,5 @@ def UNLIKE(id):
         conn.commit()
 
         print("num_like = ", num_like)
-
 
     return redirect(url_for('blog.ViewPost', id=id))
