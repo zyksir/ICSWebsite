@@ -7,91 +7,63 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import os
 import subprocess
 import json
+from .db import *
 
 from flaskr.auth import login_required
 from flaskr.db import get_db
 
 from pprint import pprint
 
+from playhouse.shortcuts import model_to_dict
+
+import ipdb
+
 bp = Blueprint('blog', __name__)
 
 
 # check if the post is collected by user
 def check_is_collect(user_id, post_id):
-    conn, db = get_db()
-    db.execute(
-        'SELECT c.author_id, c.post_id'
-        ' FROM collects c'
-        ' WHERE c.author_id = %s ',
-        (user_id)
-    )
-    collects = db.fetchall()
-    for acollect in collects:
-        if acollect['post_id'] == post_id:
-            return True
-    return False
+    try:
+        t = collects.select().where(collects.author_id == user_id, collects.post_id == post_id).get()
+        return True
+    except collects.DoesNotExist:
+        return False
 
 
 # check if the post is collected by user
 def check_is_like(user_id, post_id):
-    conn, db = get_db()
-    db.execute(
-        'SELECT l.author_id, l.post_id'
-        ' FROM likes l'
-        ' WHERE l.author_id = %s ',
-        (user_id)
-    )
-    likes = db.fetchall()
-    for alike in likes:
-        if alike['post_id'] == post_id:
-            return True
-    return False
+    try:
+        t = likes.select().where(likes.author_id == user_id, likes.post_id == post_id).get()
+        return True
+    except likes.DoesNotExist:
+        return False
 
 
 # get num_like from a post
 def get_like(post_id):
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.num_like'
-        ' FROM  post p'
-        ' WHERE p.id = %s ',
-        (post_id)
-    )
-    num_like = db.fetchone()['num_like']
+    num_like = model_to_dict(post.select(post.num_like).where(post.id == post_id).get())['num_like']
+
     return num_like
 
 
 # get num_collect from a post
 def get_collect(post_id):
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.num_collect'
-        ' FROM  post p'
-        ' WHERE p.id = %s ',
-        (post_id)
-    )
-    num_collect = db.fetchone()['num_collect']
+    num_collect = model_to_dict(post.select(post.num_collect).where(post.id == post_id).get())['num_collect']
+
     return num_collect
 
 
-# get a specific post by id
+ # get a specific post by id
 def get_post(id, check_author=True):
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, title, body, p.created, author_id, username, p.is_top, p.is_fine'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.id = %s',
-        (id,)
-    )
-    post = db.fetchone()
-
-    if post is None:
+    try:
+        apost = model_to_dict(post.select(post.id, post.title, post.body, post.created, post.author_id, post.is_top, post.is_fine, user.username).join(user).where(post.id == id).get())
+    except post.DoesNotExist:
         abort(404, "Post id {0} doesn't exist.".format(id))
 
-    if check_author and post['author_id'] != g.user['id']:
+    if check_author and apost['author_id'] != g.user['id']:
         abort(403)
 
-    return post
+    return apost
 
 
 # get a post to view by id
@@ -133,12 +105,12 @@ def delete_reply(id):
     db.execute('SET FOREIGN_KEY_CHECKS = 0')
     conn.commit()
 
-    db.execute('SELECT post_id FROM reply r WHERE id=%s', (id,))
-    post_id = db.fetchone()['post_id']
+    post_id = model_to_dict(reply.select(reply.post_id).where(reply.id == id).get())['post_id']
+
     print("post_id = ", post_id)
 
-    db.execute('DELETE FROM reply WHERE id = %s', (id,))
-    conn.commit()
+    t = reply.delete().where(reply.id == id)
+    t.execute()
 
     db.execute('SET FOREIGN_KEY_CHECKS = 1')
     conn.commit()
@@ -265,7 +237,7 @@ def create():
     return render_template('blog/temp_create.html')
 
 
-# update a post
+''' # update a post
 @bp.route('/update/<int:id>', methods=('GET', 'POST'))
 @login_required
 def update(id):
@@ -291,7 +263,7 @@ def update(id):
             conn.commit()
             return redirect(url_for('blog.index'))
 
-    return render_template('blog/temp_update.html', post=post)
+    return render_template('blog/temp_update.html', post=post) '''
 
 
 # view a post
@@ -305,13 +277,8 @@ def ViewPost(id):
         if error is not None:
             flash(error)
         else:
-            conn, db = get_db()
-            db.execute(
-                'INSERT INTO reply (body, author_id, post_id)'
-                ' VALUES (%s, %s, %s)',
-                (body, g.user['id'], id, )
-            )
-            conn.commit()
+            reply.insert(body=body, author_id=g.user['id'], post_id=id)
+
             print("insert done!")
 
             post = get_view_post(id)
@@ -319,12 +286,8 @@ def ViewPost(id):
             # update the the number of reply
             num_reply = int(post['num_reply']) + 1
 
-            db.execute(
-                'UPDATE post SET num_reply = %s'
-                ' WHERE id = %s',
-                (num_reply, id)
-            )
-            conn.commit()
+            t = post.update(num_reply=num_reply).where(post.id == id)
+            t.execute()
             print("num_reply", num_reply)
 
     post = get_view_post(id)
@@ -332,15 +295,10 @@ def ViewPost(id):
     # update the the number of views
     num_view = int(post['num_view']) + 1
 
-    conn, db = get_db()
-    db.execute(
-        'UPDATE post SET num_view = %s'
-        ' WHERE id = %s',
-        (num_view, id)
-    )
-    conn.commit()
+    t = post.update(num_view=num_view).where(post.id==id)
+    t.execute()
 
-    print(g.user)
+    #print(g.user)
     is_like = check_is_like(g.user['id'], id)
     is_collect = check_is_collect(g.user['id'], id)
 
@@ -368,16 +326,13 @@ def DeletePost(id):
 # search a keyword ST in titles
 def title_search(ST):
     s = "%" + ST + "%"
-    conn, db = get_db()
-    db.execute(
-        'SELECT p.id, p.title'
-        ' FROM post p JOIN user u ON p.author_id = u.id'
-        ' WHERE p.title LIKE %s'
-        ' ORDER BY p.id DESC',
-        (s)
-    )
-    posts = db.fetchall()
-    pprint(posts)
+
+    t_posts = post.select(post.id, post.title).where(post.title ** s).order_by(post.id.desc())
+
+    posts = []
+    for apost in t_posts:
+        posts.append(model_to_dict(apost))
+
     return posts
 
 
@@ -392,16 +347,13 @@ def SEARCH_TITLE(ST):
 # search a keyword ST in users
 def user_search(ST):
     s = "%" + ST + "%"
-    conn, db = get_db()
-    db.execute(
-        'SELECT u.id, u.username, u.nickname'
-        ' FROM user u'
-        ' WHERE u.username LIKE %s OR u.nickname LIKE %s'
-        ' ORDER BY u.id DESC',
-        (s, s)
-    )
-    users = db.fetchall()
-    pprint(users)
+
+    t_users = user.select(user.id, user.username, user.nickname).where(user.username ** s)
+
+    users = []
+    for auser in t_users:
+        users.append(model_to_dict(auser))
+
     return users
 
 
@@ -422,23 +374,15 @@ def LIKE(id):
 
     is_like = check_is_like(user_id, id)
     if (is_like == False):
-        conn, db = get_db()
         print("add like!")
-        db.execute(
-            'INSERT INTO likes (author_id, post_id)'
-            ' VALUES (%s, %s)',
-            (user_id, id)
-        )
-        conn.commit()
+
+        t = likes.insert(author_id=user_id, post_id=id)
+        t.execute()
 
         num_like = get_like(id) + 1
 
-        db.execute(
-            'UPDATE post SET num_like = %s'
-            ' WHERE id = %s',
-            (str(num_like), id)
-        )
-        conn.commit()
+        t = post.update(num_like=num_like).where(post.id==id)
+        t.execute()
 
         print("num_like = ", num_like)
 
@@ -455,22 +399,14 @@ def COLLECT(id):
     is_collect = check_is_collect(user_id, id)
     if (is_collect == False):
         print("add collect!")
-        conn, db = get_db()
-        db.execute(
-            'INSERT INTO collects (author_id, post_id)'
-            ' VALUES (%s, %s)',
-            (user_id, id)
-        )
-        conn.commit()
+
+        t = collects.insert(author_id=user_id, post_id=id)
+        t.execute()
 
         num_collect = get_collect(id) + 1
 
-        db.execute(
-            'UPDATE post SET num_collect = %s'
-            ' WHERE id = %s',
-            (str(num_collect), id)
-        )
-        conn.commit()
+        t = post.update(num_collect=num_collect).where(post.id==id)
+        t.execute()
 
         print("num_collect = ", num_collect)
 
@@ -487,21 +423,14 @@ def UNCOLLECT(id):
     is_collect = check_is_collect(user_id, id)
     if (is_collect == True):
         print("add uncollect!")
-        conn, db = get_db()
-        db.execute(
-            'DELETE FROM collects WHERE author_id = %s AND post_id = %s',
-            (user_id, id)
-        )
-        conn.commit()
+
+        t = collects.delete().where(collects.author_id == user_id, collects.post_id == id)
+        t.execute()
 
         num_collect = get_collect(id) - 1
 
-        db.execute(
-            'UPDATE post SET num_collect = %s'
-            ' WHERE id = %s',
-            (str(num_collect), id)
-        )
-        conn.commit()
+        t = post.update(num_collect=num_collect).where(post.id==id)
+        t.execute()
 
         print("num_collect = ", num_collect)
 
@@ -512,34 +441,20 @@ def UNCOLLECT(id):
 @bp.route('/UNLIKE/<int:id>', methods=('GET', 'POST'))
 @login_required
 def UNLIKE(id):
-    from .db import likes
     user_id = g.user['id']
     print("user_id = ", user_id)
 
     is_like = check_is_like(user_id, id)
     if (is_like == True):
-        conn, db = get_db()
         print("add unlike!")
-        '''db.execute(
-            'DELETE FROM likes WHERE author_id = %s AND post_id = %s',
-            (user_id, id)
-        )
-        conn.commit() '''
 
         t = likes.delete().where(likes.author_id == user_id, likes.post_id == id)
         t.execute()
 
         num_like = get_like(id) - 1
 
-        '''t = likes_db.update(num_like=num_like).where(likes_db.id == id)
-        t.execute() '''
-
-        db.execute(
-            'UPDATE post SET num_like = %s'
-            ' WHERE id = %s',
-            (str(num_like), id)
-        )
-        conn.commit()
+        t = post.update(num_like=num_like).where(post.id==id)
+        t.execute()
 
         print("num_like = ", num_like)
 
