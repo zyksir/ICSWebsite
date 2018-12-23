@@ -340,8 +340,9 @@ def ViewPost(id):
     )
     conn.commit()
 
-    is_collect = check_is_collect(g.user['id'], id)
+    print(g.user)
     is_like = check_is_like(g.user['id'], id)
+    is_collect = check_is_collect(g.user['id'], id)
 
     print("is_like = ", is_like)
     print("is_collect = ", is_collect)
@@ -511,6 +512,7 @@ def UNCOLLECT(id):
 @bp.route('/UNLIKE/<int:id>', methods=('GET', 'POST'))
 @login_required
 def UNLIKE(id):
+    from .db import likes
     user_id = g.user['id']
     print("user_id = ", user_id)
 
@@ -518,13 +520,19 @@ def UNLIKE(id):
     if (is_like == True):
         conn, db = get_db()
         print("add unlike!")
-        db.execute(
+        '''db.execute(
             'DELETE FROM likes WHERE author_id = %s AND post_id = %s',
             (user_id, id)
         )
-        conn.commit()
+        conn.commit() '''
+
+        t = likes.delete().where(likes.author_id == user_id, likes.post_id == id)
+        t.execute()
 
         num_like = get_like(id) - 1
+
+        '''t = likes_db.update(num_like=num_like).where(likes_db.id == id)
+        t.execute() '''
 
         db.execute(
             'UPDATE post SET num_like = %s'
