@@ -11,19 +11,21 @@
     <input type="text" id="title" name="title" required  lay-verify="required" placeholder="请输入用户ID" autocomplete="off" class="layui-input" value="{{ request.form['title'] }}" required>
      <div class="fly-column-right layui-hide-xs">
       <button class="layui-btn" lay-filter="*" lay-submit>搜索用户</button>
-     </div></form>
+     </div>
+  </form>
   </div>
 
 <div class="layui-container">
 <table class="layui-table">
   <thead>
     <tr>
-      <th width="20" style="text-align:center">用户ID</th>
-      <th width="100" style="text-align:center">用户昵称</th>
-      <th width="100" style="text-align:center">注册时间</th>
-      <th width="100" style="text-align:center">邮箱</th>
-        <th width="2" style="text-align:center">禁言状态</th>
-      <th width="1" style="text-align:center">删除</th>
+      <th  style="text-align:center">用户ID</th>
+      <th style="">用户昵称</th>
+      <th  style="text-align:center">注册时间</th>
+      <th  style="text-align:center">邮箱</th>
+        <th  style="text-align:center">禁言状态</th>
+        <th  style="text-align:center">禁言操作</th>
+      <th  style="text-align:center">删除操作</th>
     </tr>
   </thead>
   {% for post in posts %}
@@ -34,17 +36,24 @@
       <td style="text-align:center">{{ post['created'] }}</td>
       <td style="text-align:center">{{ post['email'] }}</td>
         {% if post['is_block'] == 1 %}
-            <td style="text-align:center">被禁言
+            <td style="text-align:center">已被禁言</td>
+            <td style="text-align:center">
             <form action="{{ url_for('admin.BlockMember', id=[post['id'],0]) }}" method="post">
-              <input type="submit" value="解除禁言"></form></td>
+                <button class="layui-btn layui-btn-normal layui-btn-xs"  lay-filter="*" lay-submit type="submit">解除禁言</button>
+            </form>
+            </td>
         {% else %}
-            <td style="text-align:center">未被禁言
+            <td style="text-align:center">未被禁言</td>
+            <td style="text-align:center">
             <form action="{{ url_for('admin.BlockMember', id=[post['id'],1]) }}" method="post">
-              <input type="submit" value="禁言"></form></td>
+                <button class="layui-btn layui-btn-warm layui-btn-xs"  lay-filter="*" lay-submit type="submit">禁言</button>
+            </form>
+            </td>
         {% endif %}
       <td style="text-align:center">
           <form action="{{ url_for('admin.DeleteMember', id=post['id']) }}" method="post">
-              <input type="submit" value="删除"></form>
+              <button class="layui-btn layui-btn-danger layui-btn-xs"  lay-filter="*" lay-submit type="submit">删除用户</button>
+          </form>
         <!--<button class="layui-btn layui-btn-sm layui-btn-danger" href="{{ url_for('admin.DeleteMember', id=post['id']) }}">
         <i class="layui-icon">&#xe640;</i>
         </button>-->

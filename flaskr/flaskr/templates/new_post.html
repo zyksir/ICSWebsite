@@ -23,6 +23,7 @@
       <th width="100" style="text-align:center">发帖题目</th>
       <th width="100" style="text-align:center">发帖内容</th>
       <th width="100" style="text-align:center">置顶状态</th>
+        <th width="100" style="text-align:center">置顶操作</th>
       <th width="1" style="text-align:center">删除</th>
     </tr> 
   </thead>
@@ -34,17 +35,24 @@
       <td style="text-align:center">{{ post['title'] }}</td>
       <td style="text-align:center">{{ post['created'] }}</td>
         {% if post['is_top'] == 1 %}
-            <td style="text-align:center">置顶
+            <td style="text-align:center">置顶</td>
+            <td style="text-align:center">
             <form action="{{ url_for('admin.TopPost', id=[post['id'],0]) }}" method="post">
-              <input type="submit" value="解除置顶"></form></td>
+                <button class="layui-btn layui-btn-normal layui-btn-xs"  lay-filter="*" lay-submit type="submit">解除置顶</button>
+            </form>
+            </td>
         {% else %}
-            <td style="text-align:center">未被置顶
+            <td style="text-align:center">未被置顶</td>
+            <td style="text-align:center">
             <form action="{{ url_for('admin.TopPost', id=[post['id'],1]) }}" method="post">
-              <input type="submit" value="置顶"></form></td>
+                <button class="layui-btn layui-btn-warm layui-btn-xs"  lay-filter="*" lay-submit type="submit">置顶</button>
+            </form>
+            </td>
         {% endif %}
       <td style="text-align:center">
           <form action="{{ url_for('admin.DeletePost', id=post['id']) }}" method="post">
-              <input type="submit" value="删除"></form>
+              <button class="layui-btn layui-btn-danger layui-btn-xs"  lay-filter="*" lay-submit type="submit">删除帖子</button>
+          </form>
         <!--<button class="layui-btn layui-btn-sm layui-btn-danger" href="{{ url_for('admin.DeletePost', id=post['id']) }}">
           <i class="layui-icon">&#xe640;</i>
         </button>-->
