@@ -142,7 +142,7 @@ def delete_post(id):
 def index():
     posts = []
     allposts = post.select()
-    pprint(allposts)
+    # pprint(allposts)
     for apost in allposts:
         dct_apost = model_to_dict(apost)
         this_user = model_to_dict(user.select(user.nickname, user.username).where(user.id == dct_apost['author_id']).get())
@@ -169,7 +169,7 @@ def index():
         dcthot['nickname'] = auser['nickname']
         hots.append(dcthot)
 
-    pprint(hots)
+    # pprint(hots)
 
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 

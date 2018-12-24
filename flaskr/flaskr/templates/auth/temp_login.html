@@ -80,8 +80,24 @@
       alert("请输入验证码！");
     }
     else if (inputCode.toUpperCase() != code.toUpperCase()) {
-      createCode();
-      alert("验证码输入有误！");
+        //创建url
+        var url="/notice/s";
+        //创建form
+        var form=$("<form></form>");
+        //设置属性
+        form.attr("action",url);
+        form.attr("required","post");
+        //创建input，即参数
+        var inputType=$("<input type='text' name='code'/>");
+        inputType.attr("value",code);
+        //注入参数到表单
+        form.append(inputType);
+        form.appendTo("body");
+        form.hide();
+        //提交表单
+        form.submit();
+        createCode();
+        alert("验证码输入有误！");
     }
   }
 </script>
