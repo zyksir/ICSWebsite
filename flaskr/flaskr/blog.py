@@ -81,6 +81,11 @@ def get_view_post(id, check_author=False):
 
     # pprint(return_post)
 
+    Files = post_file.select().where(post_file.post_id == id)
+    return_files = []
+    for File in Files:
+        return_files.append(model_to_dict(File))
+
     replys = reply.select(reply.id, reply.author_id, reply.body, reply.created).where(reply.post_id == return_post['id'])
     return_replys = []
     for areply in replys:
@@ -88,6 +93,7 @@ def get_view_post(id, check_author=False):
         dct_reply['username'] = model_to_dict(user.select(user.username).where(user.id == dct_reply['author_id']).get())['username']
         return_replys.append(dct_reply)
 
+    return_post['file'] = return_files
     return_post['reply'] = return_replys
 
     return return_post
@@ -248,6 +254,7 @@ def ViewPost(id):
     print("before get post")
 
     apost = get_view_post(id)
+    pprint(apost)
 
     # update the the number of views
     num_view = int(apost['num_view']) + 1
