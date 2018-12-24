@@ -79,7 +79,7 @@ def get_view_post(id, check_author=False):
 
     return_post['username'] = model_to_dict(user.select(user.username).where(user.id == return_post['author_id']).get())['username']
 
-    pprint(return_post)
+    # pprint(return_post)
 
     replys = reply.select(reply.id, reply.author_id, reply.body, reply.created).where(reply.post_id == return_post['id'])
     return_replys = []

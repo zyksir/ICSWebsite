@@ -103,6 +103,7 @@ def login():
         #     error = '用户名不存在！'
         # elif not check_password_hash(user['password'], password):
         #     error = '密码不正确！'
+        print(request.form)
         User, error = get_login_info(request.form)
 
         if error is None:
