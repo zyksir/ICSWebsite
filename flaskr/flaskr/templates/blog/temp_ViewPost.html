@@ -89,11 +89,11 @@
         <div class="detail-body photos">
           <p>
             {{ post['body'] | safe }}
-            {% for file in post['files'] %}
-            {% if file['post_id']==post['id'] %}
+            {% for file in post['file'] %}
           <hr>
-            {{file['filename']}}
-            {% endif %}
+            <form action="" method="post">
+                <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="{{file['filename']}}">
+            </form>
             {% endfor %}
           </p>
         </div>
