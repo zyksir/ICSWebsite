@@ -41,9 +41,6 @@ def get_register_info(form):
     elif not (password == repassword):
         error = 'you enter different passwords!'
     elif len(user.select(user.id).where(user.username == username))>0 :
-    # elif db.execute(
-    #         'SELECT id FROM user WHERE username = %s', (username,)
-    # ) > 0:
         error = 'User {} is already registered.'.format(username)
 
     return username, password, nickname, email, error
@@ -61,11 +58,6 @@ def register():
                 user.nickname: nickname,
                 user.email: email
             }).execute()
-            # db.execute(
-            #     'INSERT INTO user (username, nickname, password, email, is_block) VALUES (%s, %s, %s, %s, %s)',
-            #     (username, nickname, generate_password_hash(password), email, is_block)
-            # )
-            # conn.commit()
             return redirect(url_for('auth.login'))
 
         flash(error)
@@ -76,7 +68,6 @@ def get_login_info(form):
     username = form['username']
     password = form['password']
     error = None
-    post = {}
     User = user.select().where(user.username == username)
     if len(User) == 0:
         error = "用户名不存在"
@@ -90,19 +81,7 @@ def get_login_info(form):
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
-        # username = request.form['username']
-        # password = request.form['password']
-        # conn, db = get_db()
-        # error = None
-        # num = db.execute(
-        #     'SELECT * FROM user WHERE username = %s', (username,)
-        # )
-        # user = db.fetchone()
-
-        # if num == 0:
-        #     error = '用户名不存在！'
-        # elif not check_password_hash(user['password'], password):
-        #     error = '密码不正确！'
+        # print(request.form)
         User, error = get_login_info(request.form)
 
         if error is None:
@@ -122,11 +101,6 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        # conn, db = get_db()
-        # db.execute(
-        #     'SELECT * FROM user WHERE id = %s', (user_id,)
-        # )
-        # g.user = db.fetchone()
         g.user = model_to_dict(user.select().where(user.id == user_id).get())
 
 

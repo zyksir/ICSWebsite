@@ -79,7 +79,12 @@ def get_view_post(id, check_author=False):
 
     return_post['username'] = model_to_dict(user.select(user.username).where(user.id == return_post['author_id']).get())['username']
 
-    pprint(return_post)
+    # pprint(return_post)
+
+    Files = post_file.select().where(post_file.post_id == id)
+    return_files = []
+    for File in Files:
+        return_files.append(model_to_dict(File))
 
     replys = reply.select(reply.id, reply.author_id, reply.body, reply.created).where(reply.post_id == return_post['id'])
     return_replys = []
@@ -88,6 +93,7 @@ def get_view_post(id, check_author=False):
         dct_reply['username'] = model_to_dict(user.select(user.username).where(user.id == dct_reply['author_id']).get())['username']
         return_replys.append(dct_reply)
 
+    return_post['file'] = return_files
     return_post['reply'] = return_replys
 
     return return_post
@@ -142,7 +148,7 @@ def delete_post(id):
 def index():
     posts = []
     allposts = post.select()
-    pprint(allposts)
+    # pprint(allposts)
     for apost in allposts:
         dct_apost = model_to_dict(apost)
         this_user = model_to_dict(user.select(user.nickname, user.username).where(user.id == dct_apost['author_id']).get())
@@ -169,7 +175,7 @@ def index():
         dcthot['nickname'] = auser['nickname']
         hots.append(dcthot)
 
-    pprint(hots)
+    # pprint(hots)
 
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
@@ -248,6 +254,7 @@ def ViewPost(id):
     print("before get post")
 
     apost = get_view_post(id)
+    pprint(apost)
 
     # update the the number of views
     num_view = int(apost['num_view']) + 1
