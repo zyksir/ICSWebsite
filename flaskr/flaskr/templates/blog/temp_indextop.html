@@ -71,9 +71,10 @@
     </ul>
     
     <div class="fly-column-right layui-hide-xs"> 
-      <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a> 
-    </div> 
-    <div class="layui-hide-sm layui-show-xs-block" style="margin-top: -10px; padding-bottom: 10px; text-align: center;"> 
+      <form class="layui-form" action="" method="post">
+        <input type="text" name="searchtitle" required  lay-verify="required" placeholder="输入要搜索的帖子名称" autocomplete="off" class="layui-input">
+        <button class="layui-btn" lay-submit lay-filter="formDemo">立即搜索</button>
+      </form>
       <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a> 
     </div> 
     {% else %}
