@@ -72,7 +72,7 @@
               <a href="{{ url_for('blog.ViewPost', id=post['id']) }}">{{ post['title'] }}</a>
             </h2>
             <div class="fly-list-info">
-              <a href="user/temp_home.html" link>
+              <a href="{{ url_for('user.home', id=post['author_id']) }}" link>
                 <cite>{{ post['nickname'] }}</cite><!--这个地方希望改成nickname而不是username-->
               </a>
               <span><i class="iconfont icon-shijian" title="发布时间"></i>{{ post['created'].strftime('%Y-%m-%d') }}</span>
