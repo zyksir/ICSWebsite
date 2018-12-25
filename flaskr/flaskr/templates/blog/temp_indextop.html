@@ -69,7 +69,7 @@
           <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('admin.admin_home') }}">管理界面</a></li>
           {%  endif %}
     </ul>
-    
+
     <div class="fly-column-right layui-hide-xs"> 
       <!--
       <form class="layui-form" action="" method="post">
@@ -77,6 +77,12 @@
         <button class="layui-btn" lay-submit lay-filter="formDemo">立即搜索</button>
       </form>
     -->
+     <div class="layui-input-inline">
+      <form class="layui-form" action="" method="post">
+      <input type="test" name="searchname" required lay-verify="required" placeholder="输入要搜索的帖子名称" autocomplete="off" class="layui-input">
+    </div>
+      <a class="fly-search" lay-submit ><i class="layui-icon"></i></a> 
+    </form>
       <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a> 
     </div> 
     {% else %}
