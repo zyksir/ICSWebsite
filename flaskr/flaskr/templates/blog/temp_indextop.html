@@ -58,7 +58,21 @@
   </div>
 </div>
 
-<div class="fly-panel fly-column">
+<canvas id="myCanvas" width="1500px" height="2000px"></canvas>
+<div style="position: absolute;left: 150px; top: 60px" class="layui-container">
+<div class="layui-carousel" id="test1" lay-filter="test1">
+  <div carousel-item="">
+    <div><img src="{{ url_for('static', filename='pic/b.jpg') }}" alt="春天" width = '100%'>
+    </div>
+    <div><img src="{{ url_for('static', filename='pic/p1.jpg') }}" alt="逸夫楼" width = '100%'>
+    </div>
+    <div><img src="{{ url_for('static', filename='pic/a.jpg') }}"  alt="机房" width = '100%'>
+    </div>   
+  </div>
+</div> 
+</div>
+
+<div style="position: absolute;left: 150px; top: 330px" class="fly-panel fly-column">
   <div class="layui-container">
     <ul class="layui-clear">
       <li class="layui-hide-xs layui-this"><a href="{{ url_for('blog.index') }}">首页</a></li> 
@@ -91,6 +105,8 @@
     {% endif %}
   </div>
 </div>
+
+<div style="position: absolute;left: 150px; top: 400px" class="layui-container">
 {% block detail %}{% endblock %}
 <div class="layui-col-md4">
 
@@ -156,16 +172,56 @@
         </dl>
       </div>
 
-    </div>
-  </div>
 </div>
 
-<div class="fly-footer">
+<div  class="fly-footer">
   <p><a href="http://fly.layui.com/" target="_blank">ICS论坛</a> 2018 &copy; <a href="http://www.layui.com/" target="_blank">Web小组 出品</a></p>
+</div>
 
 </div>
+
 
 
 </body>
 </html>
+
+<script src="../res/static/layui/layui.js"></script>
+<script>
+layui.use('carousel', function(){
+  var carousel = layui.carousel;
+  //建造实例
+  carousel.render({
+    elem: '#test1'
+    ,width: '100%' //设置容器宽度
+    ,arrow: 'always' //始终显示箭头
+    //,anim: 'updown' //切换动画方式
+  });
+});
+</script>
+
+<script>
+  var cav = document.getElementById('myCanvas');
+  var w = window.screen.width;
+  var h = window.screen.height;
+  var yPositions = Array(300).join(0).split('');
+  var ctx = cav.getContext('2d');
+  var draw = function(){
+    ctx.fillStyle = 'rgba(57,61,73,1)';
+    ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(95,184,120,1)';
+    ctx.font = '20px';
+    yPositions.map(function(y,index){
+      text = String.fromCharCode(1e2+Math.random()*330);
+      x = index*10;
+      cav.getContext('2d').fillText(text,x,y);
+      if(y>Math.random()*1e4){
+        yPositions[index]=0;
+      }else{
+        yPositions[index]=y+10;
+      }
+
+    });
+  }
+  setInterval('draw()',30);
+</script>
 
