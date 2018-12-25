@@ -78,10 +78,10 @@
       </form>
     -->
      <div class="layui-input-inline">
-      <form class="layui-form" action="" method="post">
+      <form action="" method="post" enctype="multipart/form-data">
       <input type="test" name="searchname" required lay-verify="required" placeholder="输入要搜索的帖子名称" autocomplete="off" class="layui-input">
     </div>
-      <a class="fly-search" lay-submit ><i class="layui-icon"></i></a> 
+      <a class="fly-search" lay-filter="*" lay-submit ><i class="layui-icon"></i></a> 
     </form>
       <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a> 
     </div> 
@@ -138,14 +138,16 @@
 
       <dl class="fly-panel fly-list-one">
         <dt class="fly-panel-title">热议榜</dt>
-        <!--
-        {% for post in reply_most_posts %}
+        
+        {% for post in hots %}
         <dd>
           <a href="jie/detail.html">{{post['title']}}</a>
-          <span><i class="iconfont icon-pinglun1"></i> {{post['replynum']}}</span>
+          <span><i class="iconfont icon-pinglun1" title="回复数"></i> {{post['num_reply']}}</span>
+          <span><i class="layui-icon" title="收藏数">&#xe600;</i>{{ post['num_collect'] }}</span>
+          <span><i class="layui-icon" title="点赞数">&#xe6c6;</i>{{ post['num_like'] }}</span>
         </dd>
         {% endfor %}
-      -->
+      
       </dl>
 
     
