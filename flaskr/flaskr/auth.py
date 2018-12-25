@@ -12,7 +12,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from playhouse.shortcuts import model_to_dict
-from flaskr.db import *
+from .db import *
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 

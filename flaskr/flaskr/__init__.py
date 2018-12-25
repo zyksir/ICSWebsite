@@ -18,23 +18,23 @@ def create_app(test_config=None):
          SECRET_KEY='dev',
     #     DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
-    '''app.config['MYSQL_DATABASE_USER'] = 'root'
-    app.config['MYSQL_DATABASE_PASSWORD'] = 'Daban980624'
-    app.config['MYSQL_DATABASE_DB'] = 'SAKILA'
-    app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-    app.config['UPLOAD_FOLDER'] = r'E:\temp' '''
-    
-    '''app.config['MYSQL_DATABASE_USER'] = 'root'
-    app.config['MYSQL_DATABASE_PASSWORD'] = 'HWzyk123!@#'
-    app.config['MYSQL_DATABASE_DB'] = 'SAKILA'
-    app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-    app.config['UPLOAD_FOLDER'] = r'E:\system_file' '''
-
-    app.config['MYSQL_DATABASE_USER'] = 'root'
-    app.config['MYSQL_DATABASE_PASSWORD'] = '1998218wrh'
-    app.config['MYSQL_DATABASE_DB'] = 'SAKILA'
-    app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-    app.config['UPLOAD_FOLDER'] = r'D:\SAKILA'
+    # app.config['MYSQL_DATABASE_USER'] = 'root'
+    # app.config['MYSQL_DATABASE_PASSWORD'] = 'Daban980624'
+    # app.config['MYSQL_DATABASE_DB'] = 'SAKILA'
+    # app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+    # app.config['UPLOAD_FOLDER'] = r'E:\temp'
+    #
+    # app.config['MYSQL_DATABASE_USER'] = 'root'
+    # app.config['MYSQL_DATABASE_PASSWORD'] = 'HWzyk123!@#'
+    # app.config['MYSQL_DATABASE_DB'] = 'SAKILA'
+    # app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+    # app.config['UPLOAD_FOLDER'] = r'E:\system_file'
+    #
+    # app.config['MYSQL_DATABASE_USER'] = 'root'
+    # app.config['MYSQL_DATABASE_PASSWORD'] = '1998218wrh'
+    # app.config['MYSQL_DATABASE_DB'] = 'SAKILA'
+    # app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+    # app.config['UPLOAD_FOLDER'] = r'D:\SAKILA'
     
     # mysql.init_app(app)
 
@@ -68,8 +68,8 @@ def create_app(test_config=None):
     app.register_blueprint(admin.bp)
 
     # XX/home
-    from . import home
-    app.register_blueprint(home.bp)
+    # from . import home
+    # app.register_blueprint(home.bp)
 
     # XX/user
     from . import user

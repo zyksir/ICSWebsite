@@ -7,8 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import os
 import subprocess
 
-from flaskr.auth import login_required
-from flaskr.db import get_db
+from .auth import login_required
 from pprint import pprint
 from .db import *
 from playhouse.shortcuts import model_to_dict
