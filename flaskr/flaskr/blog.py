@@ -181,8 +181,9 @@ def title_search(ST):
     posts = []
     for apost in t_posts:
         ta = model_to_dict(apost)
-        ta['author_id'] = ta['author']['id']
-        ta.pop('author')
+        # pprint(ta)
+        ta['author_id']# = ta['author']['id']
+        # ta.pop('author')
         posts.append(ta)
 
     return posts
