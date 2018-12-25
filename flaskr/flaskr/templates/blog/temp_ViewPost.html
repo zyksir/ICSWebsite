@@ -20,6 +20,7 @@
           -->
 
           <!--收藏和点赞，功能还没完全写完，之后会有一个收藏和取消收藏，反正位置都在这-->
+        {% if g.user %}
           <div class="layui-btn-container">
             {% if post['is_top']==1 %}
               <span class="layui-badge layui-bg-black">置顶</span>
@@ -35,6 +36,7 @@
             <a href="{{ url_for('blog.LIKE', id=post['id']) }}" class="layui-btn layui-btn-xs layui-btn-radius">点赞</a>
             {% endif %}
           </div>
+        {% endif %}
           
           <span class="fly-list-nums"> 
             <!--
@@ -58,7 +60,7 @@
           {% if g.user['username']==post['username'] %}
           <!--删除帖子是楼主权限-->
           <form action="{{ url_for('blog.DeletePost', id=post['id']) }}" method="post">
-            <div class="detail-hits" id="LAY_jieAdmin" data-id="post['id']">
+           <div class="detail-hits" id="LAY_jieAdmin" data-id="post['id']">
             <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="删除此帖" onclick="return confirm('确定删除帖子？');">
           </div>
           </form>
@@ -71,9 +73,10 @@
             {{ post['body'] | safe }}
             {% for file in post['file'] %}
           <hr>
-            <form action="" method="post">
+            <form action="{{ url_for('blog.DownloadFile',filename=file['filename'])  }}" method="post">
                 <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="{{file['filename']}}">
             </form>
+
             {% endfor %}
           </p>
         </div>
@@ -99,11 +102,6 @@
                 {% if reply['username']==post['username'] %}
                 <span>(楼主)</span>
                 {% endif %}
-                <!--
-                <span style="color:#5FB878">(管理员)</span>
-                <span style="color:#FF9E3F">（社区之光）</span>
-                <span style="color:#999">（该号已被封）</span>
-                -->
               </div>
 
               <div class="detail-hits">
@@ -116,18 +114,13 @@
             </div>
             <div class="jieda-reply">
               <div class="jieda-admin">
+              {% if g.user %}
                 {% if reply['username']==g.user['username'] %}
-                <form action="{{ url_for('blog.DeleteReply', id=reply['id']) }}" method="post">
-                <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="删除">
-              </form>
-                {% elif g.user %}
-                {% if g.user['username']==post['username'] %}
-                <form action="{{ url_for('blog.DeleteReply', id=reply['id']) }}" method="post">
-                 <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="删除">
-                </form>
+                  <form action="{{ url_for('blog.DeleteReply', id=reply['id']) }}" method="post">
+                    <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="删除">
+                  </form>
                 {% endif %}
-                {% endif %} 
-                <!-- <span class="jieda-accept" type="accept">采纳</span> -->
+              {% endif %}
               </div>
             </div>
           </li>
@@ -135,7 +128,7 @@
           <!-- 无数据时 -->
           <!-- <li class="fly-none">消灭零回复</li> -->
         </ul>
-        
+        {% if g.user %}
         <div class="layui-form layui-form-pane">
           <form method="post">
             <div class="layui-form-item layui-form-text">
@@ -150,6 +143,7 @@
             </div>
           </form>
         </div>
+      {% endif %}
       </div>
     </div>
 

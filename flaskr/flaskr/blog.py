@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, current_app
+    Blueprint, flash, g, redirect, render_template, request, url_for, current_app,send_from_directory
 )
 from werkzeug.exceptions import abort
 from werkzeug import secure_filename
@@ -329,7 +329,6 @@ def create():
 
 # view a post
 @bp.route('/ViewPost/<int:id>', methods=('GET', 'POST'))
-@login_required
 def ViewPost(id):
     if request.method == 'POST':
         body = request.form['body']
@@ -360,15 +359,20 @@ def ViewPost(id):
 
     t = post.update(num_view=num_view).where(post.id==id)
     t.execute()
-
-    is_like = check_is_like(g.user['id'], id)
-    is_collect = check_is_collect(g.user['id'], id)
-
-    print("is_like = ", is_like)
-    print("is_collect = ", is_collect)
+    is_like = None
+    is_collect = None
+    if g.user:
+        is_like = check_is_like(g.user['id'], id)
+        is_collect = check_is_collect(g.user['id'], id)
+        print("is_like = ", is_like)
+        print("is_collect = ", is_collect)
 
     return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like)
 
+@bp.route('/DownloadFile/<string:filename>', methods=('POST', ))
+def DownloadFile(filename):
+    print(filename)
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 # delete a reply by id
 @bp.route('/DeleteReply/<int:id>', methods=('POST',))
