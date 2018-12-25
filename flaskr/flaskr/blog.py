@@ -9,8 +9,7 @@ import subprocess
 import json
 from .db import *
 
-from flaskr.auth import login_required
-from flaskr.db import get_db
+from .auth import login_required
 
 from pprint import pprint
 

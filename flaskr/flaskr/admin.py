@@ -8,9 +8,9 @@ import os
 import subprocess
 import json
 
-from flaskr.auth import login_required
+from .auth import login_required
 from .db import *
-from flaskr.blog import get_post, delete_post, delete_reply
+from .blog import get_post, delete_post, delete_reply
 from playhouse.shortcuts import model_to_dict
 from pprint import pprint
 

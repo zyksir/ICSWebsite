@@ -43,7 +43,7 @@ def get_register_info(form):
     elif len(user.select(user.id).where(user.username == username))>0 :
         error = 'User {} is already registered.'.format(username)
 
-    return username, password, nickname, email, error
+    return username, generate_password_hash(password), nickname, email, error
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
     if request.method == 'POST':
