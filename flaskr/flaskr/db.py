@@ -12,21 +12,21 @@ from peewee import *
 
 host = "127.0.0.1"
 user = "root"
-# passwd = 'HWzyk123!@#'
-passwd = 'Daban980624'
+passwd = 'HWzyk123!@#'
+# passwd = 'Daban980624'
 database = "sakila"
 mydatabase = MySQLDatabase(host=host, user=user, passwd=passwd, database=database, charset="utf8", port=3306)
 mydatabase.connect()
-def get_db():
-    if 'db' not in g:
-        user = current_app.config['MYSQL_DATABASE_USER']
-        password = current_app.config['MYSQL_DATABASE_PASSWORD']
-        db = current_app.config['MYSQL_DATABASE_DB']
-        host = current_app.config['MYSQL_DATABASE_HOST']
-        g.conn = pymysql.connect(host, user, password, db)
-        g.db = g.conn.cursor(pymysql.cursors.DictCursor)
-
-    return g.conn, g.db
+# def get_db():
+#     if 'db' not in g:
+#         user = current_app.config['MYSQL_DATABASE_USER']
+#         password = current_app.config['MYSQL_DATABASE_PASSWORD']
+#         db = current_app.config['MYSQL_DATABASE_DB']
+#         host = current_app.config['MYSQL_DATABASE_HOST']
+#         g.conn = pymysql.connect(host, user, password, db)
+#         g.db = g.conn.cursor(pymysql.cursors.DictCursor)
+#
+#     return g.conn, g.db
 
 
 def close_db(e=None):

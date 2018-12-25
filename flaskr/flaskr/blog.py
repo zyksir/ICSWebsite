@@ -181,8 +181,9 @@ def title_search(ST):
     posts = []
     for apost in t_posts:
         ta = model_to_dict(apost)
-        ta['author_id'] = ta['author']['id']
-        ta.pop('author')
+        # pprint(ta)
+        ta['author_id']# = ta['author']['id']
+        # ta.pop('author')
         posts.append(ta)
 
     return posts
@@ -303,12 +304,9 @@ def create():
         if error is not None:
             flash(error)
         else:
-            conn, db = get_db()
             t = post.insert(title=title, body=body, author_id=g.user['id'], is_top=0, is_fine=0)
-            t.execute()
-
-            db.execute('SELECT LAST_INSERT_ID()')
-            post_id = db.fetchone()['LAST_INSERT_ID()']
+            post_id = t.execute()
+            print(post_id)
 
             for file in request.files.getlist("file"):
                 print(type(file))
@@ -318,10 +316,8 @@ def create():
                 filehash = generate_password_hash(file_content)
 
                 t = post_file.insert(filename=filename, filehash=filehash, post_id=post_id)
-                t.execute()
+                post_file_id = t.execute()
 
-                db.execute('SELECT LAST_INSERT_ID()')
-                post_file_id = db.fetchone()['LAST_INSERT_ID()']
                 file_path = os.path.join(savepath, str(post_file_id)+"_"+filename)
                 with open(file_path, "wb") as fw:
                     fw.write(file_content)
