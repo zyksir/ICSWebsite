@@ -35,27 +35,7 @@
             <a href="{{ url_for('blog.LIKE', id=post['id']) }}" class="layui-btn layui-btn-xs layui-btn-radius">点赞</a>
             {% endif %}
           </div>
-          <!--
-          {% if is_collect %}
-          <form action="{{ url_for('blog.UNCOLLECT', id=post['id']) }}" method="post">
-          <input class="layui-btn layui-btn-danger layui-btn-xs jie-admin" type="submit" value="取消收藏">
-          </form>
-          {% else %}
-          <form action="{{ url_for('blog.COLLECT', id=post['id']) }}" method="post">
-          <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="收藏">
-          </form>
-          {% endif %}
-
-          {% if is_like %}
-          <form action="{{ url_for('blog.UNLIKE', id=post['id']) }}" method="post">
-            <input class="layui-btn layui-btn-danger layui-btn-xs jie-admin" type="submit" value="取消点赞">
-          </form>
-          {% else %}
-          <form action="{{ url_for('blog.LIKE', id=post['id']) }}" method="post">
-            <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="点赞">
-          </form>
-            {% endif %}
-          -->
+          
           <span class="fly-list-nums"> 
             <!--
             <a href="#comment"><i class="iconfont" title="回复">&#xe60c;</i> {{post['replynum']}}</a>
@@ -89,11 +69,11 @@
         <div class="detail-body photos">
           <p>
             {{ post['body'] | safe }}
-            {% for file in post['files'] %}
-            {% if file['post_id']==post['id'] %}
+            {% for file in post['file'] %}
           <hr>
-            {{file['filename']}}
-            {% endif %}
+            <form action="" method="post">
+                <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="{{file['filename']}}">
+            </form>
             {% endfor %}
           </p>
         </div>
@@ -114,7 +94,7 @@
               </a>
               <div class="fly-detail-user">
                 <a href="{{ url_for('user.home', id=post['author_id']) }}" class="fly-link">
-                  <cite>{{ reply['username'] }}</cite>             
+                  <cite>{{ reply['username'] }}</cite>
                 </a>
                 {% if reply['username']==post['username'] %}
                 <span>(楼主)</span>
