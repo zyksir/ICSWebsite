@@ -143,12 +143,9 @@ def delete_post(id):
     t.execute()
 
 
-# index page
-@bp.route('/')
-def index():
+def get_index_info():
     posts = []
     allposts = post.select()
-    # pprint(allposts)
     for apost in allposts:
         dct_apost = model_to_dict(apost)
         this_user = model_to_dict(user.select(user.nickname, user.username).where(user.id == dct_apost['author_id']).get())
@@ -175,7 +172,116 @@ def index():
         dcthot['nickname'] = auser['nickname']
         hots.append(dcthot)
 
-    # pprint(hots)
+    return posts, hots
+
+
+# search a keyword ST in titles
+def title_search(ST):
+    s = "%" + ST + "%"
+    t_posts = post.select(post.id, post.title, post.author_id).where(post.title ** s).order_by(post.id.desc())
+    posts = []
+    for apost in t_posts:
+        ta = model_to_dict(apost)
+        ta['author_id'] = ta['author']['id']
+        ta.pop('author')
+        posts.append(ta)
+
+    return posts
+
+
+# search a keyword ST in users
+def user_search(ST):
+    s = "%" + ST + "%"
+
+    t_users = user.select(user.id, user.username, user.nickname).where(user.username ** s)
+
+    users = []
+    for auser in t_users:
+        users.append(model_to_dict(auser))
+
+    return users
+
+
+def ADD_LIKE(id):
+    user_id = g.user['id']
+    print("user_id = ", user_id)
+
+    is_like = check_is_like(user_id, id)
+    if (is_like == False):
+        print("add like!")
+
+        t = likes.insert(author_id=user_id, post_id=id)
+        t.execute()
+
+        num_like = get_like(id) + 1
+
+        t = post.update(num_like=num_like).where(post.id==id)
+        t.execute()
+
+        print("num_like = ", num_like)
+
+
+def ADD_UNLIKE(id):
+    user_id = g.user['id']
+    print("user_id = ", user_id)
+
+    is_like = check_is_like(user_id, id)
+    if (is_like == True):
+        print("add unlike!")
+
+        t = likes.delete().where(likes.author_id == user_id, likes.post_id == id)
+        t.execute()
+
+        num_like = get_like(id) - 1
+
+        t = post.update(num_like=num_like).where(post.id==id)
+        t.execute()
+
+        print("num_like = ", num_like)
+
+
+def ADD_COLLECT(id):
+    user_id = g.user['id']
+    print("in collect user_id = ", user_id)
+
+    is_collect = check_is_collect(user_id, id)
+    if (is_collect == False):
+        print("add collect!")
+
+        t = collects.insert(author_id=user_id, post_id=id)
+        t.execute()
+
+        num_collect = get_collect(id) + 1
+
+        t = post.update(num_collect=num_collect).where(post.id==id)
+        t.execute()
+
+        print("num_collect = ", num_collect)
+
+
+def ADD_UNCOLLECT(id):
+    user_id = g.user['id']
+    print("in uncollect user_id = ", user_id)
+
+    is_collect = check_is_collect(user_id, id)
+    if (is_collect == True):
+        print("add uncollect!")
+
+        t = collects.delete().where(collects.author_id == user_id, collects.post_id == id)
+        t.execute()
+
+        num_collect = get_collect(id) - 1
+
+        t = post.update(num_collect=num_collect).where(post.id==id)
+        t.execute()
+
+        print("num_collect = ", num_collect)
+
+
+# index page
+@bp.route('/')
+def index():
+    posts, hots = get_index_info()
 
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
@@ -220,7 +326,7 @@ def create():
                 file_path = os.path.join(savepath, str(post_file_id)+"_"+filename)
                 with open(file_path, "wb") as fw:
                     fw.write(file_content)
-                print("Save %s to %s"%(filename, file_path))
+                print("Save %s to %s" % (filename, file_path))
             return redirect(url_for('blog.index'))
 
     return render_template('blog/temp_create.html')
@@ -251,8 +357,6 @@ def ViewPost(id):
             t.execute()
             print("num_reply", num_reply)
 
-    print("before get post")
-
     apost = get_view_post(id)
     pprint(apost)
 
@@ -276,6 +380,7 @@ def ViewPost(id):
 @login_required
 def DeleteReply(id):
     post_id = delete_reply(id)
+
     return redirect(url_for('blog.ViewPost', id=post_id))
 
 
@@ -283,25 +388,8 @@ def DeleteReply(id):
 @login_required
 def DeletePost(id):
     delete_post(id)
+
     return redirect(url_for('blog.index'))
-
-
-# search a keyword ST in titles
-def title_search(ST):
-    s = "%" + ST + "%"
-
-    t_posts = post.select(post.id, post.title, post.author_id).where(post.title ** s).order_by(post.id.desc())
-
-    posts = []
-    for apost in t_posts:
-        ta = model_to_dict(apost)
-        ta['author_id'] = ta['author']['id']
-        ta.pop('author')
-        posts.append(ta)
-
-    # pprint(posts)
-
-    return posts
 
 
 # search a keyword ST in titles
@@ -309,20 +397,8 @@ def title_search(ST):
 @login_required
 def SEARCH_TITLE(ST):
     posts = title_search(ST)
+
     return json.dumps(posts, ensure_ascii=False)
-
-
-# search a keyword ST in users
-def user_search(ST):
-    s = "%" + ST + "%"
-
-    t_users = user.select(user.id, user.username, user.nickname).where(user.username ** s)
-
-    users = []
-    for auser in t_users:
-        users.append(model_to_dict(auser))
-
-    return users
 
 
 # search a keyword ST in users
@@ -330,6 +406,7 @@ def user_search(ST):
 @login_required
 def SEARCH_USER(ST):
     users = user_search(ST)
+
     return json.dumps(users, ensure_ascii=False)
 
 
@@ -337,22 +414,7 @@ def SEARCH_USER(ST):
 @bp.route('/LIKE/<int:id>', methods=('GET', 'POST'))
 @login_required
 def LIKE(id):
-    user_id = g.user['id']
-    print("user_id = ", user_id)
-
-    is_like = check_is_like(user_id, id)
-    if (is_like == False):
-        print("add like!")
-
-        t = likes.insert(author_id=user_id, post_id=id)
-        t.execute()
-
-        num_like = get_like(id) + 1
-
-        t = post.update(num_like=num_like).where(post.id==id)
-        t.execute()
-
-        print("num_like = ", num_like)
+    ADD_LIKE(id)
 
     return redirect(url_for('blog.ViewPost', id=id))
 
@@ -361,22 +423,7 @@ def LIKE(id):
 @bp.route('/COLLECT/<int:id>', methods=('GET', 'POST'))
 @login_required
 def COLLECT(id):
-    user_id = g.user['id']
-    print("in collect user_id = ", user_id)
-
-    is_collect = check_is_collect(user_id, id)
-    if (is_collect == False):
-        print("add collect!")
-
-        t = collects.insert(author_id=user_id, post_id=id)
-        t.execute()
-
-        num_collect = get_collect(id) + 1
-
-        t = post.update(num_collect=num_collect).where(post.id==id)
-        t.execute()
-
-        print("num_collect = ", num_collect)
+    ADD_COLLECT(id)
 
     return redirect(url_for('blog.ViewPost', id=id))
 
@@ -385,22 +432,7 @@ def COLLECT(id):
 @bp.route('/UNCOLLECT/<int:id>', methods=('GET', 'POST'))
 @login_required
 def UNCOLLECT(id):
-    user_id = g.user['id']
-    print("in uncollect user_id = ", user_id)
-
-    is_collect = check_is_collect(user_id, id)
-    if (is_collect == True):
-        print("add uncollect!")
-
-        t = collects.delete().where(collects.author_id == user_id, collects.post_id == id)
-        t.execute()
-
-        num_collect = get_collect(id) - 1
-
-        t = post.update(num_collect=num_collect).where(post.id==id)
-        t.execute()
-
-        print("num_collect = ", num_collect)
+    ADD_UNCOLLECT(id)
 
     return redirect(url_for('blog.ViewPost', id=id))
 
@@ -409,22 +441,7 @@ def UNCOLLECT(id):
 @bp.route('/UNLIKE/<int:id>', methods=('GET', 'POST'))
 @login_required
 def UNLIKE(id):
-    user_id = g.user['id']
-    print("user_id = ", user_id)
-
-    is_like = check_is_like(user_id, id)
-    if (is_like == True):
-        print("add unlike!")
-
-        t = likes.delete().where(likes.author_id == user_id, likes.post_id == id)
-        t.execute()
-
-        num_like = get_like(id) - 1
-
-        t = post.update(num_like=num_like).where(post.id==id)
-        t.execute()
-
-        print("num_like = ", num_like)
+    ADD_UNLIKE(id)
 
     return redirect(url_for('blog.ViewPost', id=id))
 
