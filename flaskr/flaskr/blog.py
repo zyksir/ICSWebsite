@@ -399,6 +399,12 @@ def ViewPost(id):
 @bp.route('/DownloadFile/<string:filename>', methods=('POST', ))
 def DownloadFile(filename):
     print(filename)
+    tmp_list = eval(filename)
+    filename = tmp_list[0]
+    post_file_id = tmp_list[1]
+    post_id = tmp_list[2]
+    filename = str(post_file_id)+"_"+filename
+    # return redirect(url_for('blog.ViewPost', id=post_id))
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 # delete a reply by id

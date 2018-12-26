@@ -73,8 +73,7 @@
             {{ post['body'] | safe }}
             {% for file in post['file'] %}
           <hr>
-          <!--action=url_for('',filename='file['filename']',postid='post['id']')-->
-            <form action="" method="post">
+            <form action="{{ url_for('blog.DownloadFile',filename=[file['filename'],file['id'],post['id']]) }}" method="post">
                 <input class="layui-btn-xs jie-admin" id="file" name="file" type="submit" value="{{file['filename']}}">
             </form>
 

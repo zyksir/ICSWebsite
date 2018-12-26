@@ -28,7 +28,7 @@ def create_app(test_config=None):
     # app.config['MYSQL_DATABASE_PASSWORD'] = 'HWzyk123!@#'
     # app.config['MYSQL_DATABASE_DB'] = 'SAKILA'
     # app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-    # app.config['UPLOAD_FOLDER'] = r'E:\system_file'
+    app.config['UPLOAD_FOLDER'] = r'E:\system_file'
     #
     # app.config['MYSQL_DATABASE_USER'] = 'root'
     # app.config['MYSQL_DATABASE_PASSWORD'] = '1998218wrh'
