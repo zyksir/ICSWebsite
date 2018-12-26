@@ -17,7 +17,7 @@
       <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
         <div class="layui-tab-item layui-show">
           <div class="layui-form layui-form-pane">
-            <form method="post" runat="server" onsubmit="validateCode()">
+            <form method="post" runat="server" onsubmit="">
               <div class="layui-form-item">
                 <label for="username" class="layui-form-label">用户名</label>
                 <div class="layui-input-inline">
@@ -36,14 +36,12 @@
                 <div class="layui-input-inline">
                   <input type="text" id="inputCode" name="imagecode" required lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入验证码">
                 </div>
-                <div class="code" id="checkCode" onclick="createCode()" >
-                </div>
-                <a  href="#" onclick="createCode()">看不清换一张</a>
               </div>
 
               <div class="layui-form-item">
-                <button class="layui-btn" lay-filter="*" lay-submit onclick="validateCode();">立即登录</button>
+                <button class="layui-btn" lay-filter="*" lay-submit onclick="">立即登录</button>
               </div>
+              <img class="verify_code" src="/auth/code " onclick="this.src='/auth/code?'+ Math.random()">
               {% for message in get_flashed_messages() %}
                    <div class="warning" style="color:#FF5722;">{{ message }}</div>
                  {% endfor %}
@@ -54,7 +52,6 @@
     </div>
   </div>
 </div>
-
 <script language="javascript" type="text/javascript">
   window.onload = createCode();
   var code;
@@ -78,26 +75,19 @@
     var inputCode = document.getElementById("inputCode").value;
     if (inputCode.length <= 0) {
       alert("请输入验证码！");
+      window.location = "http://127.0.0.1:5000"
+      return;
     }
     else if (inputCode.toUpperCase() != code.toUpperCase()) {
-        //创建url
-        var url="/notice/s";
-        //创建form
-        var form=$("<form></form>");
-        //设置属性
-        form.attr("action",url);
-        form.attr("required","post");
-        //创建input，即参数
-        var inputType=$("<input type='text' name='code'/>");
-        inputType.attr("value",code);
-        //注入参数到表单
-        form.append(inputType);
-        form.appendTo("body");
-        form.hide();
-        //提交表单
-        form.submit();
-        createCode();
-        alert("验证码输入有误！");
+      alert("验证码输入有误！");
+      //createCode();
+      window.location = "http://127.0.0.1:5000"
+      return;
+    } else
+    {
+        alert("对啦！");
+        window.location = "http://127.0.0.1:5000"
+        return;
     }
   }
 </script>
@@ -133,5 +123,4 @@
     text-decoration:underline;
   }
 </style>
-
 {% endblock %}
