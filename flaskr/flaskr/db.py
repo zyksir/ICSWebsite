@@ -11,8 +11,8 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 from peewee import *
 
-if not os.path.exists(current_app.config['UPLOAD_FOLDER']):
-    os.mkdir(current_app.config['UPLOAD_FOLDER'])
+# if not os.path.exists(current_app.config['UPLOAD_FOLDER']):
+#     os.mkdir(current_app.config['UPLOAD_FOLDER'])
 host = "127.0.0.1"
 user = "root"
 passwd = 'HWzyk123!@#'
