@@ -18,11 +18,15 @@ user = "root"
 passwd = 'HWzyk123!@#'
 # passwd = 'Daban980624'
 <<<<<<< HEAD
+<<<<<<< HEAD
 passwd = '1998218wrh'
 passwd = 'APtx4869'
 =======
 # passwd = '1998218wrh'
 >>>>>>> 32ad770577415b430ea25c0647e5620e65e7c110
+=======
+passwd = '1998218wrh'
+>>>>>>> parent of 559881a... 文件传输做好了
 database = "sakila"
 mydatabase = MySQLDatabase(host=host, user=user, passwd=passwd, database=database, charset="utf8", port=3306)
 mydatabase.connect()
