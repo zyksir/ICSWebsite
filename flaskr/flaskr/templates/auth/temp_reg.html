@@ -17,7 +17,7 @@
       <div class="layui-form layui-tab-content" id="LAY_ucm" style="padding: 20px 0;">
         <div class="layui-tab-item layui-show">
           <div class="layui-form layui-form-pane">
-            <form method="post" runat="server" onsubmit="validateCode()">
+            <form method="post" runat="server" onsubmit="">
               <div class="layui-form-item">
                 <!--这里可能auth.py的register接收部分需要改一下。现在只收了username和password，需要增加储存nickname的功能以及对比password和repassword是否一致的功能，然后不一致需要输出对应的error，这边接口已经写好，会直接显示error的文字，所以改一下auth.py就行了-->
                 <label for="username" class="layui-form-label">用户名</label>
@@ -55,15 +55,12 @@
                 <div class="layui-input-inline">
                   <input type="text" id="inputCode" name="imagecode" required lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入验证码">
                 </div>
-                <div class="code" id="checkCode" onclick="createCode()" >
-                </div>
-                <a  href="#" onclick="createCode()">看不清换一张</a>
               </div>
-
 
               <div class="layui-form-item">
-                <button class="layui-btn" lay-filter="*" lay-submit onclick="validateCode();">立即注册</button>
+                <button class="layui-btn" lay-filter="*" lay-submit onclick="">立即登录</button>
               </div>
+              <img class="verify_code" src="/auth/code " onclick="this.src='/auth/code?'+ Math.random()">
 
               {% for message in get_flashed_messages() %}
                    <div class="warning" style="color:#FF5722;">{{ message }}</div>

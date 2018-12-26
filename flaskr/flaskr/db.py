@@ -5,17 +5,24 @@
 import sqlite3
 #from flaskext.mysql import MySQL
 import pymysql
+import os
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
 from peewee import *
 
+if not os.path.exists(current_app.config['UPLOAD_FOLDER']):
+    os.mkdir(current_app.config['UPLOAD_FOLDER'])
 host = "127.0.0.1"
 user = "root"
 passwd = 'HWzyk123!@#'
 # passwd = 'Daban980624'
+<<<<<<< HEAD
 passwd = '1998218wrh'
 passwd = 'APtx4869'
+=======
+# passwd = '1998218wrh'
+>>>>>>> 32ad770577415b430ea25c0647e5620e65e7c110
 database = "sakila"
 mydatabase = MySQLDatabase(host=host, user=user, passwd=passwd, database=database, charset="utf8", port=3306)
 mydatabase.connect()

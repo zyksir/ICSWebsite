@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, current_app,send_from_directory
+    Blueprint, flash, g, session, redirect, render_template, request, url_for, current_app,send_from_directory
 )
 from werkzeug.exceptions import abort
 from werkzeug import secure_filename
@@ -109,6 +109,14 @@ def delete_reply(id):
     t = reply.delete().where(reply.id == id)
     t.execute()
 
+    # update the the number of reply
+    apost = model_to_dict(post.select(post.num_reply).where(post.id == post_id).get())
+    num_reply = int(apost['num_reply']) - 1
+
+    t = post.update(num_reply=num_reply).where(post.id == post_id)
+    t.execute()
+    print("num_reply", num_reply)
+
     return post_id
 
 
@@ -170,6 +178,7 @@ def get_index_info():
         dcthot['username'] = auser['username']
         dcthot['nickname'] = auser['nickname']
         hots.append(dcthot)
+    session['hots'] = hots
 
     return posts, hots
 
@@ -177,14 +186,20 @@ def get_index_info():
 # search a keyword ST in titles
 def title_search(ST):
     s = "%" + ST + "%"
-    t_posts = post.select(post.id, post.title, post.author_id).where(post.title ** s).order_by(post.id.desc())
+    t_posts = post.select().where(post.title ** s).order_by(post.id.desc())
     posts = []
     for apost in t_posts:
         ta = model_to_dict(apost)
+        this_user = model_to_dict(user.select(user.nickname, user.username).where(user.id == ta['author_id']).get())
+        ta['username'] = this_user['username']
+        ta['nickname'] = this_user['nickname']
         # pprint(ta)
         ta['author_id']# = ta['author']['id']
         # ta.pop('author')
         posts.append(ta)
+
+    # print("posts")
+    # pprint(posts)
 
     return posts
 
@@ -279,9 +294,13 @@ def ADD_UNCOLLECT(id):
 
 
 # index page
-@bp.route('/')
+@bp.route('/',methods=('GET', 'POST'))
 def index():
     posts, hots = get_index_info()
+    if request.method == 'POST':
+        ST = request.form.get("searchname",type=str,default=None)
+        posts = title_search(ST)
+        return redirect(url_for('blog.create'))
 
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
@@ -331,8 +350,16 @@ def create():
 @bp.route('/ViewPost/<int:id>', methods=('GET', 'POST'))
 def ViewPost(id):
     if request.method == 'POST':
-        body = request.form['body']
-        error = None
+        body = request.form.get("body",type=str,default=None)
+        ST = request.form.get("searchname",type=str,default=None)
+        Filename = request.form.get("file",type=str,default=None)
+        if body:
+            error = None
+        if ST:
+            #posts = title_search(ST)
+            return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
+            # return render_template('blog/temp_SearchResult.html', posts=posts)
+            # error = None
 
         if error is not None:
             flash(error)
@@ -367,11 +394,17 @@ def ViewPost(id):
         print("is_like = ", is_like)
         print("is_collect = ", is_collect)
 
-    return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like)
+    return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like, hots=session['hots'])
 
 @bp.route('/DownloadFile/<string:filename>', methods=('POST', ))
 def DownloadFile(filename):
     print(filename)
+    tmp_list = eval(filename)
+    filename = tmp_list[0]
+    post_file_id = tmp_list[1]
+    post_id = tmp_list[2]
+    filename = str(post_file_id)+"_"+filename
+    # return redirect(url_for('blog.ViewPost', id=post_id))
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 # delete a reply by id
@@ -392,13 +425,13 @@ def DeletePost(id):
 
 
 # search a keyword ST in titles
-@bp.route('/SEARCH/TITLE/<string:ST>')
+@bp.route('/SEARCH/TITLE/<string:ST>', methods=('GET','POST'))
 @login_required
 def SEARCH_TITLE(ST):
     posts = title_search(ST)
+    return render_template('blog/temp_SearchResult.html', posts=posts)
 
-    return json.dumps(posts, ensure_ascii=False)
-
+    # return json.dumps(posts, ensure_ascii=False)
 
 # search a keyword ST in users
 @bp.route('/SEARCH/USER/<string:ST>')

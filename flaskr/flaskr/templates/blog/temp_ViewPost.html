@@ -73,8 +73,8 @@
             {{ post['body'] | safe }}
             {% for file in post['file'] %}
           <hr>
-            <form action="{{ url_for('blog.DownloadFile',filename=file['filename'])  }}" method="post">
-                <input class="layui-btn layui-btn-xs jie-admin" type="submit" value="{{file['filename']}}">
+            <form action="{{ url_for('blog.DownloadFile',filename=[file['filename'],file['id'],post['id']]) }}" method="post">
+                <input class="layui-btn-xs jie-admin" id="file" name="file" type="submit" value="{{file['filename']}}">
             </form>
 
             {% endfor %}
@@ -139,7 +139,7 @@
             </div>
             <div class="layui-form-item">
               <input type="hidden" value="Save">
-              <button class="layui-btn" lay-filter="*" lay-submit>提交回复</button>
+              <button class="layui-btn" lay-filter="body" lay-submit>提交回复</button>
             </div>
           </form>
         </div>

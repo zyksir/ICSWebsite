@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html>
 <head>
@@ -236,3 +237,235 @@ layui.use('carousel', function(){
 });
 </script>
 
+=======
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+<title>{% block title %}{% endblock %} - 论坛</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='res/layui/css/layui.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='res/css/global.css') }}">
+  <script type="text/javascript" src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>
+</head>
+<body>
+
+<div class="fly-header layui-bg-black">
+  <div class="layui-container">
+    <a class="fly-logo" href="/">
+      <img src="{{ url_for('static', filename='res/images/ics_logo.png') }}" alt="layui">
+    </a>
+    <ul class="layui-nav fly-nav layui-hide-xs">
+      <li class="layui-nav-item layui-this">
+        <a href="https://www.pku.edu.cn/"><i class="iconfont icon-jiaoliu"></i>北京大学</a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="http://eecs.pku.edu.cn/"><i class="iconfont icon-iconmingxinganli"></i>信息科学与技术学院</a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="http://www.layui.com/" target="_blank"><i class="iconfont icon-ui"></i>模板来源</a>
+      </li>
+    </ul>
+    
+    
+    <ul class="layui-nav fly-nav-user">
+       {% if g.user %}
+       <li class="layui-nav-item">
+        <a class="fly-nav-avatar" href="{{ url_for('user.home', id=g.user['id']) }}"><!--个人主页-->
+          <cite class="layui-hide-xs">{{ g.user['nickname'] }}</cite>
+          <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg">
+        </a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="{{ url_for('user.setname') }}">我的设置</a><!--我的设置-->
+      </li>
+      <li class="layui-nav-item">
+        <a href="{{ url_for('auth.logout') }}">退出</a>
+      </li>
+       {% else %}
+      <!-- 未登入的状态 -->
+      <li class="layui-nav-item">
+        <a class="iconfont icon-touxiang layui-hide-xs" href="user/temp_base.html"></a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="{{ url_for('auth.login') }}">登入</a>
+      </li>
+      <li class="layui-nav-item">
+        <a href="{{ url_for('auth.register') }}">注册</a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+
+<canvas id="myCanvas" width="1500px" height="2000px"></canvas>
+<div style="position: absolute;left: 150px; top: 60px" class="layui-container">
+<div class="layui-carousel" id="test1" lay-filter="test1">
+  <div carousel-item="">
+    <div><img src="{{ url_for('static', filename='pic/b.jpg') }}" alt="春天" width = '100%'>
+    </div>
+    <div><img src="{{ url_for('static', filename='pic/p1.jpg') }}" alt="逸夫楼" width = '100%'>
+    </div>
+    <div><img src="{{ url_for('static', filename='pic/a.jpg') }}"  alt="机房" width = '100%'>
+    </div>   
+  </div>
+</div> 
+</div>
+
+<div style="position: absolute;left: 150px; top: 330px" class="fly-panel fly-column">
+  <div class="layui-container">
+    <ul class="layui-clear">
+      <li class="layui-hide-xs layui-this"><a href="{{ url_for('blog.index') }}">首页</a></li> 
+      {% if g.user %}
+      <!-- 用户登入后显示 -->
+      
+      <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('user.home', id=g.user['id']) }}">我的主页</a></li>
+          {% if g.user['id'] == 1 %}
+          <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><a href="{{ url_for('admin.admin_home') }}">管理界面</a></li>
+          {%  endif %}
+    </ul>
+
+    <div class="fly-column-right layui-hide-xs"> 
+      <!--
+      <form class="layui-form" action="" method="post">
+        <input type="text" name="searchtitle" required  lay-verify="required" placeholder="输入要搜索的帖子名称" autocomplete="off" class="layui-input">
+        <button class="layui-btn" lay-submit lay-filter="formDemo">立即搜索</button>
+      </form>
+    -->
+     <div class="layui-input-inline">
+      <form action="" method="post" enctype="multipart/form-data">
+      <input type="test" name="searchname" id="searchname" required lay-verify="required" placeholder="输入要搜索的帖子名称" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-input-inline">
+      <button class="layui-btn" lay-filter="searchname" lay-submit ><i class="layui-icon"></i></button>
+      </div>
+    </form>
+      <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a> 
+    </div> 
+    {% else %}
+    <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block">登录探索更多功能</li> 
+    {% endif %}
+  </div>
+</div>
+
+<div style="position: absolute;left: 150px; top: 400px" class="layui-container">
+{% block detail %}{% endblock %}
+<div class="layui-col-md4">
+
+      <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
+        <h3 class="fly-panel-title">回贴榜</h3><!--这个地方不知道你们要怎么实现，我先随便写一个然后注释掉-->
+        <dl>
+          <!--个人主页还需要写一下-->
+          <!--
+          {% for user in reply_most_users %} 
+          <dd>
+            <a href="user/home.html">
+              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>{{ user['nickname'] }}</cite><i>{{ user['replynum'] }}</i>
+            </a>
+          </dd>
+         {% endfor %}
+       -->
+        </dl>
+      </div>
+
+      <dl class="fly-panel fly-list-one">
+        <dt class="fly-panel-title">热议榜</dt>
+        
+        {% for post in hots %}
+        <dd>
+          <a href="jie/detail.html">{{post['title']}}</a>
+          <span><i class="iconfont icon-pinglun1" title="回复数"></i> {{post['num_reply']}}</span>
+          <span><i class="layui-icon" title="收藏数">&#xe600;</i>{{ post['num_collect'] }}</span>
+          <span><i class="layui-icon" title="点赞数">&#xe6c6;</i>{{ post['num_like'] }}</span>
+        </dd>
+        {% endfor %}
+      
+      </dl>
+
+      <div class="fly-panel">
+        <h3 class="fly-panel-title">温馨通道</h3>
+        <ul class="fly-panel-main fly-list-static">
+          <li>
+            <a href="https://github.com/zyksir/Web/tree/new_webpage" target="_blank">开发者的GitHub，欢迎Star</a>
+          </li>
+          <li>
+            <a href="http://course.pku.edu.cn/" target="_blank">北京大学教学网</a>
+          </li>
+          <li>
+            <a href="http://fly.layui.com/jie/5366/" target="_blank">
+              layui常见问题的处理和实用干货集锦
+            </a>
+          </li>
+          <li>
+            <a href="http://fly.layui.com/jie/4281/" target="_blank">layui的 GitHub及Gitee (码云)仓库，欢迎Star</a>
+          </li>
+        </ul>
+      </div>
+
+
+      
+      <div class="fly-panel fly-link">
+        <h3 class="fly-panel-title">友情链接</h3>
+        <dl class="fly-panel-main">
+          <dd><a href="http://eecs.pku.edu.cn/Survey/brief/" target="_blank">信息科学与技术学院概况</a><dd>
+          <dd><a href="https://bbs.pku.edu.cn/v2/login.php" target="_blank">北大未名BBS</a><dd>
+          <dd><a href="https://www.layui.com/" target="_blank">Layui经典模块化前端框架</a><dd>
+          <dd><a href="mailto:xianxin@layui-inc.com?subject=%E7%94%B3%E8%AF%B7Fly%E7%A4%BE%E5%8C%BA%E5%8F%8B%E9%93%BE" class="fly-link">申请友链</a><dd>
+        </dl>
+      </div>
+
+</div>
+
+<div  class="fly-footer">
+  <p><a href="http://fly.layui.com/" target="_blank">ICS论坛</a> 2018 &copy; <a href="http://www.layui.com/" target="_blank">Web小组 出品</a></p>
+</div>
+
+</div>
+
+
+
+</body>
+</html>
+
+<script src="../res/static/layui/layui.js"></script>
+<script>
+layui.use('carousel', function(){
+  var carousel = layui.carousel;
+  //建造实例
+  carousel.render({
+    elem: '#test1'
+    ,width: '100%' //设置容器宽度
+    ,arrow: 'always' //始终显示箭头
+    //,anim: 'updown' //切换动画方式
+  });
+});
+</script>
+
+<script>
+  var cav = document.getElementById('myCanvas');
+  var w = window.screen.width;
+  var h = window.screen.height;
+  var yPositions = Array(300).join(0).split('');
+  var ctx = cav.getContext('2d');
+  var draw = function(){
+    ctx.fillStyle = 'rgba(57,61,73,1)';
+    ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(95,184,120,1)';
+    ctx.font = '20px';
+    yPositions.map(function(y,index){
+      text = String.fromCharCode(1e2+Math.random()*330);
+      x = index*10;
+      cav.getContext('2d').fillText(text,x,y);
+      if(y>Math.random()*1e4){
+        yPositions[index]=0;
+      }else{
+        yPositions[index]=y+10;
+      }
+
+    });
+  }
+  setInterval('draw()',30);
+</script>
+
+>>>>>>> bb3924421426f9535b799be437dfc94dd1818a36
+>>>>>>> 32ad770577415b430ea25c0647e5620e65e7c110
