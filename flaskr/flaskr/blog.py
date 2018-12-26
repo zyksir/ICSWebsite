@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, current_app,send_from_directory
+    Blueprint, flash, g, session, redirect, render_template, request, url_for, current_app,send_from_directory
 )
 from werkzeug.exceptions import abort
 from werkzeug import secure_filename
@@ -109,6 +109,14 @@ def delete_reply(id):
     t = reply.delete().where(reply.id == id)
     t.execute()
 
+    # update the the number of reply
+    apost = model_to_dict(post.select(post.num_reply).where(post.id == post_id).get())
+    num_reply = int(apost['num_reply']) - 1
+
+    t = post.update(num_reply=num_reply).where(post.id == post_id)
+    t.execute()
+    print("num_reply", num_reply)
+
     return post_id
 
 
@@ -170,6 +178,7 @@ def get_index_info():
         dcthot['username'] = auser['username']
         dcthot['nickname'] = auser['nickname']
         hots.append(dcthot)
+    session['hots'] = hots
 
     return posts, hots
 
@@ -177,14 +186,20 @@ def get_index_info():
 # search a keyword ST in titles
 def title_search(ST):
     s = "%" + ST + "%"
-    t_posts = post.select(post.id, post.title, post.author_id).where(post.title ** s).order_by(post.id.desc())
+    t_posts = post.select().where(post.title ** s).order_by(post.id.desc())
     posts = []
     for apost in t_posts:
         ta = model_to_dict(apost)
+        this_user = model_to_dict(user.select(user.nickname, user.username).where(user.id == ta['author_id']).get())
+        ta['username'] = this_user['username']
+        ta['nickname'] = this_user['nickname']
         # pprint(ta)
         ta['author_id']# = ta['author']['id']
         # ta.pop('author')
         posts.append(ta)
+
+    # print("posts")
+    # pprint(posts)
 
     return posts
 
@@ -341,9 +356,10 @@ def ViewPost(id):
         if body:
             error = None
         if ST:
-            posts = title_search(ST)
-            return redirect(url_for('blog.create'))
-            error = None
+            #posts = title_search(ST)
+            return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
+            # return render_template('blog/temp_SearchResult.html', posts=posts)
+            # error = None
 
         if error is not None:
             flash(error)
@@ -378,7 +394,7 @@ def ViewPost(id):
         print("is_like = ", is_like)
         print("is_collect = ", is_collect)
 
-    return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like)
+    return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like, hots=session['hots'])
 
 @bp.route('/DownloadFile/<string:filename>', methods=('POST', ))
 def DownloadFile(filename):
@@ -407,8 +423,9 @@ def DeletePost(id):
 @login_required
 def SEARCH_TITLE(ST):
     posts = title_search(ST)
+    return render_template('blog/temp_SearchResult.html', posts=posts)
 
-    return json.dumps(posts, ensure_ascii=False)
+    # return json.dumps(posts, ensure_ascii=False)
 
 # search a keyword ST in users
 @bp.route('/SEARCH/USER/<string:ST>')
