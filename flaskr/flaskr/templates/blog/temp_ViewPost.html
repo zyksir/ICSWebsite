@@ -4,8 +4,8 @@
   <h1>{% block title %}{{post['title']}}{% endblock %}</h1>
 {% endblock %}
 
-{% block detail %}
-<div class="layui-container">
+{% block all_content %}
+<div style="position: absolute;left: 150px; top: 400px" class="layui-container">
   <div class="layui-row layui-col-space15">
     <div class="layui-col-md8 content detail">
       <div class="fly-panel detail-box">
@@ -146,6 +146,8 @@
       {% endif %}
       </div>
     </div>
+  </div>
+</div>
 
 <script src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>
 <script>

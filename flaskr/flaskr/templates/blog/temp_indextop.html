@@ -6,8 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="{{ url_for('static', filename='res/layui/css/layui.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='res/css/global.css') }}">
-  <script type="text/javascript" src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>  
+  
+
 </head>
+
+
+
 <body>
 
 <div class="fly-header layui-bg-black">
@@ -58,7 +63,8 @@
   </div>
 </div>
 
-<canvas id="myCanvas" width="1500px" height="2000px"></canvas>
+
+
 <div style="position: absolute;left: 150px; top: 60px" class="layui-container">
 <div class="layui-carousel" id="test1" lay-filter="test1">
   <div carousel-item="">
@@ -104,10 +110,13 @@
     <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block">登录探索更多功能</li> 
     {% endif %}
   </div>
-</div>
+</div>  
 
-<div style="position: absolute;left: 150px; top: 400px" class="layui-container">
+{% block all_content %}
+<canvas id="myCanvas" width="1400px" height="3000px"></canvas>
+<div style="position: absolute;left: 150px; top: 390px" class="layui-container">
 {% block detail %}{% endblock %}
+
 <div class="layui-col-md4">
 
       <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
@@ -174,41 +183,20 @@
 
 </div>
 
-<div  class="fly-footer">
-  <p><a href="http://fly.layui.com/" target="_blank">ICS论坛</a> 2018 &copy; <a href="http://www.layui.com/" target="_blank">Web小组 出品</a></p>
-</div>
 
 </div>
-
-
-
-</body>
-</html>
-
-<script src="../res/static/layui/layui.js"></script>
-<script>
-layui.use('carousel', function(){
-  var carousel = layui.carousel;
-  //建造实例
-  carousel.render({
-    elem: '#test1'
-    ,width: '100%' //设置容器宽度
-    ,arrow: 'always' //始终显示箭头
-    //,anim: 'updown' //切换动画方式
-  });
-});
-</script>
 
 <script>
   var cav = document.getElementById('myCanvas');
   var w = window.screen.width;
   var h = window.screen.height;
+
   var yPositions = Array(300).join(0).split('');
   var ctx = cav.getContext('2d');
   var draw = function(){
-    ctx.fillStyle = 'rgba(57,61,73,1)';
+    ctx.fillStyle = 'rgba(57,61,73,1)'; //dark
     ctx.fillRect(0,0,w,h);
-    ctx.fillStyle = 'rgba(95,184,120,1)';
+    ctx.fillStyle = 'rgba(95,184,120,1)'; //green    
     ctx.font = '20px';
     yPositions.map(function(y,index){
       text = String.fromCharCode(1e2+Math.random()*330);
@@ -222,6 +210,29 @@ layui.use('carousel', function(){
 
     });
   }
-  setInterval('draw()',30);
+  cav.setAttribute("width",screen.availWidth);
+  cav.setAttribute("height",screen.availHeight);
+  setInterval('draw()',20);
+
+
+</script>
+
+{% endblock %}
+
+
+</body>
+</html>
+
+<script>
+layui.use('carousel', function(){
+  var carousel = layui.carousel;
+  //建造实例
+  carousel.render({
+    elem: '#test1'
+    ,width: '100%' //设置容器宽度
+    ,arrow: 'always' //始终显示箭头
+    //,anim: 'updown' //切换动画方式
+  });
+});
 </script>
 

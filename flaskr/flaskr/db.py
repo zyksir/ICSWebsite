@@ -15,6 +15,7 @@ user = "root"
 passwd = 'HWzyk123!@#'
 # passwd = 'Daban980624'
 passwd = '1998218wrh'
+passwd = 'APtx4869'
 database = "sakila"
 mydatabase = MySQLDatabase(host=host, user=user, passwd=passwd, database=database, charset="utf8", port=3306)
 mydatabase.connect()
