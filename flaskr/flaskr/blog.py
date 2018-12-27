@@ -428,6 +428,10 @@ def DeletePost(id):
 @bp.route('/SEARCH/TITLE/<string:ST>', methods=('GET','POST'))
 @login_required
 def SEARCH_TITLE(ST):
+    if request.method == 'POST':
+        ST = request.form.get("searchname",type=str,default=None)
+        # posts = title_search(ST)
+        return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
     posts = title_search(ST)
     return render_template('blog/temp_SearchResult.html', posts=posts)
 
