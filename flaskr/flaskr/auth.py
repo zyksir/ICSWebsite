@@ -94,7 +94,6 @@ def register():
         pprint(username)
         pprint(nickname)
         pprint(error)
-        # conn, db = get_db()
 
         if error is None:
             user.insert({
@@ -141,7 +140,6 @@ def login():
             return redirect(url_for('index'))
 
         flash(error)    # stores messages that can be retrieved when rendering the template.
-        #return '1'
 
     return render_template('auth/temp_login.html')
 
