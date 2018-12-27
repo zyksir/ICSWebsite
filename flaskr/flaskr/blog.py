@@ -299,8 +299,8 @@ def index():
     posts, hots = get_index_info()
     if request.method == 'POST':
         ST = request.form.get("searchname",type=str,default=None)
-        posts = title_search(ST)
-        return redirect(url_for('blog.create'))
+        # posts = title_search(ST)
+        return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
 
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
