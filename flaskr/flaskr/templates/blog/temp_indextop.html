@@ -100,7 +100,9 @@
       <button class="layui-btn" lay-filter="searchname" lay-submit ><i class="layui-icon"></i></button>
       </div>
     </form>
-      <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a> 
+    {% if g.user['is_block'] == 0 %}
+      <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a>
+    {% endif %}
     </div> 
     {% else %}
     <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block">登录探索更多功能</li> 
