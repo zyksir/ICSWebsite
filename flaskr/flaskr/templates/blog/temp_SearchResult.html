@@ -13,29 +13,45 @@
 <div class="layui-container">
   <div class="layui-row layui-col-space15">
     <div class="layui-col-md8">
+
       <div class="fly-panel" style="margin-bottom: 0;">
         <div class="fly-panel-title fly-filter">
-          <a href="" class="layui-this">搜索结果</a>
+          <a href="" class="layui-this">相关用户</a>
+        </div>
+
+        <dl class="fly-list"> 
+          {% for user in users %}
+          <dd>
+            <a href="{{ url_for('user.home', id=user['id']) }}">
+              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>{{user['nickname']}}</cite>
+            </a>
+          </dd>
+          {% endfor %}
+        </dl>
+      </div>
+
+      <div class="fly-panel" style="margin-bottom: 0;">
+        <div class="fly-panel-title fly-filter">
+          <a href="" class="layui-this">相关帖子</a>
         </div>
 
         <ul class="fly-list"> 
           {% for post in posts %}
           <li>
-            <a href="user/home.html" class="fly-avatar">
+            <a href="{{ url_for('user.home', id=post['author_id']) }}" class="fly-avatar">
               <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="{{ post['username'] }}">
             </a>
             <h2>
               <a href="{{ url_for('blog.ViewPost', id=post['id']) }}">{{ post['title'] }}</a>
             </h2>
             <div class="fly-list-info">
-              <a href="user/temp_home.html" link>
+              <a href="{{ url_for('user.home', id=post['author_id']) }}" link>
                 <cite>{{ post['nickname'] }}</cite>
               </a>
               <span>{{ post['created'].strftime('%Y-%m-%d') }}</span>
               
-              <span class="fly-list-kiss layui-hide-xs" title="收藏数"><i class="layui-icon layui-icon-rate"></i>{{ post['num_collect'] }}</span>
-              <span class="fly-list-kiss layui-hide-xs" title="点赞数"><i class="layui-icon layui-icon-praise"></i>{{ post['num_like'] }}</span>
-              <span class="fly-list-nums"> 
+              <span class="fly-list-kiss layui-hide-xs" style="color: #8a8a8a;"><i class="layui-icon" title="收藏数">&#xe600;</i>{{ post['num_collect'] }}</span>
+              <span class="fly-list-kiss layui-hide-xs" style="color: #8a8a8a;"><i class="layui-icon" title="点赞数">&#xe6c6;</i>{{ post['num_like'] }}</span>
                 <i class="iconfont icon-pinglun1" title="回复数"></i>{{ post['num_reply'] }}
               </span>
             </div>

@@ -319,10 +319,10 @@ def SAVE_FILES(file_list, savepath, post_id):
 # index page
 @bp.route('/',methods=('GET', 'POST'))
 def index():
-    if request.method == 'POST':
-        ST = request.form.get("searchname",type=str,default=None)
+    #if request.method == 'POST':
+      #  ST = request.form.get("searchname",type=str,default=None)
         # posts = title_search(ST)
-        return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
+      #  return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
 
     posts, hots = get_index_info()
 
@@ -362,13 +362,13 @@ def create():
 def ViewPost(id):
     if request.method == 'POST':
         body = request.form.get("body",type=str,default=None)
-        ST = request.form.get("searchname",type=str,default=None)
+       # ST = request.form.get("searchname",type=str,default=None)
         Filename = request.form.get("file",type=str,default=None)
         if body:
             error = None
-        if ST:
+       # if ST:
             #posts = title_search(ST)
-            return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
+           # return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
             # return render_template('blog/temp_SearchResult.html', posts=posts)
             # error = None
 
