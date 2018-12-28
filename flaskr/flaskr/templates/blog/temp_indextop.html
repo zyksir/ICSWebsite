@@ -92,14 +92,16 @@
         <button class="layui-btn" lay-submit lay-filter="formDemo">立即搜索</button>
       </form>
     -->
+    <div class="layui-input-inline">
+    <form action="" method="post" enctype="multipart/form-data">
      <div class="layui-input-inline">
-      <form action="url_for('SEARCH_TITLE',ST='searchkeywords')" method="post" enctype="multipart/form-data">
       <input type="test" name="searchkeywords" id="searchkeywords" required lay-verify="required" placeholder="输入要搜索的帖子名称" autocomplete="off" class="layui-input">
     </div>
     <div class="layui-input-inline">
       <button class="layui-btn" lay-filter="searchname" lay-submit ><i class="layui-icon"></i></button>
       </div>
     </form>
+  </div>
     {% if g.user['is_block'] == 0 %}
       <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a>
     {% endif %}
