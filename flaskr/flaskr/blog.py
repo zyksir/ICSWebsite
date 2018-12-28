@@ -132,12 +132,6 @@ def delete_post(id):
 
     print("filelist = \n", file_list)
 
-    t = collects.delete().where(collects.post_id == id)
-    t.execute()
-
-    t = likes.delete().where(likes.post_id == id)
-    t.execute()
-
     t = post_file.delete().where(post_file.post_id == id)
     t.execute()
 
