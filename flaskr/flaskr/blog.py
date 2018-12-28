@@ -293,6 +293,23 @@ def ADD_UNCOLLECT(id):
         print("num_collect = ", num_collect)
 
 
+def SAVE_FILES(file_list, savepath, post_id):
+    for file in file_list:
+        print(type(file))
+        print(file.filename)
+        file_content = file.read()
+        filename = secure_filename(file.filename)
+        filehash = generate_password_hash(file_content)
+
+        t = post_file.insert(filename=filename, filehash=filehash, post_id=post_id)
+        post_file_id = t.execute()
+
+        file_path = os.path.join(savepath, str(post_file_id) + "_" + filename)
+        with open(file_path, "wb") as fw:
+            fw.write(file_content)
+        print("Save %s to %s" % (filename, file_path))
+
+
 # index page
 @bp.route('/',methods=('GET', 'POST'))
 def index():
@@ -327,20 +344,7 @@ def create():
             post_id = t.execute()
             print(post_id)
 
-            for file in request.files.getlist("file"):
-                print(type(file))
-                print(file.filename)
-                file_content = file.read()
-                filename = secure_filename(file.filename)
-                filehash = generate_password_hash(file_content)
-
-                t = post_file.insert(filename=filename, filehash=filehash, post_id=post_id)
-                post_file_id = t.execute()
-
-                file_path = os.path.join(savepath, str(post_file_id)+"_"+filename)
-                with open(file_path, "wb") as fw:
-                    fw.write(file_content)
-                print("Save %s to %s" % (filename, file_path))
+            SAVE_FILES(request.files.getlist("file"), savepath, post_id)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/temp_create.html')
@@ -396,6 +400,15 @@ def ViewPost(id):
 
     return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like, hots=session['hots'])
 
+def CHECK_DOWNLOADFILE(post_file_id, filename):
+    with open(filename, "rb") as f:
+        content = f.read()
+        filehash = model_to_dict(post_file.select().where(post_file.id == post_file_id).get())['filehash']
+        if not check_password_hash(filehash, content):
+            error = "文件已被修改"
+            return error
+
+
 @bp.route('/DownloadFile/<string:filename>', methods=('POST', ))
 def DownloadFile(filename):
     print(filename)
@@ -404,7 +417,11 @@ def DownloadFile(filename):
     post_file_id = tmp_list[1]
     post_id = tmp_list[2]
     filename = str(post_file_id)+"_"+filename
-    # return redirect(url_for('blog.ViewPost', id=post_id))
+    error = CHECK_DOWNLOADFILE(post_file_id, os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+    if error:
+        flash(error)
+        return redirect(url_for("blog.ViewPost", id=post_id))
+
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
 
 # delete a reply by id
@@ -429,7 +446,7 @@ def DeletePost(id):
 @login_required
 def SEARCH_TITLE(ST):
     if request.method == 'POST':
-        ST = request.form.get("searchname",type=str,default=None)
+        ST = request.form.get("searchname", type=str,default=None)
         # posts = title_search(ST)
         return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
     posts = title_search(ST)

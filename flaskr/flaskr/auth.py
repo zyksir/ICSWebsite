@@ -61,11 +61,14 @@ def get_register_info(form):
     email = request.form['email']
     imagecode = request.form['imagecode']
     error = None
-
+    if not nickname:
+        nickname = username
     if not username:
         error = 'Username is required.'
     elif not password:
         error = 'Password is required.'
+    elif not email:
+        error = 'Email is required.'
     elif not repassword:
         error = 'Repassword is required'
     elif not (password == repassword):
@@ -76,8 +79,6 @@ def get_register_info(form):
         error = 'The maximum size of username is 40, your username is too long!'
     elif len(nickname) > 40:
         error = 'The maximum size of nickname is 40, your username is too long!'
-    elif not (password == repassword):
-        error = 'you enter different passwords!'
     elif len(user.select(user.id).where(user.username == username))>0 :
         error = 'User {} is already registered.'.format(username)
     elif imagecode != session['imagecode']:
