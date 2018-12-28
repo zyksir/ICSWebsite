@@ -10,9 +10,9 @@ from peewee import *
 
 host = "127.0.0.1"
 user = "root"
-passwd = 'HWzyk123!@#'
+# passwd = 'HWzyk123!@#'
 # # passwd = 'Daban980624'
-# passwd = '1998218wrh'
+passwd = '1998218wrh'
 database = "sakila"
 mydatabase = MySQLDatabase(host=host, user=user, passwd=passwd, database=database, charset="utf8", port=3306)
 mydatabase.connect()
