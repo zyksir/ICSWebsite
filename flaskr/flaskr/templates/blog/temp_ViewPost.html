@@ -128,7 +128,7 @@
           <!-- 无数据时 -->
           <!-- <li class="fly-none">消灭零回复</li> -->
         </ul>
-        {% if g.user %}
+        {% if g.user and g.user['is_block']==0 %}
         <div class="layui-form layui-form-pane">
           <form method="post">
             <div class="layui-form-item layui-form-text">
