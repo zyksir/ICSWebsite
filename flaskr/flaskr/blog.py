@@ -407,6 +407,7 @@ def ViewPost(id):
 
     return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like, hots=session['hots'])
 
+
 def CHECK_DOWNLOADFILE(post_file_id, filename):
     with open(filename, "rb") as f:
         content = f.read()
@@ -430,6 +431,7 @@ def DownloadFile(filename):
         return redirect(url_for("blog.ViewPost", id=post_id))
 
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
 
 # delete a reply by id
 @bp.route('/DeleteReply/<int:id>', methods=('POST',))
@@ -457,9 +459,9 @@ def SEARCH_TITLE(ST):
         # posts = title_search(ST)
         return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
     posts = title_search(ST)
-    return render_template('blog/temp_SearchResult.html', posts=posts)
+    users = user_search(ST)
+    return render_template('blog/temp_SearchResult.html', posts=posts, users=users)
 
-    # return json.dumps(posts, ensure_ascii=False)
 
 # search a keyword ST in users
 @bp.route('/SEARCH/USER/<string:ST>')

@@ -6,7 +6,8 @@
 
 {% block content %}
 <!--<link rel="stylesheet" href="../static/res/layui/css/layui.css" media="all">-->
-  <div class="layui-container">
+    <canvas id="myCanvas" width="150px" height="500px" horizontalScrollPolicy="off"></canvas>
+  <div style="position:absolute;left:90px;top:140px" class="layui-container">
   <form action="" method="post" enctype="multipart/form-data">
     <input type="text" id="title" name="title" required  lay-verify="required" placeholder="请输入文件名" autocomplete="off" class="layui-input">
      <div class="fly-column-right layui-hide-xs">
@@ -14,7 +15,7 @@
      </div></form>
   </div>
 
-<div class="layui-container">
+<div style="position:absolute;left:90px;top:200px" class="layui-container">
 <table class="layui-table">
   <thead>
     <tr>
@@ -42,7 +43,37 @@
   </tbody>
   {% endfor %}
 </table>
+<br>
+    <p style="text-align:center"><span style="color:#c2c2c2">Admin管理系统 2018 &copy; Web 小组出品</span></p>
+<br><br>
+  </div>
 </div>
+<script>
+  var cav = document.getElementById('myCanvas');
+  var w = window.screen.availWidth;
+  var h = window.screen.availHeight;
+  var yPositions = Array(300).join(0).split('');
+  var ctx = cav.getContext('2d');
+  var draw = function(){
+    ctx.fillStyle = 'rgba(57,61,73,1)';
+    ctx.fillRect(0,0,w,h*1);
+    ctx.fillStyle = 'rgba(95,184,120,1)';
+    ctx.font = '20px';
+    yPositions.map(function(y,index){
+      text = String.fromCharCode(1e2+Math.random()*330);
+      x = index*10;
+      cav.getContext('2d').fillText(text,x,y);
+      if(y>Math.random()*1e4){
+        yPositions[index]=0;
+      }else{
+        yPositions[index]=y+10;
+      }
 
+    });
+  }
+  cav.setAttribute("width",screen.availWidth);
+  cav.setAttribute("height",screen.availHeight*1);
+  setInterval('draw()',20);
+</script>
 {% endblock %}
 
