@@ -76,11 +76,14 @@
             <form action="{{ url_for('blog.DownloadFile',filename=[file['filename'],file['id'],post['id']]) }}" method="post">
                 <input class="layui-btn-xs jie-admin" id="file" name="file" type="submit" value="{{file['filename']}}">
             </form>
-
+                  {% for message in get_flashed_messages() %}
+                    <div class="warning" style="color:#FF5722;">{{ message }}</div>
+                  {% endfor %}
             {% endfor %}
           </p>
         </div>
       </div>
+
 
       <div class="fly-panel detail-box" id="flyReply">
         <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">

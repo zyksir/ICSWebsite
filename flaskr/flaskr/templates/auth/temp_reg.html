@@ -55,12 +55,12 @@
                 <div class="layui-input-inline">
                   <input type="text" id="inputCode" name="imagecode" required lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入验证码">
                 </div>
+                <img class="verify_code" src="/auth/code " onclick="this.src='/auth/code?'+ Math.random()">
               </div>
 
               <div class="layui-form-item">
                 <button class="layui-btn" lay-filter="*" lay-submit onclick="">提交</button>
               </div>
-              <img class="verify_code" src="/auth/code " onclick="this.src='/auth/code?'+ Math.random()">
 
               {% for message in get_flashed_messages() %}
                    <div class="warning" style="color:#FF5722;">{{ message }}</div>
@@ -72,6 +72,7 @@
     </div>
   </div>
 </div>
+<!--
 <script language="javascript" type="text/javascript">
   window.onload = createCode();
   var code;
@@ -134,4 +135,5 @@
     text-decoration:underline;
   }
 </style>
+-->
 {% endblock %}

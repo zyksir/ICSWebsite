@@ -25,12 +25,12 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def validate_picture():
     total = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345789'
     # 图片大小130 x 50
-    width = 130
-    heighth = 50
+    width = 150
+    heighth = 40
     # 先生成一个新图片对象
     im = Image.new('RGB',(width, heighth), 'White')
     # 设置字体
-    font = ImageFont.truetype("C:\Windows\Fonts\Arial.ttf", 36)
+    font = ImageFont.truetype("C:\Windows\Fonts\Arial.ttf", 28)
     # 创建draw对象
     draw = ImageDraw.Draw(im)
     str = ''
@@ -38,7 +38,7 @@ def validate_picture():
     for item in range(5):
         text = random.choice(total)
         str += text
-        draw.text((5+random.randint(4,7)+20*item,5+random.randint(3,7)), text=text, fill='Black', font=font)
+        draw.text((13+random.randint(4,7)+20*item,random.randint(3,7)), text=text, fill='Black', font=font)
 
     # 划几根干扰线
     for num in range(8):

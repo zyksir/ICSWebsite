@@ -22,9 +22,12 @@
         <ul class="fly-list"> 
           {% for user in users %}
           <li>
-            <a href="{{ url_for('user.home', id=user['id']) }}">
-              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>{{user['nickname']}}</cite>
+             <a href="{{ url_for('user.home', id=user['id']) }}" class="fly-avatar">
+              <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" alt="{{ user['nickname'] }}">
             </a>
+            <a href="{{ url_for('user.home', id=user['id']) }}" link>
+                <cite>{{user['nickname']}}</cite>
+              </a>
           </li>
           {% endfor %}
         </ul>
