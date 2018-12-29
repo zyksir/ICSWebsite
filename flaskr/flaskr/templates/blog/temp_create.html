@@ -1,11 +1,12 @@
-{% extends 'temp_base.html' %}
+{% extends 'blog/temp_indextop.html' %}
 
 {% block header %}
   <h1>{% block title %}发表帖子{% endblock %}</h1>
 {% endblock %}
 
-{% block detail %}
-<div class="layui-container fly-marginTop">
+{% block all_content %}
+<canvas id="myCanvas" width="150px" height="500px" horizontalScrollPolicy="off"></canvas>
+<div style="position: absolute;left: 150px; top: 400px" class="layui-container fly-marginTop">
   <div class="fly-panel" pad20 style="padding-top: 5px;">
     {% if g.user %}
     <div class="layui-form layui-form-pane">
@@ -88,5 +89,32 @@ layui.use(['layer', 'form', 'layedit'], function () {
                     }
                 });
     });
+</script>
+<script>
+  var cav = document.getElementById('myCanvas');
+  var w = window.screen.availWidth;
+  var h = window.screen.availHeight+200;
+  var yPositions = Array(300).join(0).split('');
+  var ctx = cav.getContext('2d');
+  var draw = function(){
+    ctx.fillStyle = 'rgba(57,61,73,1)';
+    ctx.fillRect(0,0,w,h);
+    ctx.fillStyle = 'rgba(95,184,120,1)';
+    ctx.font = '20px';
+    yPositions.map(function(y,index){
+      text = String.fromCharCode(1e2+Math.random()*330);
+      x = index*10;
+      cav.getContext('2d').fillText(text,x,y);
+      if(y>Math.random()*1e4){
+        yPositions[index]=0;
+      }else{
+        yPositions[index]=y+10;
+      }
+
+    });
+  }
+  cav.setAttribute("width",screen.availWidth);
+  cav.setAttribute("height",screen.availHeight+200);
+  setInterval('draw()',20);
 </script>
 {% endblock %}

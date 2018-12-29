@@ -5,8 +5,10 @@
   <h1>{% block title %}个人设置{% endblock %}</h1>
 {% endblock %}
 
-{% block detail %}
+{% block all_content %}
+    <canvas id="myCanvas" width="150px" height="500px" horizontalScrollPolicy="off"></canvas>
 {% if g.user %}
+<div style="position:absolute;left:150px;top:400px" class="layui-container">
 <div class="layui-container fly-marginTop fly-user-main">
   <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
     <li class="layui-nav-item">
@@ -66,15 +68,39 @@
       </div>
     </div>
   </div>
+    <br>
+    <br>
+    <p style="text-align:center"><span style="color:#c2c2c2">ICS 社区 2018 &copy; Web 小组出品</span></p>
 </div>
 
-<div class="fly-footer">
-  <p><a href="http://fly.layui.com/" target="_blank">Fly社区</a> 2017 &copy; <a href="http://www.layui.com/" target="_blank">layui.com 出品</a></p>
-  <p>
-    <a href="http://fly.layui.com/jie/3147/" target="_blank">付费计划</a>
-    <a href="http://www.layui.com/template/fly/" target="_blank">获取Fly社区模版</a>
-    <a href="http://fly.layui.com/jie/2461/" target="_blank">微信公众号</a>
-  </p>
-</div>
+
+
+<script>
+  var cav = document.getElementById('myCanvas');
+  var w = window.screen.availWidth;
+  var h = window.screen.availHeight;
+  var yPositions = Array(300).join(0).split('');
+  var ctx = cav.getContext('2d');
+  var draw = function(){
+    ctx.fillStyle = 'rgba(57,61,73,1)';
+    ctx.fillRect(0,0,w,h+350);
+    ctx.fillStyle = 'rgba(95,184,120,1)';
+    ctx.font = '20px';
+    yPositions.map(function(y,index){
+      text = String.fromCharCode(1e2+Math.random()*330);
+      x = index*10;
+      cav.getContext('2d').fillText(text,x,y);
+      if(y>Math.random()*1e4){
+        yPositions[index]=0;
+      }else{
+        yPositions[index]=y+10;
+      }
+
+    });
+  }
+  cav.setAttribute("width",screen.availWidth);
+  cav.setAttribute("height",screen.availHeight+350);
+  setInterval('draw()',20);
+</script>
 {% endif %}
 {% endblock %}
