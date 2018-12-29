@@ -19,15 +19,15 @@
           <a href="" class="layui-this">相关用户</a>
         </div>
 
-        <dl class="fly-list"> 
+        <ul class="fly-list"> 
           {% for user in users %}
-          <dd>
+          <li>
             <a href="{{ url_for('user.home', id=user['id']) }}">
               <img src="https://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg"><cite>{{user['nickname']}}</cite>
             </a>
-          </dd>
+          </li>
           {% endfor %}
-        </dl>
+        </ul>
       </div>
 
       <div class="fly-panel" style="margin-bottom: 0;">
