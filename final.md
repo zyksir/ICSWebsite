@@ -18,19 +18,97 @@
 
 接下来对数据库中各个TABLE逐一进行说明。
 
-**[这里吹一波peewee]**(wrh)
+##### user 用户
 
-##### user
+id 用户编号
 
-##### post
+created 创建时间
 
-##### post_file
+username 用户名
 
-##### reply
+nickname 昵称
 
-##### collects
+password 密码
 
-##### likes
+email 邮箱
+
+is_block 是否被禁言
+
+
+
+##### post 贴子
+
+id 贴子编号
+
+created 创建时间
+
+author_id 作者编号
+
+num_view 点击量
+
+num_reply 回复数
+
+num_like 点赞数
+
+num_collect 收藏数
+
+hot 热门指数
+
+title 贴子标题
+
+body 贴子内容
+
+is_top 是否置顶
+
+is_fine 是否精品
+
+
+
+##### post_file 文件
+
+id 文件编号
+
+post_id 贴子编号
+
+created 创建时间
+
+filename 文件名
+
+filehash 文件哈希值
+
+
+
+##### reply 回复
+
+id 回复编号
+
+author_id 作者编号
+
+post_id 贴子编号
+
+created 创建时间
+
+body 回复内容
+
+
+
+##### collects 收藏
+
+id 收藏编号
+
+author_id 作者编号
+
+post_id 贴子编号
+
+
+
+##### likes 点赞
+
+id 点赞编号
+
+author_id 作者编号
+
+post_id 贴子编号
 
 
 
