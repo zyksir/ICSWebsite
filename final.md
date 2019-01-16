@@ -39,7 +39,7 @@ flask run
 3. 若填写均无误，点击提交，即可注册完毕。
 4. 若看不清验证码，点击图片即可更新
 
-![regist](D:\mywork\GitHub\Web\pic\regist.PNG)
+![regist](.\pic\regist.PNG)
 
 ###### 登录
 
@@ -57,13 +57,13 @@ flask run
 
 - 如果输入的验证码错误，回到登录界面并显示“验证码错误”。
 
-![regist](D:\mywork\GitHub\Web\pic\regist.PNG)
+![regist](.\pic\login.PNG)
 
 ###### 个人主页&个人设置
 
 点击对应按钮进入界面即可。
 
-![regist](D:\mywork\GitHub\Web\pic\home.PNG)
+![regist](.\pic\home.PNG)
 
 ##### 帖子
 
@@ -71,24 +71,24 @@ flask run
 
 点击`创建新帖`按钮，填写帖子的主题、内容部分即可发帖。
 
-![post_file](D:\mywork\GitHub\Web\pic\post_file.PNG)
+![post_file](.\pic\post_file.PNG)
 
 ###### 回复
 
 进入帖子界面，填写回复内容点击回复即可。
 
-![reply](D:\mywork\GitHub\Web\pic\reply.PNG)
+![reply](.\pic\reply.PNG)
 
 ###### 文件
 
 - 上传步骤：用户在发帖时，若想上传文件，可以点击发表新帖页面中的选择文件，选择想要上传的本地文件。本次仅允许用户上传一个文件，多个文件可以通过将其压缩的方式方式上传。
 - 下载步骤：用户想要下载某文件，可以在帖子展示界面点击显示有文件的按钮，如果文件安全，用户就可以选择希望文件下载到的用户电脑上的地址，之后就可以开始文件传输。
 
-![download](D:\mywork\GitHub\Web\pic\download.PNG)
+![download](.\pic\download.PNG)
 
 ##### 管理员
 
-![admin_home](D:\mywork\GitHub\Web\pic\admin_home.PNG)
+![admin_home](.\pic\admin_home.PNG)
 
 ###### 用户管理
 
@@ -98,7 +98,7 @@ flask run
 4. 点击`禁言`按钮即可完成对相应用户禁言的功能。用户一旦被禁言，在管理员界面禁言状态显示`已禁言`，在论坛对应的界面中，`发表新帖`和`回复`按钮就会消失，如此该用户就无法发帖、无法回复。
 5. 点击`删除`按钮即可完成删除用户，管理员界面不再显示该用户，用户无法登陆论坛并发帖。
 
-![admin_user](D:\mywork\GitHub\Web\pic\admin_user.PNG)
+![admin_user](.\pic\admin_user.PNG)
 
 ###### 帖子管理
 
@@ -109,24 +109,24 @@ flask run
 
 ###### 文件管理
 
-![admin_post](D:\mywork\GitHub\Web\pic\admin_post.PNG)
+![admin_post](.\pic\admin_post.PNG)
 
 1. 在管理员首页点击`文件管理`按钮可以进入文件管理界面。
 2. 在帖子管理界面可以显示所有帖子的上传用户id、上传用户昵称、文件名等信息
 3. 若想搜索对应文件的信息，可以在搜索框输入目标文件的标题相关的信息，点击搜索帖子，即可显示对应文件的相关信息。关键词没有必要是完全匹配，可以是部分匹配。
 4. 点击`删除文件`，与该文件相关的表项就会被对应删除。
 
-![admin_file](D:\mywork\GitHub\Web\pic\admin_file.PNG)
+![admin_file](.\pic\admin_file.PNG)
 
 #### 组内分工
 
-##### 前端：
+##### 后端：
 
 朱熠恺：注册、登录、文件传输、用户管理、帖子管理、文件管理、管理员界面的搜索功能
 
 吴睿海：验证码、用户个人主页、用户个人设置、热帖、回复、用户界面的搜索功能
 
-##### 后端：
+##### 前端：
 
 徐沁玫：注册、登录、文件传输接口、用户个人主页、个人设置、主界面、发帖
 
@@ -411,6 +411,3 @@ Flask 是一个 web 微框架，不依赖于外部库的框架，自由灵活量
 纸飞机象征着远航和希望，预示着通过论坛共享知识资料、解答学科难题，用户可以在计算机学科中更进一步。
 
 ICS既是Introduction to Computer Science，也是爱CS，希望用户可以共同维护社区和谐，充分利用社区资源。
-
-
-
