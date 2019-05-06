@@ -25,12 +25,12 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def validate_picture():
     total = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012345789'
     # 图片大小130 x 50
-    width = 130
-    heighth = 50
+    width = 150
+    heighth = 40
     # 先生成一个新图片对象
     im = Image.new('RGB',(width, heighth), 'White')
     # 设置字体
-    font = ImageFont.truetype("C:\Windows\Fonts\Arial.ttf", 36)
+    font = ImageFont.truetype("C:\Windows\Fonts\Arial.ttf", 28)
     # 创建draw对象
     draw = ImageDraw.Draw(im)
     str = ''
@@ -38,7 +38,7 @@ def validate_picture():
     for item in range(5):
         text = random.choice(total)
         str += text
-        draw.text((5+random.randint(4,7)+20*item,5+random.randint(3,7)), text=text, fill='Black', font=font)
+        draw.text((13+random.randint(4,7)+20*item,random.randint(3,7)), text=text, fill='Black', font=font)
 
     # 划几根干扰线
     for num in range(8):
@@ -61,11 +61,14 @@ def get_register_info(form):
     email = request.form['email']
     imagecode = request.form['imagecode']
     error = None
-
+    if not nickname:
+        nickname = username
     if not username:
         error = 'Username is required.'
     elif not password:
         error = 'Password is required.'
+    elif not email:
+        error = 'Email is required.'
     elif not repassword:
         error = 'Repassword is required'
     elif not (password == repassword):
@@ -76,8 +79,6 @@ def get_register_info(form):
         error = 'The maximum size of username is 40, your username is too long!'
     elif len(nickname) > 40:
         error = 'The maximum size of nickname is 40, your username is too long!'
-    elif not (password == repassword):
-        error = 'you enter different passwords!'
     elif len(user.select(user.id).where(user.username == username))>0 :
         error = 'User {} is already registered.'.format(username)
     elif imagecode != session['imagecode']:
@@ -94,15 +95,20 @@ def register():
         pprint(username)
         pprint(nickname)
         pprint(error)
-        # conn, db = get_db()
 
         if error is None:
-            user.insert({
-                user.username: username,
-                user.password: password,
-                user.nickname: nickname,
-                user.email: email
-            }).execute()
+            conn, db = get_db()
+            db.execute(
+                'INSERT INTO user (username, nickname, password, email) VALUES (%s, %s, %s, %s)',
+                (username, nickname, password, email)
+            )
+            conn.commit()
+            # user.insert({
+            #     user.username: username,
+            #     user.password: password,
+            #     user.nickname: nickname,
+            #     user.email: email
+            # }).execute()
             return redirect(url_for('auth.login'))
 
         flash(error)
@@ -115,16 +121,28 @@ def get_login_info(form):
     password = form['password']
     imagecode = form['imagecode']
     error = None
-    User = user.select().where(user.username == username)
-    if len(User) == 0:
+    conn, db = get_db()
+    num = db.execute(
+        'SELECT * FROM user WHERE username = %s', (username)
+    )
+    User = db.fetchone()
+    conn.commit()
+    if num == 0:
         error = "用户名不存在"
-        User = None
-    else:
-        User = User.get()
-        if not check_password_hash(User.password, password):
-            error = "密码不正确"
-        elif imagecode != session['imagecode']:
-            error = "验证码错误"
+    elif imagecode != session['imagecode']:
+        error = "验证码错误"
+    elif not check_password_hash(User['password'], password):
+        error = '密码不正确！'
+    # User = user.select().where(user.username == username)
+    # if len(User) == 0:
+    #     error = "用户名不存在"
+    #     User = None
+    # else:
+    #     User = User.get()
+    #     if not check_password_hash(User.password, password):
+    #         error = "密码不正确"
+    #     elif imagecode != session['imagecode']:
+    #         error = "验证码错误"
 
     return User, error
 
@@ -137,11 +155,11 @@ def login():
 
         if error is None:
             session.clear()
-            session['user_id'] = User.id
+            session['user_id'] = User["id"]
+            # session['user_id'] = User.id
             return redirect(url_for('index'))
 
         flash(error)    # stores messages that can be retrieved when rendering the template.
-        #return '1'
 
     return render_template('auth/temp_login.html')
 
@@ -171,6 +189,7 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
+
 
 @bp.route('/code')
 def get_code():

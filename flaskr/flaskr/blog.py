@@ -132,6 +132,12 @@ def delete_post(id):
 
     print("filelist = \n", file_list)
 
+    t = collects.delete().where(collects.post_id == id)
+    t.execute()
+
+    t = likes.delete().where(likes.post_id == id)
+    t.execute()
+
     t = post_file.delete().where(post_file.post_id == id)
     t.execute()
 
@@ -293,14 +299,32 @@ def ADD_UNCOLLECT(id):
         print("num_collect = ", num_collect)
 
 
+def SAVE_FILES(file_list, savepath, post_id):
+    for file in file_list:
+        print(type(file))
+        print(file.filename)
+        file_content = file.read()
+        filename = secure_filename(file.filename)
+        filehash = generate_password_hash(file_content)
+
+        t = post_file.insert(filename=filename, filehash=filehash, post_id=post_id)
+        post_file_id = t.execute()
+
+        file_path = os.path.join(savepath, str(post_file_id) + "_" + filename)
+        with open(file_path, "wb") as fw:
+            fw.write(file_content)
+        print("Save %s to %s" % (filename, file_path))
+
+
 # index page
-@bp.route('/',methods=('GET', 'POST'))
+@bp.route('/', methods=('GET', 'POST'))
 def index():
-    posts, hots = get_index_info()
     if request.method == 'POST':
-        ST = request.form.get("searchname",type=str,default=None)
-        # posts = title_search(ST)
+        ST = request.form.get("searchkeywords",type=str,default=None)
+        posts = title_search(ST)
         return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
+
+    posts, hots = get_index_info()
 
     return render_template('blog/temp_index.html', posts=posts, hots=hots)
 
@@ -327,20 +351,7 @@ def create():
             post_id = t.execute()
             print(post_id)
 
-            for file in request.files.getlist("file"):
-                print(type(file))
-                print(file.filename)
-                file_content = file.read()
-                filename = secure_filename(file.filename)
-                filehash = generate_password_hash(file_content)
-
-                t = post_file.insert(filename=filename, filehash=filehash, post_id=post_id)
-                post_file_id = t.execute()
-
-                file_path = os.path.join(savepath, str(post_file_id)+"_"+filename)
-                with open(file_path, "wb") as fw:
-                    fw.write(file_content)
-                print("Save %s to %s" % (filename, file_path))
+            SAVE_FILES(request.files.getlist("file"), savepath, post_id)
             return redirect(url_for('blog.index'))
 
     return render_template('blog/temp_create.html')
@@ -351,15 +362,15 @@ def create():
 def ViewPost(id):
     if request.method == 'POST':
         body = request.form.get("body",type=str,default=None)
-        ST = request.form.get("searchname",type=str,default=None)
+        ST = request.form.get("searchkeywords",type=str,default=None)
         Filename = request.form.get("file",type=str,default=None)
         if body:
             error = None
         if ST:
-            #posts = title_search(ST)
+            posts = title_search(ST)
             return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
-            # return render_template('blog/temp_SearchResult.html', posts=posts)
-            # error = None
+            return render_template('blog/temp_SearchResult.html', posts=posts)
+            error = None
 
         if error is not None:
             flash(error)
@@ -396,10 +407,31 @@ def ViewPost(id):
 
     return render_template('blog/temp_ViewPost.html', post=apost, is_collect=is_collect, is_like=is_like, hots=session['hots'])
 
+
+def CHECK_DOWNLOADFILE(post_file_id, filename):
+    with open(filename, "rb") as f:
+        content = f.read()
+        filehash = model_to_dict(post_file.select().where(post_file.id == post_file_id).get())['filehash']
+        if not check_password_hash(filehash, content):
+            error = "文件已被修改"
+            return error
+
+
 @bp.route('/DownloadFile/<string:filename>', methods=('POST', ))
 def DownloadFile(filename):
     print(filename)
+    tmp_list = eval(filename)
+    filename = tmp_list[0]
+    post_file_id = tmp_list[1]
+    post_id = tmp_list[2]
+    filename = str(post_file_id)+"_"+filename
+    error = CHECK_DOWNLOADFILE(post_file_id, os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+    if error:
+        flash(error)
+        return redirect(url_for("blog.ViewPost", id=post_id))
+
     return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
 
 # delete a reply by id
 @bp.route('/DeleteReply/<int:id>', methods=('POST',))
@@ -422,10 +454,14 @@ def DeletePost(id):
 @bp.route('/SEARCH/TITLE/<string:ST>', methods=('GET','POST'))
 @login_required
 def SEARCH_TITLE(ST):
+    if request.method == 'POST':
+        ST = request.form.get("searchkeywords", type=str,default=None)
+        # posts = title_search(ST)
+        return redirect(url_for('blog.SEARCH_TITLE', ST=ST))
     posts = title_search(ST)
-    return render_template('blog/temp_SearchResult.html', posts=posts)
+    users = user_search(ST)
+    return render_template('blog/temp_SearchResult.html', posts=posts, users=users)
 
-    # return json.dumps(posts, ensure_ascii=False)
 
 # search a keyword ST in users
 @bp.route('/SEARCH/USER/<string:ST>')

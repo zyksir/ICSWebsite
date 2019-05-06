@@ -6,9 +6,10 @@
 {% endblock %}
 
 {% block all_content %}
+    <canvas id="myCanvas" width="150px" height="500px" horizontalScrollPolicy="off"></canvas>
 {% if g.user %}
-<div style="position: absolute;left: 150px; top: 400px" class="layui-container">
-<div  class="layui-container fly-marginTop fly-user-main">
+<div style="position:absolute;left:90px;top:400px" class="layui-container">
+<div class="layui-container fly-marginTop fly-user-main">
   <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
     <li class="layui-nav-item">
       <a href="{{ url_for('user.setname')}}">
@@ -30,7 +31,6 @@
     </li>
   </ul>
 
-
   <div class="site-tree-mobile layui-hide">
     <i class="layui-icon">&#xe602;</i>
   </div>
@@ -40,10 +40,10 @@
     <i class="layui-icon">&#xe602;</i>
   </div>
   <div class="site-mobile-shade"></div>
-
   
   
-  <div class="fly-panel fly-panel-user" pad20>
+  
+     <div class="fly-panel fly-panel-user" pad20>
     <div class="layui-tab layui-tab-brief" lay-filter="user">
       <ul class="layui-tab-title" id="LAY_mine">
         <li class="layui-this" lay-id="info">我的邮箱</li>
@@ -63,23 +63,44 @@
               <button class="layui-btn" key="set-mine" lay-filter="*" lay-submit>确认修改</button>
             </div>
           </form>
-        </div>        
+          </div>        
+        </div>
       </div>
     </div>
   </div>
+    <br>
+    <br>
+    <p style="text-align:center"><span style="color:#c2c2c2">ICS 社区 2018 &copy; Web 小组出品</span></p>
+</div>
 
 
 
- </div>
+<script>
+  var cav = document.getElementById('myCanvas');
+  var w = window.screen.availWidth;
+  var h = window.screen.availHeight;
+  var yPositions = Array(300).join(0).split('');
+  var ctx = cav.getContext('2d');
+  var draw = function(){
+    ctx.fillStyle = 'rgba(57,61,73,1)';
+    ctx.fillRect(0,0,w,h+350);
+    ctx.fillStyle = 'rgba(95,184,120,1)';
+    ctx.font = '20px';
+    yPositions.map(function(y,index){
+      text = String.fromCharCode(1e2+Math.random()*330);
+      x = index*10;
+      cav.getContext('2d').fillText(text,x,y);
+      if(y>Math.random()*1e4){
+        yPositions[index]=0;
+      }else{
+        yPositions[index]=y+10;
+      }
 
-
-  <div  class="fly-footer">
-    <p>ICS论坛  <br>  2018 &copy;    Web小组 出品  </p>
-  </div>
-
-
-
-
-
+    });
+  }
+  cav.setAttribute("width",screen.availWidth);
+  cav.setAttribute("height",screen.availHeight+350);
+  setInterval('draw()',20);
+</script>
 {% endif %}
 {% endblock %}

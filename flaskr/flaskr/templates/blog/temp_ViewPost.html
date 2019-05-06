@@ -4,8 +4,8 @@
   <h1>{% block title %}{{post['title']}}{% endblock %}</h1>
 {% endblock %}
 
-{% block all_content %}
-<div style="position: absolute;left: 150px; top: 400px" class="layui-container">
+{% block detail %}
+<div class="layui-container">
   <div class="layui-row layui-col-space15">
     <div class="layui-col-md8 content detail">
       <div class="fly-panel detail-box">
@@ -73,15 +73,17 @@
             {{ post['body'] | safe }}
             {% for file in post['file'] %}
           <hr>
-          <!--action=url_for('',filename='file['filename']',postid='post['id']')-->
-            <form action="" method="post">
+            <form action="{{ url_for('blog.DownloadFile',filename=[file['filename'],file['id'],post['id']]) }}" method="post">
                 <input class="layui-btn-xs jie-admin" id="file" name="file" type="submit" value="{{file['filename']}}">
             </form>
-
+                  {% for message in get_flashed_messages() %}
+                    <div class="warning" style="color:#FF5722;">{{ message }}</div>
+                  {% endfor %}
             {% endfor %}
           </p>
         </div>
       </div>
+
 
       <div class="fly-panel detail-box" id="flyReply">
         <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
@@ -129,7 +131,7 @@
           <!-- 无数据时 -->
           <!-- <li class="fly-none">消灭零回复</li> -->
         </ul>
-        {% if g.user %}
+        {% if g.user and g.user['is_block']==0 %}
         <div class="layui-form layui-form-pane">
           <form method="post">
             <div class="layui-form-item layui-form-text">
@@ -147,8 +149,6 @@
       {% endif %}
       </div>
     </div>
-  </div>
-</div>
 
 <script src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>
 <script>

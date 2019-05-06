@@ -6,13 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <link rel="stylesheet" href="{{ url_for('static', filename='res/layui/css/layui.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='res/css/global.css') }}">
-  <script type="text/javascript" src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>  
-  
-
+  <script type="text/javascript" src="{{ url_for('static', filename='res/layui/layui.js') }}"></script>
 </head>
-
-
-
 <body>
 
 <div class="fly-header layui-bg-black">
@@ -64,8 +59,7 @@
 </div>
 
 
-
-<div style="position: absolute;left: 150px; top: 60px" class="layui-container">
+<div style="position: absolute;left: 90px; top: 60px" class="layui-container">
 <div class="layui-carousel" id="test1" lay-filter="test1">
   <div carousel-item="">
     <div><img src="{{ url_for('static', filename='pic/b.jpg') }}" alt="春天" width = '100%'>
@@ -78,7 +72,7 @@
 </div> 
 </div>
 
-<div style="position: absolute;left: 150px; top: 330px" class="fly-panel fly-column">
+<div style="position: absolute;left: 90px; top: 340px" class="fly-panel fly-column">
   <div class="layui-container">
     <ul class="layui-clear">
       <li class="layui-hide-xs layui-this"><a href="{{ url_for('blog.index') }}">首页</a></li> 
@@ -98,27 +92,31 @@
         <button class="layui-btn" lay-submit lay-filter="formDemo">立即搜索</button>
       </form>
     -->
+    <div class="layui-input-inline">
+    <form action="" method="post" enctype="multipart/form-data">
      <div class="layui-input-inline">
-      <form action="" method="post" enctype="multipart/form-data">
-      <input type="test" name="searchname" id="searchname" required lay-verify="required" placeholder="输入要搜索的帖子名称" autocomplete="off" class="layui-input">
+      <input type="test" name="searchkeywords" id="searchkeywords" required lay-verify="required" placeholder="输入要搜索的帖子名称" autocomplete="off" class="layui-input">
     </div>
     <div class="layui-input-inline">
       <button class="layui-btn" lay-filter="searchname" lay-submit ><i class="layui-icon"></i></button>
       </div>
     </form>
-      <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a> 
+  </div>
+    {% if g.user['is_block'] == 0 %}
+      <a href="{{ url_for('blog.create') }}" class="layui-btn">发表新帖</a>
+    {% endif %}
     </div> 
     {% else %}
     <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block">登录探索更多功能</li> 
     {% endif %}
   </div>
-</div>  
+</div>
 
 {% block all_content %}
-<canvas id="myCanvas" width="1400px" height="3000px" horizontalScrollPolicy="off"></canvas>
-<div style="position: absolute;left: 150px; top: 400px" class="layui-container">
+<canvas id="myCanvas" width="150px" height="500px" horizontalScrollPolicy="off"></canvas>
+<div style="position: absolute;left: 90px; top: 405px" class="layui-container">
 {% block detail %}{% endblock %}
-
+{% block createNew %}{% endblock %}
 <div class="layui-col-md4">
 
       <div class="fly-panel fly-rank fly-rank-reply" id="LAY_replyRank">
@@ -187,19 +185,17 @@
 
 
 </div>
-
 <script>
   var cav = document.getElementById('myCanvas');
-  var w = window.screen.width;
-  var h = window.screen.height;
-
+  var w = window.screen.availWidth;
+  var h = window.screen.availHeight;
   var yPositions = Array(300).join(0).split('');
   var ctx = cav.getContext('2d');
   var draw = function(){
-    ctx.fillStyle = 'rgba(57,61,73,1)'; //dark
-    ctx.fillRect(0,0,w,h);
-    ctx.fillStyle = 'rgba(95,184,120,1)'; //green    
-    ctx.font = '10px';
+    ctx.fillStyle = 'rgba(57,61,73,1)';
+    ctx.fillRect(0,0,w,h*3);
+    ctx.fillStyle = 'rgba(95,184,120,1)';
+    ctx.font = '20px';
     yPositions.map(function(y,index){
       text = String.fromCharCode(1e2+Math.random()*330);
       x = index*10;
@@ -213,17 +209,16 @@
     });
   }
   cav.setAttribute("width",screen.availWidth);
-  cav.setAttribute("height",screen.availHeight);
+  cav.setAttribute("height",screen.availHeight*3);
   setInterval('draw()',20);
-
-
 </script>
+
 
 {% endblock %}
 
-
 </body>
 </html>
+
 
 <script>
 layui.use('carousel', function(){
@@ -237,4 +232,5 @@ layui.use('carousel', function(){
   });
 });
 </script>
+
 
