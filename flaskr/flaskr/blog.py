@@ -475,7 +475,7 @@ def SAVE_FILES(file_list, savepath, post_id):
         # t = post_file.insert(filename=filename, filehash=filehash, post_id=post_id)
         # post_file_id = t.execute()
 
-        file_path = os.path.join(savepath, str(post_file_id) + "_" + filename)
+        file_path = os.path.join(savepath, str(post_id) + "_" + filename)
         with open(file_path, "wb") as fw:
             fw.write(file_content)
         print("Save %s(file id:%s) to %s" % (filename, str(post_file_id), file_path))

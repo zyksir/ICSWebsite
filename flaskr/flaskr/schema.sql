@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS post_file;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS user;
 
+
 CREATE TABLE user (
   id INT AUTO_INCREMENT PRIMARY KEY,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -65,8 +66,17 @@ CREATE TABLE likes (
   FOREIGN KEY (author_id) REFERENCES user (id),
   FOREIGN KEY (post_id) REFERENCES post (id)
 );
+CREATE UNIQUE INDEX USERNAME_INDEX ON user (username);
+CREATE UNIQUE INDEX LIKES_INDEX ON likes (author_id, post_id);
+CREATE UNIQUE INDEX COLLECTS_INDEX ON collects (author_id, post_id);
 
 
+DROP TRIGGER IF EXISTS add_num_likes;
+DROP TRIGGER IF EXISTS minus_num_likes;
+DROP TRIGGER IF EXISTS add_num_collects;
+DROP TRIGGER IF EXISTS minus_num_collects;
+DROP TRIGGER IF EXISTS add_num_reply;
+DROP TRIGGER IF EXISTS minus_num_reply;
 
 CREATE TRIGGER add_num_likes
 AFTER INSERT ON likes
@@ -81,12 +91,12 @@ UPDATE post SET num_like=num_like-1 WHERE id=OLD.post_id;
 CREATE TRIGGER add_num_collects
 AFTER INSERT ON collects
 FOR EACH ROW
-UPDATE post SET num_collects=num_collects+1 WHERE id=NEW.post_id;
+UPDATE post SET num_collect=num_collect+1 WHERE id=NEW.post_id;
 
 CREATE TRIGGER  minus_num_collects
 BEFORE DELETE ON collects
 FOR EACH ROW
-UPDATE post SET num_collects=num_collects-1 WHERE id=OLD.post_id;
+UPDATE post SET num_collect=num_collect-1 WHERE id=OLD.post_id;
 
 CREATE TRIGGER add_num_reply
 AFTER INSERT ON reply
@@ -99,20 +109,16 @@ FOR EACH ROW
 UPDATE post SET num_reply=num_reply-1 WHERE id=OLD.post_id;
 
 
+DROP PROCEDURE IF EXISTS delete_post;
 DELIMITER  //
 CREATE PROCEDURE delete_post(IN p_id INT)
 BEGIN
-START TRANSACTION;
 SELECT filename, id FROM post_file WHERE post_id=p_id;
 DELETE FROM collects WHERE post_id=p_id;
 DELETE FROM likes WHERE post_id=p_id;
 DELETE FROM reply WHERE post_id=p_id;
 DELETE FROM post_file WHERE post_id=p_id;
 DELETE FROM post WHERE id=p_id;
-COMMIT
 END
 //
-
-CREATE UNIQUE INDEX USERNAME_INDEX ON user (username);
-CREATE UNIQUE INDEX LIKES_INDEX ON likes (author_id, post_id);
-CREATE UNIQUE INDEX COLLECTS_INDEX ON collects (author_id, post_id);
+DELIMITER  ;
