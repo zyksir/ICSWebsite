@@ -171,7 +171,14 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = model_to_dict(user.select().where(user.id == user_id).get())
+        conn, db = get_db()
+        db.execute(
+            "SELECT * FROM USER WHERE id = %s", (user_id)
+        )
+        g.user = db.fetchone()
+        # print("g.user" + str(g.user))
+        # g.user = model_to_dict(user.select().where(user.id == user_id).get())
+        # print("g.user" + str(g.user))
 
 
 @bp.route('/logout')
